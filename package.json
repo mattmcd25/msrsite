@@ -1,31 +1,19 @@
 {
-  "name": "node-js-getting-started",
-  "version": "0.3.0",
-  "description": "A sample Node.js app using Express 4",
-  "engines": {
-    "node": "8.9.1"
-  },
+  "name": "msrna",
+  "version": "1.0.0",
+  "description": "Web application for managing MSR Namibia's member database",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "node test.js"
-  },
-  "dependencies": {
-    "ejs": "^2.5.6",
-    "express": "^4.15.2"
-  },
-  "devDependencies": {
-    "request": "^2.81.0",
-    "tape": "^4.7.0"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/heroku/node-js-getting-started"
+    "url": "git+https://github.com/mattmcd25/msrsite.git"
   },
-  "keywords": [
-    "node",
-    "heroku",
-    "express"
-  ],
-  "license": "MIT"
+  "author": "mattmcd25 & wittenber0",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattmcd25/msrsite/issues"
+  },
+  "homepage": "https://github.com/mattmcd25/msrsite#readme"
 }
