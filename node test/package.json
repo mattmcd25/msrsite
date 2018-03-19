@@ -1,0 +1,22 @@
+{
+  "name": "msrna",
+  "version": "1.0.0",
+  "description": "Web application for managing MSR Namibia's member database",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattmcd25/msrsite.git"
+  },
+  "author": "mattmcd25 & wittenber0",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mattmcd25/msrsite/issues"
+  },
+  "homepage": "https://github.com/mattmcd25/msrsite#readme",
+  "devDependencies": {
+    "@angular/cli": "^1.7.3"
+  }
+}
