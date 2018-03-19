@@ -1,16 +1,25 @@
 {
-  "name": "react-test",
+  "name": "msrna",
   "version": "0.1.0",
-  "private": true,
+  "description": "Web application for managing MSR Namibia's member database",
   "dependencies": {
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-scripts": "1.1.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattmcd25/msrsite.git"
+  },
+  "author": "mattmcd25 & wittenber0",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/mattmcd25/msrsite/issues"
+  },
+  "homepage": "https://github.com/mattmcd25/msrsite#readme"
 }
