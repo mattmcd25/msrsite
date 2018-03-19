@@ -5,15 +5,17 @@ const test_data = [
         'skills': [
             'Typing',
             'Programming'
-        ]
+        ],
+        'phone': '123'
     },
     {
-        'name': 'Ryan'
+        'name': 'Ryan',
         'surname': 'Wittenberg',
         'skills': [
             'Programming',
             'Hunting'
-        ]
+        ],
+        'phone': '456'
     },
     {
         'name': 'Melissa',
@@ -21,7 +23,8 @@ const test_data = [
         'skills': [
             'Typing',
             'Bricklaying'
-        ]
+        ],
+        'phone': '789'
     },
     {
         'name': 'Deanna',
@@ -29,8 +32,17 @@ const test_data = [
         'skills': [
             'Typing',
             'Farming'
-        ]
+        ],
+        'phone': '000'
+    },
+    {
+        'name': 'Samwel',
+        'surname': 'Whoknows',
+        'skills': [
+            'Driving'
+        ],
+        'phone': '+264 818 482 163'
     }
-]
+];
 
 export default test_data;
