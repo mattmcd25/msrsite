@@ -1,8 +1,11 @@
-var express = require('express');
-var app = express();
+const express = require('express');
+const path = require('path');
+const app = express();
 
-app.get('/api', function (req, res) {
-    res.send("hello world");
+// app.use(express.static(path.join(__dirname, 'build')));
+
+app.get('/api', (req, res) => {
+    res.send("hello api");
     // var sql = require("mssql");
     //
     // // config for your database
@@ -31,10 +34,17 @@ app.get('/api', function (req, res) {
     //
     //     });
     // });
-});
+})
 
-// app.use('*', express.static(path.join(__dirname, 'dist')));
+// if (process.env.NODE_ENV === "production") {
+//     console.log('production: serving static assests');
+//     app.use(express.static("build"));
+// }
 
-var server = app.listen(5000, function () {
+// app.get('/*', function (req, res) {
+//     res.sendFile(path.join(__dirname, 'build', 'index.html'));
+// });
+
+var server = app.listen(3005, function () {
     console.log('Server is running..');
 });

@@ -18,5 +18,8 @@
   "homepage": "https://github.com/mattmcd25/msrsite#readme",
   "devDependencies": {
     "@angular/cli": "^1.7.3"
+  },
+  "dependencies": {
+    "mssql": "^4.1.0"
   }
 }
