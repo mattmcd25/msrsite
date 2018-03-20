@@ -1,49 +1,38 @@
 const express = require('express');
 const path = require('path');
-const app = express();
+const sql = require("mssql");
+const gen = require('./api/generalActions');
+const query = require('./api/queryActions');
 
-app.set("port", process.env.PORT || 3005);
+// ========== Configuration ==========
+const app = express(); // server app
+app.set("port", process.env.PORT || 3005); // select port based on heroku settings
 
-app.get('/api', (req, res) => {
-    res.send("hello api");
-    // var sql = require("mssql");
-    //
-    // // config for your database
-    // var config = {
-    //     user: 'msrtest',
-    //     password: 'msr2018!',
-    //     server: 'den1.mssql4.gear.host',
-    //     database: 'msrtest'
-    // };
-    //
-    // // connect to your database
-    // sql.connect(config, function (err) {
-    //
-    //     if (err) console.log(err);
-    //
-    //     // create Request object
-    //     var request = new sql.Request();
-    //
-    //     // query to the database and get the records
-    //     request.query('select * from Member', function (err, recordset) {
-    //
-    //         if (err) console.log(err)
-    //
-    //         // send records as a response
-    //         res.send(recordset);
-    //
-    //     });
-    // });
+app.get('/api', (req, res) => { // generic test
+    res.send("hello from the api!");
 });
 
-if (process.env.NODE_ENV === "production") {
-    app.use(express.static('build'));
 
-    +app.get('/*', function (req, res) {
+
+// ========== General Actions ==========
+app.get('/api/connect', gen.connect); // connect to the database
+app.get('/api/disconnect', gen.disconnect); // disconnect from the database
+
+
+
+// ========== Querying Actions ==========
+app.get('/api/select*/:table', query.selectAll); // select all from a table or view
+
+
+
+// ========== Launching Server ==========
+if (process.env.NODE_ENV === "production") { // if production, also host static (client) assets
+    app.use(express.static('build'));
+    app.get('/*', function (req, res) {
         res.sendFile('build/index.html');
     });
 }
 
-var server = app.listen(app.get("port"), () => {
+app.listen(app.get("port"), () => { // listen on the port
     console.log('Server is running..');
 });
