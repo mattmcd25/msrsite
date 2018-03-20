@@ -1,19 +1,9 @@
 import React from "react";
 
-export default function Member(props) {
-    /*const skills = props.skills.map((skill) => {
-        return (
-            <li key={skill}>
-                <p>{skill}</p>
-            </li>
-        )
-    });*/
-
+export default function Member (props) {
     return (
-        <tr key={props.name}>
-            <td>{props.name}</td>
-            <td>{props.surname}</td>
-            <td>{props.phone}</td>
+        <tr key='5'>
+            {Object.values(props.data).map(val => <td>{val}</td>)}
         </tr>
     );
 }

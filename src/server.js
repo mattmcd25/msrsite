@@ -22,6 +22,7 @@ app.get('/api/disconnect', gen.disconnect); // disconnect from the database
 
 // ========== Querying Actions ==========
 app.get('/api/select*/:table', query.selectAll); // select all from a table or view
+app.get('/api/colnames/:table', query.getColumns); // get column names from a table or view
 
 
 

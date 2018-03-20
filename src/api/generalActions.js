@@ -10,16 +10,30 @@ const config = {
 
 // connect : connects to the database
 exports.connect = (req, res) => {
+    console.log("Trying to connect...");
     sql.connect(config, (err) => {
-        if (err) console.log(err);
-        else res.send("Successfully connected to database.");
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+        else {
+            console.log("Connected successfully.");
+            res.status(200).send("Successfully connected to database.");
+        }
     });
 }
 
 // disconnect : disconnects from the database
 exports.disconnect = (req, res) => {
+    console.log("Trying to disconnect...");
     sql.close((err) => {
-        if (err) console.log(err);
-        else res.send("Successfully disconnected from database.");
+        if (err) {
+            console.log(err);
+            res.status(500).send(err);
+        }
+        else {
+            console.log("Disconnected successfully.");
+            res.status(200).send("Successfully disconnected from database.");
+        }
     });
 }
