@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
+app.set("port", process.env.PORT || 3005);
+
 app.get('/api', (req, res) => {
     res.send("hello api");
     // var sql = require("mssql");
@@ -42,6 +44,6 @@ if (process.env.NODE_ENV === "production") {
     });
 }
 
-var server = app.listen(3005, function () {
+var server = app.listen(app.get("port"), () => {
     console.log('Server is running..');
 });
