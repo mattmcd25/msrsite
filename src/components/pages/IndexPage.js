@@ -2,6 +2,7 @@ import React from 'react';
 // import Member from "../Member";
 import { Link } from 'react-router-dom';
 import MemberTable from "../MemberTable";
+// import DatabaseManager from '../../data/DatabaseManager';
 
 export default class IndexPage extends React.Component {
     render() {
@@ -24,6 +25,7 @@ export default class IndexPage extends React.Component {
                 </button>
 
                 <MemberTable/>
+                {/*<p>{testDB()}</p>*/}
             </div>
         );
     }

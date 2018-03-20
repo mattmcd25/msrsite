@@ -2,10 +2,13 @@
   "name": "msrna",
   "version": "0.1.0",
   "description": "Web application for managing MSR Namibia's member database",
+  "devDependencies": {
+    "concurrently": "^3.5.1",
+    "react-scripts": "1.1.1"
+  },
   "dependencies": {
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-scripts": "1.1.1",
     "react-router-dom": "^4.2.2"
   },
   "repository": {
@@ -14,11 +17,14 @@
   },
   "author": "mattmcd25 & wittenber0",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently --kill-others \"npm run server\" \"npm run client\"",
+    "server": "node src/server.js",
+    "client": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
+  "proxy": "http://localhost:3005",
   "bugs": {
     "url": "https://github.com/mattmcd25/msrsite/issues"
   },
