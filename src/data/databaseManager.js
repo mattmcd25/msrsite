@@ -1,6 +1,6 @@
 
 
-export default function test() {
+export function test() {
     var sql = require("mssql");
 
     // config for your database
