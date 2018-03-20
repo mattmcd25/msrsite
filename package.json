@@ -11,22 +11,15 @@
     "react-dom": "^16.2.0",
     "react-router-dom": "^4.2.2"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mattmcd25/msrsite.git"
-  },
   "author": "mattmcd25 & wittenber0",
   "scripts": {
     "start": "concurrently --kill-others \"npm run server\" \"npm run client\"",
+    "build+run": "npm run build && npm run server",
     "server": "node src/server.js",
     "client": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "proxy": "http://localhost:3005",
-  "bugs": {
-    "url": "https://github.com/mattmcd25/msrsite/issues"
-  },
-  "homepage": "https://github.com/mattmcd25/msrsite#readme"
+  "proxy": "http://localhost:3005"
 }

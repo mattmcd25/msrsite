@@ -2,8 +2,6 @@ const express = require('express');
 const path = require('path');
 const app = express();
 
-// app.use(express.static(path.join(__dirname, 'build')));
-
 app.get('/api', (req, res) => {
     res.send("hello api");
     // var sql = require("mssql");
@@ -34,16 +32,15 @@ app.get('/api', (req, res) => {
     //
     //     });
     // });
-})
+});
 
-// if (process.env.NODE_ENV === "production") {
-//     console.log('production: serving static assests');
-//     app.use(express.static("build"));
-// }
+if (process.env.NODE_ENV === "production") {
+    app.use(express.static('build'));
 
-// app.get('/*', function (req, res) {
-//     res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
+    +app.get('/*', function (req, res) {
+        res.sendFile('build/index.html');
+    });
+}
 
 var server = app.listen(3005, function () {
     console.log('Server is running..');
