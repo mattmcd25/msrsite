@@ -1,6 +1,4 @@
 const express = require('express');
-const path = require('path');
-const sql = require("mssql");
 const gen = require('./api/generalActions');
 const query = require('./api/queryActions');
 
@@ -34,6 +32,13 @@ if (process.env.NODE_ENV === "production") { // if production, also host static 
     });
 }
 
-app.listen(app.get("port"), () => { // listen on the port
-    console.log('Server is running..');
+gen.connect().then(() => { // connect to the database
+    app.listen(app.get("port"), () => { // listen on the port
+        console.log('Server is running...');
+        app.on('close', () => { // on close, disconnect from db
+            gen.disconnect().then(() => {
+                console.log('Server is stopped.');
+            })
+        });
+    });
 });
