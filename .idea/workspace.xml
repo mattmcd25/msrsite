@@ -3,11 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="168e74c6-2817-4400-b05d-4828ecd0185a" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/src/api/queryActions.js" afterPath="$PROJECT_DIR$/src/api/queryActions.js" />
-      <change beforePath="$PROJECT_DIR$/src/components/Member.js" afterPath="$PROJECT_DIR$/src/components/Member.js" />
-      <change beforePath="$PROJECT_DIR$/src/components/MemberTable.js" afterPath="$PROJECT_DIR$/src/components/MemberTable.js" />
-      <change beforePath="$PROJECT_DIR$/src/data/databaseManager.js" afterPath="$PROJECT_DIR$/src/data/databaseManager.js" />
-      <change beforePath="$PROJECT_DIR$/src/server.js" afterPath="$PROJECT_DIR$/src/server.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -250,12 +245,12 @@
       <workItem from="1521193124190" duration="4929000" />
       <workItem from="1521448456780" duration="691000" />
       <workItem from="1521559034003" duration="4791000" />
-      <workItem from="1521637847565" duration="6529000" />
+      <workItem from="1521637847565" duration="6754000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="61081000" />
+    <option name="totallyTimeSpent" value="61306000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
