@@ -25,9 +25,9 @@ export default class MemberTable extends React.Component {
                     <p>Loading database...</p> :
                     <table>
                         <thead>
-                        <tr>
-                            {this.state.headers.map(head => <th key={head}>{head}</th>)}
-                        </tr>
+                            <tr>
+                                {this.state.headers.map(head => <th key={head}>{head}</th>)}
+                            </tr>
                         </thead>
                         <tbody>
                             {this.state.members.map((mem) => <Member data={mem}/>)}
