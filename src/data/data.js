@@ -1,47 +1,48 @@
 const test_data = [
     {
-        'name': 'Matt',
-        'surname': 'McDonald',
-        'skills': [
-            'Typing',
-            'Programming'
-        ],
-        'phone': '123'
+        "ID": 1,
+        "FIRSTNAME": "Matt",
+        "SURNAME": "McDonald",
+        "MEMBERSHIP": "1170",
+        "MOBILE": "1234",
+        "ADDRESS": "A",
+        "MARITAL": "Single"
     },
     {
-        'name': 'Ryan',
-        'surname': 'Wittenberg',
-        'skills': [
-            'Programming',
-            'Hunting'
-        ],
-        'phone': '456'
+        "ID": 2,
+        "FIRSTNAME": "Ryan",
+        "SURNAME": "Wittenberg",
+        "MEMBERSHIP": "1171",
+        "MOBILE": "5678",
+        "ADDRESS": "B",
+        "MARITAL": "Married"
     },
     {
-        'name': 'Melissa',
-        'surname': 'Wojnowski',
-        'skills': [
-            'Typing',
-            'Bricklaying'
-        ],
-        'phone': '789'
+        "ID": 3,
+        "FIRSTNAME": "Melissa",
+        "SURNAME": "Wojnowski",
+        "MEMBERSHIP": "1172",
+        "MOBILE": "9101",
+        "ADDRESS": "C",
+        "MARITAL": "Single"
     },
     {
-        'name': 'Deanna',
-        'surname': 'Poirier',
-        'skills': [
-            'Typing',
-            'Farming'
-        ],
-        'phone': '000'
+        "ID": 4,
+        "FIRSTNAME": "Deanna",
+        "SURNAME": "Poirier",
+        "MEMBERSHIP": "1173",
+        "MOBILE": "1121",
+        "ADDRESS": "D",
+        "MARITAL": "Single"
     },
     {
-        'name': 'Samwel',
-        'surname': 'Whoknows',
-        'skills': [
-            'Driving'
-        ],
-        'phone': '+264 818 482 163'
+        "ID": 5,
+        "FIRSTNAME": "Samwel",
+        "SURNAME": "Samyung",
+        "MEMBERSHIP": "1111",
+        "MOBILE": "7",
+        "ADDRESS": "no",
+        "MARITAL": "heck no"
     }
 ];
 

@@ -14,7 +14,7 @@
   },
   "author": "mattmcd25 & wittenber0",
   "scripts": {
-    "start": "concurrently --kill-others \"npm run server\" \"npm run client\"",
+    "start": "concurrently --kill-others --names \"server,client\" \"npm run server\" \"npm run client\"",
     "build+run": "npm run build && npm run server",
     "server": "node src/server.js",
     "client": "react-scripts start",

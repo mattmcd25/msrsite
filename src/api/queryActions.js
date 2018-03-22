@@ -1,19 +1,36 @@
 const sql = require("mssql");
 
-// selectAll : returns all data from a specified table
+// selectAll : (request :table) x result => promise
+// returns all data from a specified table
 exports.selectAll = (req, res) => {
     let tableID = req.params['table'];
 
+    console.log("Trying to select * from " + tableID);
+    let request = new sql.Request(); // create Request object
+    return request.query('select * from '+tableID) // query
+        .then(recordset => {
+            console.log("Success");
+            res.status(200).send(recordset); // send records as a response
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).send(err);
+        });
+};
 
-    // create Request object
-    let request = new sql.Request();
-    // query to the database and get the records
-    request.query('select * from '+tableID, (err, recordset) => {
+// getColumns : (request :table) x result => promise
+// returns the column names from a specified table
+exports.getColumns = (req, res) => {
+    let tableID = req.params['table'];
 
-        if (err) console.log(err);
-
-        // send records as a response
-        res.send(recordset);
-
-    });
-}
+    console.log("Trying to get column names for " + tableID);
+    let request = new sql.Request(); // create Request object
+    return request.query('select column_name from information_schema.columns where table_name=\''+tableID+'\'') // query
+        .then(recordset => {
+            console.log("Success");
+            res.status(200).send(recordset); // send records as a response
+        }).catch(err => {
+            console.log(err);
+            res.status(500).send(err);
+        });
+};

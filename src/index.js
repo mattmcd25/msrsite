@@ -5,5 +5,5 @@ import AppRoutes from "./components/pages/AppRoutes";
 
 ReactDOM.render(
     <AppRoutes/>,
-  document.getElementById('root')
+    document.getElementById('root')
 );
