@@ -1,12 +1,10 @@
-// var connected = false;
-
-function api_call(call, cb) {
-    return fetch(`api/${call}`, {
-        accept: "application/json"
-    })
-        .then(checkStatus)
-        .then(cb);
-}
+// function api_call(call, cb) {
+//     return fetch(`api/${call}`, {
+//         accept: "application/json"
+//     })
+//         .then(checkStatus)
+//         .then(cb);
+// }
 
 function api_call_json(call, cb) {
     return fetch(`api/${call}`, {
@@ -35,9 +33,9 @@ function parseJSON(response) {
 
 
 
-export function connect() {
-    return api_call('connect');
-}
+// export function connect() {
+//     return api_call('connect');
+// }
 
 export function getAllMembers() {
     return api_call_json('select*/Member', json => {
