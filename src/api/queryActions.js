@@ -6,15 +6,9 @@ const server = require("../server");
 exports.selectAll = (req, res) => {
     let tableID = req.params['table'];
 
-    if(!server.ALLOWED_TABLES.includes(tableID.toUpperCase())) {
-        err = "Invalid table name/potential SQL injection: " + tableID;
-        console.log(err);
-        if(res) res.status(500).send(err);
-        return;
-    }
     console.log("Trying to select * from " + tableID);
     let request = new sql.Request(); // create Request object
-    return request.query('select * from '+tableID) // query
+    return request.query`select * from ${tableID}` // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -30,15 +24,9 @@ exports.selectAll = (req, res) => {
 exports.getColumns = (req, res) => {
     let tableID = req.params['table'];
 
-    if(!server.ALLOWED_TABLES.includes(tableID.toUpperCase())) {
-        err = "Invalid table name/potential SQL injection: " + tableID;
-        console.log(err);
-        if(res) res.status(500).send(err);
-        return;
-    }
     console.log("Trying to get column names for " + tableID);
     let request = new sql.Request(); // create Request object
-    return request.query('select column_name from information_schema.columns where table_name=\''+tableID+'\'') // query
+    return request.query`select column_name from information_schema.columns where table_name='${tableID}'` // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -53,7 +41,7 @@ exports.getColumns = (req, res) => {
 exports.getTables = (req, res) => {
     console.log("Trying to get all table names");
     let request = new sql.Request();
-    return request.query('select table_name from information_schema.tables')
+    return request.query`select table_name from information_schema.tables`
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset);

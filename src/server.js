@@ -1,9 +1,14 @@
 const express = require('express');
+const bodyparser = require('body-parser');
 const gen = require('./api/generalActions');
 const query = require('./api/queryActions');
+const update = require('./api/updateActions');
 
 // ========== Configuration ==========
 const app = express(); // server app
+
+app.use(bodyparser.json({ type: 'application/json' })); // use bodyparser for JSON
+
 app.set("port", process.env.PORT || 3005); // select port based on heroku settings
 
 app.get('/api', (req, res) => { // generic test
@@ -25,6 +30,11 @@ app.get('/api/tabnames', query.getTables); // get all table names from the db
 
 
 
+// ========== Update Actions ==========
+app.post('/api/insert/:table', update.insert);
+
+
+
 // ========== Launching Server ==========
 if (process.env.NODE_ENV === "production") { // if production, also host static (client) assets
     app.use(express.static('build'));
@@ -34,16 +44,11 @@ if (process.env.NODE_ENV === "production") { // if production, also host static 
 }
 
 gen.connect().then(() => { // connect to the database
-    query.getTables().then(result => {
-        exports.ALLOWED_TABLES = result['recordsets'][0].map(tab => tab.table_name);
-        console.log(exports.ALLOWED_TABLES);
-    }).then(() => {
-        app.listen(app.get("port"), () => { // listen on the port
-            console.log('Server is running...');
-            app.on('close', () => { // on close, disconnect from db
-                gen.disconnect().then(() => {
-                    console.log('Server is stopped.');
-                });
+    app.listen(app.get("port"), () => { // listen on the port
+        console.log('Server is running...');
+        app.on('close', () => { // on close, disconnect from db
+            gen.disconnect().then(() => {
+                console.log('Server is stopped.');
             });
         });
     });
