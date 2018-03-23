@@ -3,13 +3,13 @@ const sql = require("mssql");
 
 // selectAll : (request :table) x result => promise
 // returns all data from a specified table
+// SECURITY: tableID checked by my middleware
 exports.selectAll = (req, res) => {
-    let tableID = req.params['table'];
+    let tableID = req.params['table'].toUpperCase();
 
     console.log("Trying to select * from " + tableID);
     let request = new sql.Request(); // create Request object
-    let query = `SELECT * FROM ${tableID}`;
-    return request.query(query) // query
+    return request.query(`SELECT * FROM `+ tableID) // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -22,13 +22,13 @@ exports.selectAll = (req, res) => {
 
 // getColumns : (request :table) x result => promise
 // returns the column names from a specified table
+// SECURITY: tableID checked by my middleware
 exports.getColumns = (req, res) => {
-    let tableID = req.params['table'];
+    let tableID = req.params['table'].toUpperCase();
 
     console.log("Trying to get column names for " + tableID);
     let request = new sql.Request(); // create Request object
-    let query = `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${tableID}'`;
-    return request.query(query) // query
+    return request.query(`select column_name from information_schema.columns where table_name='${tableID}'`) // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -43,8 +43,7 @@ exports.getColumns = (req, res) => {
 exports.getTables = (req, res) => {
     console.log("Trying to get all table names");
     let request = new sql.Request();
-    let query = `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES`;
-    return request.query(query)
+    return request.query(`SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES`)
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset);

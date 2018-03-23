@@ -3,8 +3,9 @@ const server = require("../server");
 
 // insert : (request :table) x result => promise
 // inserts data from JSON into a specified table
+// SECURITY: tableID checked by my middleware, cols/vars checked by protect/bodyparser
 exports.insert = (req, res) => {
-    let tableID = req.params['table'];
+    let tableID = req.params['table'].toUpperCase();
 
     console.log("Trying to insert " + Object.keys(req.body) + ":" + Object.values(req.body) + " into " + tableID);
     let cols = '("' + Object.keys(req.body).reduce((acc, cur) => acc + '", "' + cur) + '")';

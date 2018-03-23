@@ -7,11 +7,11 @@
     "react-scripts": "1.1.1"
   },
   "dependencies": {
+    "@risingstack/protect": "^1.2.0",
     "mssql": "^4.1.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-router-dom": "^4.2.2",
-    "sql-injection": "0.0.6"
+    "react-router-dom": "^4.2.2"
   },
   "author": "mattmcd25 & wittenber0",
   "scripts": {
