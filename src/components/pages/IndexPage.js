@@ -5,28 +5,49 @@ import {MemberTable} from "../MemberTable";
 import { getAllColumns, getAllMembers } from "../../data/databaseManager";
 // import DatabaseManager from '../../data/DatabaseManager';
 
+
 export default class IndexPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            members: [],
             display: [],
             headers: [],
-            loaded: false
+            loaded: false,
+            inputValue: ""
         };
 
         getAllColumns('Member').then(cols => {
             getAllMembers().then(res => {
-                this.setState({display: res, headers: cols, loaded: true});
+                this.setState({members: res, display: res, headers: cols, loaded: true});
             });
         });
+
     }
+
+
+    updateInputValue=(evt) =>{
+        this.setState({
+            inputValue: evt.target.value
+        });
+
+        this.setState((prevState) => ({
+            display: prevState.members.filter(mem => {
+                let l = Object.values(mem).filter(val => val.toString().indexOf(prevState.inputValue) >=0);
+                return (l.length > 0);
+            })
+        }));
+    };
+
+
+
 
     render() {
         return (
             <div className="home">
                 <label>
                     Search
-                    <input type="text" name="search"/>
+                    <input value={this.state.inputValue} onChange={this.updateInputValue} type="text" name="search"/>
                     <br/>
                 </label>
 

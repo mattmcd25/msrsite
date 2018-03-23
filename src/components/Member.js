@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Member (props) {
     return (
-        <tr key={props.data.ID}>
+        <tr key={props.data[0]}>
             {Object.values(props.data).map(val => <td>{val}</td>)}
         </tr>
     );
