@@ -33,7 +33,7 @@ export default class IndexPage extends React.Component {
 
         this.setState((prevState) => ({
             display: prevState.members.filter(mem => {
-                let l = Object.values(mem).filter(val => val.toString().indexOf(prevState.inputValue) >=0);
+                let l = Object.values(mem).filter(val => val.toString().toLowerCase().indexOf(prevState.inputValue.toLowerCase()) >=0);
                 return (l.length > 0);
             })
         }));
