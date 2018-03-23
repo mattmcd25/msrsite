@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyparser = require('body-parser');
+const sqlinjection = require('sql-injection');
 const gen = require('./api/generalActions');
 const query = require('./api/queryActions');
 const update = require('./api/updateActions');
@@ -7,6 +8,7 @@ const update = require('./api/updateActions');
 // ========== Configuration ==========
 const app = express(); // server app
 
+app.use(sqlinjection); // use sql-injection for security
 app.use(bodyparser.json({ type: 'application/json' })); // use bodyparser for JSON
 
 app.set("port", process.env.PORT || 3005); // select port based on heroku settings
@@ -52,4 +54,7 @@ gen.connect().then(() => { // connect to the database
             });
         });
     });
+}).catch(err => {
+    console.log("your wifi probably sucks lol");
+    console.log(err);
 });

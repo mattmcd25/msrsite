@@ -10,7 +10,8 @@ exports.insert = (req, res) => {
     let cols = '("' + Object.keys(req.body).reduce((acc, cur) => acc + '", "' + cur) + '")';
     let vars = '(' + Object.values(req.body).map(val => varToSQL(val)).reduce((acc, cur) => acc + ', ' + cur) + ')';
     let request = new sql.Request();
-    return request.query`INSERT INTO ${tableID} ${cols} VALUES ${vars}`
+    let query = `INSERT INTO ${tableID} ${cols} VALUES ${vars}`;
+    return request.query(query)
         .then(recordset => {
             console.log("Success");
             if(res) res.status(201).send(recordset);

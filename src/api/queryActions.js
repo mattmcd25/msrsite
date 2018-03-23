@@ -1,5 +1,5 @@
 const sql = require("mssql");
-const server = require("../server");
+// const server = require("../server");
 
 // selectAll : (request :table) x result => promise
 // returns all data from a specified table
@@ -8,7 +8,8 @@ exports.selectAll = (req, res) => {
 
     console.log("Trying to select * from " + tableID);
     let request = new sql.Request(); // create Request object
-    return request.query`select * from ${tableID}` // query
+    let query = `SELECT * FROM ${tableID}`;
+    return request.query(query) // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -26,7 +27,8 @@ exports.getColumns = (req, res) => {
 
     console.log("Trying to get column names for " + tableID);
     let request = new sql.Request(); // create Request object
-    return request.query`select column_name from information_schema.columns where table_name='${tableID}'` // query
+    let query = `SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${tableID}'`;
+    return request.query(query) // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -41,7 +43,8 @@ exports.getColumns = (req, res) => {
 exports.getTables = (req, res) => {
     console.log("Trying to get all table names");
     let request = new sql.Request();
-    return request.query`select table_name from information_schema.tables`
+    let query = `SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES`;
+    return request.query(query)
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset);
