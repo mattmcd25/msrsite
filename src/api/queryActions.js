@@ -1,20 +1,15 @@
 const sql = require("mssql");
-const server = require("../server");
+// const server = require("../server");
 
 // selectAll : (request :table) x result => promise
 // returns all data from a specified table
+// SECURITY: tableID checked by my middleware
 exports.selectAll = (req, res) => {
-    let tableID = req.params['table'];
+    let tableID = req.params['table'].toUpperCase();
 
-    if(!server.ALLOWED_TABLES.includes(tableID.toUpperCase())) {
-        err = "Invalid table name/potential SQL injection: " + tableID;
-        console.log(err);
-        if(res) res.status(500).send(err);
-        return;
-    }
     console.log("Trying to select * from " + tableID);
     let request = new sql.Request(); // create Request object
-    return request.query('select * from '+tableID) // query
+    return request.query(`SELECT * FROM `+ tableID) // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -27,18 +22,13 @@ exports.selectAll = (req, res) => {
 
 // getColumns : (request :table) x result => promise
 // returns the column names from a specified table
+// SECURITY: tableID checked by my middleware
 exports.getColumns = (req, res) => {
-    let tableID = req.params['table'];
+    let tableID = req.params['table'].toUpperCase();
 
-    if(!server.ALLOWED_TABLES.includes(tableID.toUpperCase())) {
-        err = "Invalid table name/potential SQL injection: " + tableID;
-        console.log(err);
-        if(res) res.status(500).send(err);
-        return;
-    }
     console.log("Trying to get column names for " + tableID);
     let request = new sql.Request(); // create Request object
-    return request.query('select column_name from information_schema.columns where table_name=\''+tableID+'\'') // query
+    return request.query(`select column_name from information_schema.columns where table_name='${tableID}'`) // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response
@@ -53,7 +43,7 @@ exports.getColumns = (req, res) => {
 exports.getTables = (req, res) => {
     console.log("Trying to get all table names");
     let request = new sql.Request();
-    return request.query('select table_name from information_schema.tables')
+    return request.query(`SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES`)
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset);
