@@ -57,12 +57,17 @@ export default class IndexPage extends React.Component {
                     </button>
                 </Link>
 
+                <Link to="/member">
+                    <button className="indexButton">
+                        Member Page
+                    </button>
+                </Link>
+
                 <button className="indexButton">
                     Advanced Search
                 </button>
 
                 <MemberTable headers={this.state.headers} display={this.state.display} loaded={this.state.loaded}/>
-                {/*<p>{testDB()}</p>*/}
             </div>
         );
     }

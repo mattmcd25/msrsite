@@ -1,3 +1,5 @@
+import test_data from "./data.js"
+
 // function api_call(call, cb) {
 //     return fetch(`api/${call}`, {
 //         accept: "application/json"
@@ -36,6 +38,20 @@ function parseJSON(response) {
 // export function connect() {
 //     return api_call('connect');
 // }
+
+export function getMemberByID(id){
+    return test_data[id-1];
+}
+
+export function getAllMemFields(){
+    return ["ID",
+        "FIRSTNAME",
+        "SURNAME",
+        "MEMBERSHIP",
+        "MOBILE",
+        "ADDRESS",
+        "MARITAL"];
+}
 
 export function getAllMembers() {
     return api_call_json('select*/Member', json => {
