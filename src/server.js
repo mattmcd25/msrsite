@@ -56,6 +56,7 @@ app.get('/api/tabnames', query.getTables); // get all table names from the db
 
 // ========== Update Actions ==========
 app.post('/api/insert/:table', checkTableID, update.insert);
+app.patch('/api/update/:table', checkTableID, update.update);
 
 
 
