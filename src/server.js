@@ -1,5 +1,6 @@
 const express = require('express');
 const protect = require('@risingstack/protect');
+const path = require('path');
 const bodyparser = require('body-parser');
 const gen = require('./api/generalActions');
 const query = require('./api/queryActions');
@@ -51,19 +52,22 @@ app.get('/api/disconnect', gen.disconnect); // disconnect from the database
 app.get('/api/select*/:table', checkTableID, query.selectAll); // select all from a table or view
 app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
 app.get('/api/tabnames', query.getTables); // get all table names from the db
+app.post('/api/query', query.advancedQuery); // advanced query
 
 
 
 // ========== Update Actions ==========
-app.post('/api/insert/:table', checkTableID, update.insert);
+app.post('/api/insert/:table', checkTableID, update.insert); // insert on a table
+app.patch('/api/update/:table', checkTableID, update.update); // update a table row
 
 
 
 // ========== Launching Server ==========
 if (process.env.NODE_ENV === "production") { // if production, also host static (client) assets
-    app.use(express.static('build'));
+    app.use(express.static(path.join(__dirname, '..', 'build')));
+
     app.get('/*', function (req, res) {
-        res.sendFile('build/index.html');
+        res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
     });
 }
 

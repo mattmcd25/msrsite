@@ -1,9 +1,6 @@
 import React from 'react';
-// import Member from "../Member";
-import { Link } from 'react-router-dom';
 import {MemberTable} from "../MemberTable";
-import { getAllColumns, getAllMembers } from "../../data/databaseManager";
-// import DatabaseManager from '../../data/DatabaseManager';
+import { getAllColumns, getAll, getMemberByID } from "../../data/databaseManager";
 
 
 export default class IndexPage extends React.Component {
@@ -16,17 +13,22 @@ export default class IndexPage extends React.Component {
             loaded: false,
             inputValue: ""
         };
+    };
 
+    componentDidMount() {
+        this.loadTable();
+    };
+
+    loadTable = () => {
+        this.setState({ loaded: false });
         getAllColumns('Member').then(cols => {
-            getAllMembers().then(res => {
+            getAll('Member').then(res => {
                 this.setState({members: res, display: res, headers: cols, loaded: true});
             });
         });
+    };
 
-    }
-
-
-    updateInputValue=(evt) =>{
+    updateInputValue = (evt) => {
         this.setState({
             inputValue: evt.target.value
         });
@@ -39,30 +41,19 @@ export default class IndexPage extends React.Component {
         }));
     };
 
-
-
-
     render() {
         return (
             <div className="home">
                 <label>
                     Search
                     <input value={this.state.inputValue} onChange={this.updateInputValue} type="text" name="search"/>
-                    <br/>
                 </label>
 
-                <Link to="/new">
-                    <button className="indexButton">
-                        New Member
-                    </button>
-                </Link>
-
-                <button className="indexButton">
-                    Advanced Search
+                <button className="indexButton" onClick={this.loadTable}>
+                    Refresh
                 </button>
 
                 <MemberTable headers={this.state.headers} display={this.state.display} loaded={this.state.loaded}/>
-                {/*<p>{testDB()}</p>*/}
             </div>
         );
     }
