@@ -52,12 +52,13 @@ app.get('/api/disconnect', gen.disconnect); // disconnect from the database
 app.get('/api/select*/:table', checkTableID, query.selectAll); // select all from a table or view
 app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
 app.get('/api/tabnames', query.getTables); // get all table names from the db
+app.post('/api/query', query.advancedQuery); // advanced query
 
 
 
 // ========== Update Actions ==========
-app.post('/api/insert/:table', checkTableID, update.insert);
-app.patch('/api/update/:table', checkTableID, update.update);
+app.post('/api/insert/:table', checkTableID, update.insert); // insert on a table
+app.patch('/api/update/:table', checkTableID, update.update); // update a table row
 
 
 

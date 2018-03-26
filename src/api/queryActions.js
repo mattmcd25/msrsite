@@ -1,4 +1,5 @@
 const sql = require("mssql");
+const ua = require("./updateActions");
 // const server = require("../server");
 
 // selectAll : (request :table) x result => promise
@@ -20,6 +21,23 @@ exports.selectAll = (req, res) => {
         });
 };
 
+exports.advancedQuery = (req, res) => {
+    console.log("Trying to select * with cond " + Object.keys(req.body) + ":" + Object.values(req.body));
+    let cond = Object.keys(req.body).reduce((acc, cur) => `${acc} AND ${cur}=${ua.varToSQL(req.body[cur])}`, '').substring(5);
+    let query = `SELECT * FROM "ALL" WHERE ${cond}`;
+    console.log(query);
+    let request = new sql.Request();
+    return request.query(query) // query
+        .then(recordset => {
+            console.log("Success");
+            if(res) res.status(200).send(recordset); // send records as a response
+        })
+        .catch(err => {
+            console.log(err);
+            if(res) res.status(500).send(err);
+        });
+};
+
 // getColumns : (request :table) x result => promise
 // returns the column names from a specified table
 // SECURITY: tableID checked by my middleware
@@ -28,7 +46,7 @@ exports.getColumns = (req, res) => {
 
     console.log("Trying to get column names for " + tableID);
     let request = new sql.Request(); // create Request object
-    return request.query(`select column_name from information_schema.columns where table_name='${tableID}'`) // query
+    return request.query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${tableID}'`) // query
         .then(recordset => {
             console.log("Success");
             if(res) res.status(200).send(recordset); // send records as a response

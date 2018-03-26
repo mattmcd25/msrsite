@@ -51,9 +51,9 @@ exports.update = (req, res) => {
 // varToSQL : 'a -> 'a
 // puts extra quotes around the value if it is a String
 // for use when generating INSERT or UPDATE statements
-function varToSQL (val) {
+exports.varToSQL = (val) => {
     if(typeof(val) === 'string')
         return '\''+val+'\'';
     else
         return val;
-}
+};

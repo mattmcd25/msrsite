@@ -69,3 +69,14 @@ export function insert(table, data) {
 export function update(table, data) {
     return api_patch(`update/${table}`, data);
 }
+
+export function query(data) {
+    return api_post(`query`, data)
+        .then(json => json['recordsets'][0]);
+}
+
+export function getMemberByID(id) {
+    return query({
+        "ID":`${id}`
+    });
+}
