@@ -1,20 +1,26 @@
 import test_data from "./data.js"
 
-// function api_call(call, cb) {
-//     return fetch(`api/${call}`, {
-//         accept: "application/json"
-//     })
-//         .then(checkStatus)
-//         .then(cb);
-// }
-
-function api_call_json(call, cb) {
+// ========== Internal Functions ==========
+function api_get(call) {
     return fetch(`api/${call}`, {
-        accept: "application/json"
-    })
-        .then(checkStatus)
-        .then(parseJSON)
-        .then(cb);
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(checkStatus)
+        .then(parseJSON);
+}
+
+function api_post(call, body) {
+    return fetch(`api/${call}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        }).then(checkStatus)
+        .then(parseJSON);
 }
 
 function checkStatus(response) {
@@ -35,9 +41,20 @@ function parseJSON(response) {
 
 
 
-// export function connect() {
-//     return api_call('connect');
-// }
+// ========== Exported Functions ==========
+export function getAll(table) {
+    return api_get(`select*/${table}`)
+        .then(json => json['recordsets'][0]);
+}
+
+export function getAllColumns(table) {
+    return api_get(`colnames/${table}`)
+        .then(json => json['recordsets'][0].map(col => col.column_name));
+}
+
+export function insert(table, data) {
+    return api_post(`insert/${table}`, data);
+}
 
 export function getMemberByID(id){
     return test_data[id-1];
@@ -51,18 +68,4 @@ export function getAllMemFields(){
         "MOBILE",
         "ADDRESS",
         "MARITAL"];
-}
-
-export function getAllMembers() {
-    return api_call_json('select*/Member', json => {
-        return json['recordsets'][0];
-    });
-}
-
-export function getAllColumns(table) {
-    return api_call_json('colnames/'+table, json => {
-        return json['recordsets'][0].map(col => {
-            return col.column_name;
-        });
-    });
 }

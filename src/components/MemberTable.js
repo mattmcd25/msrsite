@@ -13,7 +13,7 @@ export function MemberTable(props) {
                     </tr>
                     </thead>
                     <tbody>
-                        {props.display.map((mem) => <Member data={mem}/>)}
+                        {props.display.map((mem) => <Member key={mem.ID} data={mem}/>)}
                     </tbody>
                 </table>
             }

@@ -1,9 +1,7 @@
 import React from 'react';
-// import Member from "../Member";
 import { Link } from 'react-router-dom';
 import {MemberTable} from "../MemberTable";
-import { getAllColumns, getAllMembers } from "../../data/databaseManager";
-// import DatabaseManager from '../../data/DatabaseManager';
+import { getAllColumns, getAll } from "../../data/databaseManager";
 
 
 export default class IndexPage extends React.Component {
@@ -16,17 +14,22 @@ export default class IndexPage extends React.Component {
             loaded: false,
             inputValue: ""
         };
+    };
 
+    componentDidMount() {
+        this.loadTable();
+    };
+
+    loadTable = () => {
+        this.setState({ loaded: false });
         getAllColumns('Member').then(cols => {
-            getAllMembers().then(res => {
+            getAll('Member').then(res => {
                 this.setState({members: res, display: res, headers: cols, loaded: true});
             });
         });
+    };
 
-    }
-
-
-    updateInputValue=(evt) =>{
+    updateInputValue = (evt) => {
         this.setState({
             inputValue: evt.target.value
         });
@@ -39,9 +42,6 @@ export default class IndexPage extends React.Component {
         }));
     };
 
-
-
-
     render() {
         return (
             <div className="home">
@@ -50,6 +50,10 @@ export default class IndexPage extends React.Component {
                     <input value={this.state.inputValue} onChange={this.updateInputValue} type="text" name="search"/>
                     <br/>
                 </label>
+
+                <button className="indexButton" onClick={this.loadTable}>
+                    Refresh
+                </button>
 
                 <Link to="/new">
                     <button className="indexButton">
