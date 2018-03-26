@@ -14,8 +14,10 @@ export default class IndexPage extends React.Component {
             loaded: false,
             inputValue: ""
         };
+    };
 
-        this.loadTable()
+    componentDidMount() {
+        this.loadTable();
     };
 
     loadTable = () => {
