@@ -1,5 +1,6 @@
 const express = require('express');
 const protect = require('@risingstack/protect');
+const path = require('path');
 const bodyparser = require('body-parser');
 const gen = require('./api/generalActions');
 const query = require('./api/queryActions');
@@ -62,9 +63,14 @@ app.patch('/api/update/:table', checkTableID, update.update);
 
 // ========== Launching Server ==========
 if (process.env.NODE_ENV === "production") { // if production, also host static (client) assets
-    app.use(express.static('build'));
+//     app.use(express.static('build'));
+//     app.get('/*', function (req, res) {
+//         res.sendFile('build/index.html');
+//     });
+    app.use(express.static(path.join(__dirname, 'build')));
+
     app.get('/*', function (req, res) {
-        res.sendFile('build/index.html');
+        res.sendFile(path.join(__dirname, 'build', 'index.html'));
     });
 }
 
