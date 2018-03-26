@@ -63,14 +63,10 @@ app.patch('/api/update/:table', checkTableID, update.update);
 
 // ========== Launching Server ==========
 if (process.env.NODE_ENV === "production") { // if production, also host static (client) assets
-//     app.use(express.static('build'));
-//     app.get('/*', function (req, res) {
-//         res.sendFile('build/index.html');
-//     });
-    app.use(express.static(path.join(__dirname, 'build')));
+    app.use(express.static(path.join(__dirname, '..', 'build')));
 
     app.get('/*', function (req, res) {
-        res.sendFile(path.join(__dirname, 'build', 'index.html'));
+        res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
     });
 }
 
