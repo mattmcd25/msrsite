@@ -1,24 +1,36 @@
 // ========== Internal Functions ==========
 function api_get(call) {
     return fetch(`api/${call}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        }).then(checkStatus)
-        .then(parseJSON);
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    }).then(checkStatus)
+    .then(parseJSON);
 }
 
 function api_post(call, body) {
     return fetch(`api/${call}`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        }).then(checkStatus)
-        .then(parseJSON);
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    }).then(checkStatus)
+    .then(parseJSON);
+}
+
+function api_patch(call, body) {
+    return fetch(`api/${call}`, {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    }).then(checkStatus)
+    .then(parseJSON);
 }
 
 function checkStatus(response) {
@@ -52,4 +64,8 @@ export function getAllColumns(table) {
 
 export function insert(table, data) {
     return api_post(`insert/${table}`, data);
+}
+
+export function update(table, data) {
+    return api_patch(`update/${table}`, data);
 }
