@@ -1,22 +1,42 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { List, ListItem, Subheader, Divider, FontIcon, Avatar } from 'react-md';
+
+const gen_items = [
+    {name:"View Members", to:"/", icon:"home", desc:"View basic information"},
+    {name:"Add Member", to:"/new", icon:"add", desc:"Add a new member"},
+    {name:"Advanced Search", to:"/query", icon:"search", desc:"Search by skills or work"}
+];
+
+const admin_items = [
+    {name:"Manage Stuff", to:"/manage", icon:"settings", desc:"Idk admin settings"}
+];
 
 export default function Navigation(props) {
     return (
-      <div className="navigation">
-          <NavButton to="/">Home</NavButton>
-          <NavButton to="/new">New Member</NavButton>
-          <NavButton to="/query">Advanced Search</NavButton>
-      </div>
+      <List className="navigation">
+          <Subheader primaryText="General"/>
+          {makeNav(gen_items)}
+          <Divider/>
+          <Subheader primaryText="Administrative"/>
+          {makeNav(admin_items)}
+          <Divider/>
+      </List>
     );
 }
 
-function NavButton(props) {
+function makeNav(list) {
+    return list.map(it => <NavItem {...it}/>);
+}
+
+function NavItem(props) {
     return (
-        <Link to={props.to}>
-            <button className="navbutton">
-                {props.children}
-            </button>
+        <Link className="navItem" to={props.to}>
+            <ListItem className="navItem"
+                leftIcon={<FontIcon>{props.icon}</FontIcon>}
+                primaryText={props.name}
+                secondaryText={props.desc}
+            />
         </Link>
     );
 }
