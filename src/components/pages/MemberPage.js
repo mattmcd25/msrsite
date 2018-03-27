@@ -14,8 +14,8 @@ export default class MemberPage extends React.Component {
         return (
             <Route render={({history}) =>(
                 <div className="memberPage">
-                    {this.memfields.map(f =>
-                        <div key={f}>
+                    {this.memfields.map((f, i) =>
+                        <div key={i}>
                             <label>{f + ": " + this.mem[f]}</label><br/>
                         </div>
                     )}
