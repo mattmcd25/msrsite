@@ -4,23 +4,28 @@
   "description": "Web application for managing MSR Namibia's member database",
   "devDependencies": {
     "concurrently": "^3.5.1",
-    "react-scripts": "1.1.1"
+    "react-scripts": "1.1.1",
+    "node-sass-chokidar": "^1.2.2"
   },
   "dependencies": {
-    "express": "^4.16.3",
     "@risingstack/protect": "^1.2.0",
+    "express": "^4.16.3",
     "mssql": "^4.1.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-router-dom": "^4.2.2"
+    "react-md": "^1.2.12",
+    "react-router-dom": "^4.2.2",
+    "webfontloader": "^1.6.28"
   },
   "author": "mattmcd25 & wittenber0",
   "scripts": {
-    "start": "concurrently --kill-others --names \"server,client\" \"npm run server\" \"npm run client\"",
+    "build-css": "node-sass-chokidar --include-path ./node_modules src/ -o src/",
+    "watch-css": "npm run build-css && npm run build-css -- --watch --recursive",
+    "start": "concurrently --kill-others --names \"server,client,css\" \"npm run server\" \"npm run client\" \"npm run watch-css\"",
     "build+run": "npm run build && npm run server",
     "server": "node src/server.js",
     "client": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },

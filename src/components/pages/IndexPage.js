@@ -1,7 +1,7 @@
 import React from 'react';
 import {MemberTable} from "../MemberTable";
 import { getAllColumns, getAll, getMemberByID } from "../../data/databaseManager";
-
+import { Button as matbutton } from 'react-md';
 
 export default class IndexPage extends React.Component {
     constructor(props) {
@@ -52,6 +52,8 @@ export default class IndexPage extends React.Component {
                 <button className="indexButton" onClick={this.loadTable}>
                     Refresh
                 </button>
+
+                <matbutton raised>Test Material</matbutton>
 
                 <MemberTable headers={this.state.headers} display={this.state.display} loaded={this.state.loaded}/>
             </div>

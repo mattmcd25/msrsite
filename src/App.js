@@ -8,7 +8,7 @@ import NotFoundPage from "./components/pages/NotFoundPage";
 export default class AppRoutes extends React.Component {
     render() {
         return (
-            <Router onUpdate={() => window.scrollTo(0, 0)}>
+            <Router>
                 <Layout>
                     <Switch>
                         <Route exact path="/" component={IndexPage}/>
@@ -20,3 +20,5 @@ export default class AppRoutes extends React.Component {
         );
     }
 }
+
+//onUpdate={() => window.scrollTo(0, 0)}
