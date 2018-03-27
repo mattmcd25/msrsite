@@ -5,6 +5,7 @@ import { Route } from 'react-router-dom'
 export default class EditMemberPage extends React.Component {
     constructor(props){
         super(props);
+        
         this.state = {
             ID: "",
             FIRSTNAME: "",
@@ -20,6 +21,7 @@ export default class EditMemberPage extends React.Component {
 
         Object.keys(this.state).map(col => {
             this.state[col] = mem[col];
+            return 1;
         });
 
 
