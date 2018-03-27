@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { insert } from '../../data/databaseManager';
 
-export default class IndexPage extends React.Component {
+export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -32,7 +32,7 @@ export default class IndexPage extends React.Component {
 
     render() {
         return (
-            <div className="newMember">
+            <div className="newMemberPage">
                 <label>New Member</label><br/>
                 <label>
                     First Name

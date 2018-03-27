@@ -1,9 +1,12 @@
 import React from "react";
+import { Route } from 'react-router-dom'
 
-export default function Member (props) {
+export default function Member(props){
     return (
-        <tr key={props.data.ID}>
-            {Object.values(props.data).map((val, i) => <td key={Object.keys(props.data)[i]}>{val}</td>)}
-        </tr>
-    );
+        <Route render={({history}) =>(
+            <tr key={props.data.ID} onClick={() => history.push("/member/" + props.data.ID)}>
+                {Object.values(props.data).map((val, i) => <td key={i}>{val}</td>)}</tr>)}/>
+
+        );
 }
+
