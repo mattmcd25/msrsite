@@ -2,7 +2,7 @@ import test_data from "./data.js"
 
 // ========== Internal Functions ==========
 function api_get(call) {
-    return fetch(`api/${call}`, {
+    return fetch(`/api/${call}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
@@ -12,7 +12,7 @@ function api_get(call) {
 }
 
 function api_post(call, body) {
-    return fetch(`api/${call}`, {
+    return fetch(`/api/${call}`, {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',

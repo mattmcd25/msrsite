@@ -1,11 +1,12 @@
 import React from 'react';
-import {getMemberByID, getAllMemFields, getAllColumns, getAll} from "../../data/databaseManager";
+import {getMemberByID} from "../../data/databaseManager";
 import { Route } from 'react-router-dom'
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
         super(props);
         this.state = {
+            ID: "",
             FIRSTNAME: "",
             SURNAME: "",
             MEMBERSHIP: "",
@@ -17,11 +18,11 @@ export default class EditMemberPage extends React.Component {
 
         let mem = getMemberByID(this.props.match.params.memid);
 
-        getAllColumns('Member').then(cols => {
-            this.setState({
-                [cols]: mem[cols]
-            })
+        Object.keys(this.state).map(col => {
+            this.state[col] = mem[col];
         });
+
+
 
     }
 
@@ -47,7 +48,7 @@ export default class EditMemberPage extends React.Component {
                         </div>
                     )}
 
-                    <button onClick={() => history.push("/member/" + this.state.mem.ID)}>
+                    <button onClick={() => history.push("/member/" + this.state.ID)}>
                         Save
                     </button>
                     <br/>

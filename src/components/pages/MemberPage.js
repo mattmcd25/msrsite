@@ -5,7 +5,6 @@ import { Route } from 'react-router-dom'
 export default class MemberPage extends React.Component {
     constructor(props){
         super(props);
-        console.log(this.props.match.params.memid);
         this.mem = getMemberByID(this.props.match.params.memid);
         this.memfields = getAllMemFields();
     }
