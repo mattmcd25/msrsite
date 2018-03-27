@@ -57,3 +57,5 @@ exports.varToSQL = (val) => {
     else
         return val;
 };
+
+varToSQL = exports.varToSQL;

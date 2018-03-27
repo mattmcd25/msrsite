@@ -1,31 +1,19 @@
 import React from 'react';
-import {getMemberByID} from "../../data/databaseManager";
+import {getMemberByID, update} from "../../data/databaseManager";
 import { Route } from 'react-router-dom'
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
         super(props);
-        
+
         this.state = {
-            ID: "",
-            FIRSTNAME: "",
-            SURNAME: "",
-            MEMBERSHIP: "",
-            MOBILE: "",
-            ADDRESS: "",
-            MARITAL: ""
+            mem: undefined
         };
 
+    }
 
-        let mem = getMemberByID(this.props.match.params.memid);
-
-        Object.keys(this.state).map(col => {
-            this.state[col] = mem[col];
-            return 1;
-        });
-
-
-
+    componentDidMount(){
+        getMemberByID(this.props.match.params.memid).then(amem => this.setState({mem: amem}));
     }
 
     updateInputValue = (evt) =>{
@@ -33,8 +21,8 @@ export default class EditMemberPage extends React.Component {
         const value = target.value;
         const name = target.name;
 
-        this.setState({
-            [name]: value
+        this.setState((prevstate) => {
+            return {mem : {...prevstate.mem, [name]: value}}
         });
     };
 
@@ -42,22 +30,35 @@ export default class EditMemberPage extends React.Component {
         return (
             <Route render={({history}) =>(
                 <div className="editMemberPage">
-                    {Object.keys(this.state).map((f, i) =>
-                        <div key={i}>
-                            <label>{f + ": "}</label>
-                            <input value={this.state[f]} onChange={this.updateInputValue} type="text" name={f}/>
-                            <br/>
-                        </div>
+                    {
+                        this.state.mem === undefined ? "Loading" :
+                        Object.keys(this.state.mem).map((f, i) => {
+                            if(f != "ID") {
+                                return(
+                                <div key={i}>
+                                    <label>{f + ": "}</label>
+                                    <input value={this.state.mem[f]} onChange={this.updateInputValue} type="text"
+                                           name={f}/>
+                                </div>
+                                )
+                            }
+                        }
                     )}
-
-                    <button onClick={() => history.push("/member/" + this.state.ID)}>
+                    <br/>
+                    <button onClick={() => {
+                        let id = this.state.mem.ID;
+                        let pk = {id: this.state.mem.ID};
+                        delete this.state.mem.ID;
+                        update('Member', {...this.state.mem, PK: pk});
+                        history.push("/member/" + id);
+                    }}>
                         Save
                     </button>
                     <br/>
                     <button onClick={() => history.push("/")}>
                         Home
                     </button>
-                    </div>
+                </div>
             )}/>
         );
     }
