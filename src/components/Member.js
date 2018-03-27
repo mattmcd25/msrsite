@@ -1,9 +1,13 @@
 import React from "react";
+import { TableRow, TableColumn } from 'react-md';
 
 export default function Member (props) {
     return (
-        <tr key={props.data.ID}>
-            {Object.values(props.data).map((val, i) => <td key={Object.keys(props.data)[i]}>{val}</td>)}
-        </tr>
+        <TableRow key={props.data.ID}>
+            {Object.values(props.data).map((val, i) =>
+                <TableColumn key={Object.keys(props.data)[i]}>
+                    {val}
+                </TableColumn>)}
+        </TableRow>
     );
 }

@@ -1,7 +1,8 @@
 import React from 'react';
-import {MemberTable} from "../MemberTable";
-import { getAllColumns, getAll, getMemberByID } from "../../data/databaseManager";
-import { Button, TextField, FontIcon } from 'react-md';
+import MemberTable from "../MemberTable";
+import MemberTableHeader from '../MemberTableHeader';
+import { getAllColumns, getAll } from "../../data/databaseManager";
+import { Card } from 'react-md';
 
 export default class IndexPage extends React.Component {
     constructor(props) {
@@ -51,25 +52,11 @@ export default class IndexPage extends React.Component {
     render() {
         return (
             <div className="home">
-                <TextField
-                    id="search"
-                    label="Quick Search"
-                    leftIcon={<FontIcon>search</FontIcon>}
-                    inlineIndicator={
-                        <Button icon className="inline-btn" onClick={this.clearInput}>clear</Button>
-                    }
-                    size={25}
-                    fullWidth={false}
-                    value={this.state.inputValue}
-                    onChange={this.updateInputValue}
-                    type={"text"}
-                />
-
-                <Button raised className="indexButton" onClick={this.loadTable}>
-                    Refresh
-                </Button>
-
-                <MemberTable headers={this.state.headers} display={this.state.display} loaded={this.state.loaded}/>
+                <Card tableCard>
+                    <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
+                                       onChange={this.updateInputValue} onRefreshClick={this.loadTable} />
+                    <MemberTable loaded={this.state.loaded} headers={this.state.headers} display={this.state.display}/>
+                </Card>
             </div>
         );
     }
