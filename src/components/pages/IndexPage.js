@@ -1,11 +1,12 @@
 import React from 'react';
 import {MemberTable} from "../MemberTable";
 import { getAllColumns, getAll, getMemberByID } from "../../data/databaseManager";
-import { Button as matbutton } from 'react-md';
+import { Button, TextField, FontIcon } from 'react-md';
 
 export default class IndexPage extends React.Component {
     constructor(props) {
         super(props);
+        this.props.f("View Members");
         this.state = {
             members: [],
             display: [],
@@ -28,9 +29,9 @@ export default class IndexPage extends React.Component {
         });
     };
 
-    updateInputValue = (evt) => {
+    updateInputValue = (value) => {
         this.setState({
-            inputValue: evt.target.value
+            inputValue: value
         });
 
         this.setState((prevState) => ({
@@ -41,19 +42,32 @@ export default class IndexPage extends React.Component {
         }));
     };
 
+    clearInput = (evt) => {
+        this.setState({
+            inputValue: ''
+        });
+    };
+
     render() {
         return (
             <div className="home">
-                <label>
-                    Search
-                    <input value={this.state.inputValue} onChange={this.updateInputValue} type="text" name="search"/>
-                </label>
+                <TextField
+                    id="search"
+                    label="Quick Search"
+                    leftIcon={<FontIcon>search</FontIcon>}
+                    inlineIndicator={
+                        <Button icon className="inline-btn" onClick={this.clearInput}>clear</Button>
+                    }
+                    size={25}
+                    fullWidth={false}
+                    value={this.state.inputValue}
+                    onChange={this.updateInputValue}
+                    type={"text"}
+                />
 
-                <button className="indexButton" onClick={this.loadTable}>
+                <Button raised className="indexButton" onClick={this.loadTable}>
                     Refresh
-                </button>
-
-                <matbutton raised>Test Material</matbutton>
+                </Button>
 
                 <MemberTable headers={this.state.headers} display={this.state.display} loaded={this.state.loaded}/>
             </div>

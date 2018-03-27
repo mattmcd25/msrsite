@@ -6,14 +6,27 @@ import Layout from "./components/pages/Layout";
 import NotFoundPage from "./components/pages/NotFoundPage";
 
 export default class AppRoutes extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            title: "null"
+        }
+    }
+
+    updateTitle = (t) => {
+        this.setState({
+            title:t
+        });
+    };
+
     render() {
         return (
             <Router>
-                <Layout>
+                <Layout title={this.state.title}>
                     <Switch>
-                        <Route exact path="/" component={IndexPage}/>
-                        <Route path="/new" component={NewMember}/>
-                        <Route component={NotFoundPage}/>
+                        <Route exact path="/" render={x => <IndexPage f={this.updateTitle}/>}/>
+                        <Route path="/new" render={x => <NewMember f={this.updateTitle}/>}/>
+                        <Route render={x => <NotFoundPage f={this.updateTitle}/>}/>
                     </Switch>
                 </Layout>
             </Router>

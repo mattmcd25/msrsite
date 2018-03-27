@@ -2,9 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { insert } from '../../data/databaseManager';
 
-export default class IndexPage extends React.Component {
+export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
+        this.props.f("Add Member");
         this.state = {
             FIRSTNAME: "",
             SURNAME: "",

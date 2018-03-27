@@ -59,7 +59,7 @@ export function getAll(table) {
 
 export function getAllColumns(table) {
     return api_get(`colnames/${table}`)
-        .then(json => json['recordsets'][0].map(col => col.column_name));
+        .then(json => json['recordsets'][0].map(col => col.COLUMN_NAME));
 }
 
 export function insert(table, data) {

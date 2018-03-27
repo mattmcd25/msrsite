@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { List, ListItem, Subheader, Divider, FontIcon, Avatar } from 'react-md';
+import { List, ListItem, Subheader, Divider, FontIcon } from 'react-md';
 
 const gen_items = [
     {name:"View Members", to:"/", icon:"home", desc:"View basic information"},
