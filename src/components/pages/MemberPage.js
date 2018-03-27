@@ -1,24 +1,40 @@
 import React from 'react';
-import {getMemberByID, getAllMemFields} from "../../data/databaseManager";
+import {getMemberByID} from "../../data/databaseManager";
 import { Route } from 'react-router-dom'
+import { mem_cols as memfields } from "../../index";
 
 export default class MemberPage extends React.Component {
     constructor(props){
         super(props);
-        this.mem = getMemberByID(this.props.match.params.memid);
-        this.memfields = getAllMemFields();
+        this.state = {
+            mem: undefined
+        };
+    }
+
+    componentDidMount(){
+        getMemberByID(
+            this.props.match.params.memid).then(
+                amem => this.setState(
+                    {mem: amem}));
     }
 
     render() {
         return (
             <Route render={({history}) =>(
                 <div className="memberPage">
-                    {this.memfields.map((f, i) =>
-                        <div key={i}>
-                            <label>{f + ": " + this.mem[f]}</label><br/>
-                        </div>
+                    {
+                        this.state.mem === undefined ? "Loading" :
+                        memfields.map((f, i) =>{
+                            if(f != "ID") {
+                                return(
+                                <div key={i}>
+                                    <label>{f + ": " + this.state.mem[f]}</label><br/>
+                                </div>);
+                            }
+                        }
                     )}
-                    <button onClick={() => history.push("/member/" + this.mem.ID + "/edit")}>
+                    <br/>
+                    <button onClick={() => history.push("/member/" + this.state.mem.ID + "/edit")}>
                         Edit
                     </button>
                     <br/>

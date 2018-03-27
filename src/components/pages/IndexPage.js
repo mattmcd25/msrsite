@@ -1,6 +1,7 @@
 import React from 'react';
 import {MemberTable} from "../MemberTable";
-import { getAllColumns, getAll, getMemberByID } from "../../data/databaseManager";
+import { getAll } from "../../data/databaseManager";
+import { mem_cols as headers } from "../../index";
 
 
 export default class IndexPage extends React.Component {
@@ -9,7 +10,6 @@ export default class IndexPage extends React.Component {
         this.state = {
             members: [],
             display: [],
-            headers: [],
             loaded: false,
             inputValue: ""
         };
@@ -21,10 +21,8 @@ export default class IndexPage extends React.Component {
 
     loadTable = () => {
         this.setState({ loaded: false });
-        getAllColumns('Member').then(cols => {
-            getAll('Member').then(res => {
-                this.setState({members: res, display: res, headers: cols, loaded: true});
-            });
+        getAll('Member').then(res => {
+            this.setState({members: res, display: res, loaded: true});
         });
     };
 
@@ -53,7 +51,7 @@ export default class IndexPage extends React.Component {
                     Refresh
                 </button>
 
-                <MemberTable headers={this.state.headers} display={this.state.display} loaded={this.state.loaded}/>
+                <MemberTable headers={headers} display={this.state.display} loaded={this.state.loaded}/>
             </div>
         );
     }
