@@ -1,5 +1,3 @@
-import test_data from "./data.js"
-
 // ========== Internal Functions ==========
 function api_get(call) {
     return fetch(`/api/${call}`, {
@@ -21,6 +19,18 @@ function api_post(call, body) {
             body: JSON.stringify(body)
         }).then(checkStatus)
         .then(parseJSON);
+}
+
+function api_patch(call, body) {
+    return fetch(`/api/${call}`, {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+    }).then(checkStatus)
+    .then(parseJSON);
 }
 
 function checkStatus(response) {
@@ -56,16 +66,17 @@ export function insert(table, data) {
     return api_post(`insert/${table}`, data);
 }
 
-export function getMemberByID(id){
-    return test_data[id-1];
+export function update(table, data) {
+    return api_patch(`update/${table}`, data);
 }
 
-export function getAllMemFields(){
-    return ["ID",
-        "FIRSTNAME",
-        "SURNAME",
-        "MEMBERSHIP",
-        "MOBILE",
-        "ADDRESS",
-        "MARITAL"];
+export function query(data) {
+    return api_post(`query`, data)
+        .then(json => json['recordsets'][0]);
+}
+
+export function getMemberByID(id) {
+    return query({
+        "ID":`${id}`
+    });
 }

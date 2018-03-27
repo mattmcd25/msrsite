@@ -1,7 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import {MemberTable} from "../MemberTable";
-import { getAllColumns, getAll } from "../../data/databaseManager";
+import { getAllColumns, getAll, getMemberByID } from "../../data/databaseManager";
 
 
 export default class IndexPage extends React.Component {
@@ -48,19 +47,12 @@ export default class IndexPage extends React.Component {
                 <label>
                     Search
                     <input value={this.state.inputValue} onChange={this.updateInputValue} type="text" name="search"/>
-                    <br/>
                 </label>
+
                 <button className="indexButton" onClick={this.loadTable}>
                     Refresh
                 </button>
-                <Link to="/new">
-                    <button className="indexButton">
-                        New Member
-                    </button>
-                </Link>
-                <button className="indexButton">
-                    Advanced Search
-                </button>
+
                 <MemberTable headers={this.state.headers} display={this.state.display} loaded={this.state.loaded}/>
             </div>
         );
