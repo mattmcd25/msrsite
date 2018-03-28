@@ -1,6 +1,6 @@
 import React from "react";
 import { DataTable, TablePagination, TableHeader, TableRow, TableBody, TableColumn } from 'react-md';
-import Member from "./Member";
+import Member from "./MemberTableRow";
 
 export default function MemberTableBody(props) {
     return (

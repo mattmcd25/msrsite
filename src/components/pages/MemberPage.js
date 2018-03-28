@@ -1,51 +1,53 @@
 import React from 'react';
-import {getMemberByID} from "../../data/databaseManager";
-import { Route } from 'react-router-dom'
-import { mem_cols as memfields } from "../../index";
+import { getMemberByID, getMemberSkillsByID, getMemberWorkByID } from "../../data/databaseManager";
+import MemberDisplay from '../MemberDisplay';
 
-export default class MemberPage extends React.Component {
-    constructor(props){
+export default class MemberPage extends React.PureComponent {
+    constructor(props) {
         super(props);
         this.state = {
             mem: undefined
         };
     }
 
-    componentDidMount(){
-        getMemberByID(this.props.match.params.memid)
-            .then(amem => {
-                this.setState({
-                    mem: amem
-                });
-                this.props.setTitle(amem.FIRSTNAME + " " + amem.SURNAME);
-            });
+    componentDidMount() {
+        let id = this.props.match.params.memid;
+        getMemberSkillsByID(id)
+            .then(skills => this.setState({ skills: skills }))
+            .then(() => getMemberWorkByID(id))
+            .then(work => this.setState({ work: this.makeFriendly(work) }))
+            .then(() => getMemberByID(id))
+            .then(mem => this.setState({ mem: mem }))
+            .then(() => this.props.setTitle(this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
     }
+
+    makeFriendly = (work) => {
+        let x = work.reduce((acc, cur) => {
+            if(acc!==undefined && acc.hasOwnProperty(cur.EMPLOYER)) {
+                acc[cur.EMPLOYER].SKILLS.push(cur.NAME);
+                return acc;
+            }
+            else {
+                return {
+                    [cur.EMPLOYER]: {
+                        LENGTH: cur.LENGTH,
+                        SKILLS: [cur.NAME]
+                    },
+                    ...acc
+                }
+            }
+        }, {});
+        console.log(x);
+        return x;
+    };
 
     render() {
         return (
-            <Route render={({history}) =>(
-                <div className="memberPage">
-                    {
-                        this.state.mem === undefined ? "Loading" :
-                        memfields.map((f, i) => {
-                            return (f !== "ID") && (
-                                <div key={i}>
-                                    <label>{f + ": " + this.state.mem[f]}</label>
-                                    <br/>
-                                </div>
-                            );
-                        }
-                    )}
-                    <br/>
-                    <button onClick={() => history.push("/member/" + this.state.mem.ID + "/edit")}>
-                        Edit
-                    </button>
-                    <br/>
-                    <button onClick={() => history.push("/")}>
-                        Home
-                    </button>
-                </div>
-            )}/>
+            <div className="memberPage">
+                {this.state.mem === undefined ?
+                    <div>Loading<br/></div> :
+                    <MemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}/>}
+            </div>
         );
     }
 }

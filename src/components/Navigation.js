@@ -4,7 +4,7 @@ import { List, ListItem, Subheader, Divider, FontIcon } from 'react-md';
 
 const gen_items = [
     {name:"View Members", to:"/", icon:"home", desc:"View basic information"},
-    {name:"Add Member", to:"/new", icon:"add", desc:"Add a new member"},
+    {name:"Add MemberTableRow", to:"/new", icon:"add", desc:"Add a new member"},
     {name:"Advanced Search", to:"/query", icon:"search", desc:"Search by skills or work"}
 ];
 

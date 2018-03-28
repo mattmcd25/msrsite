@@ -52,7 +52,7 @@ app.get('/api/disconnect', gen.disconnect); // disconnect from the database
 app.get('/api/select*/:table', checkTableID, query.selectAll); // select all from a table or view
 app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
 app.get('/api/tabnames', query.getTables); // get all table names from the db
-app.post('/api/query', query.advancedQuery); // advanced query
+app.post('/api/query/:table', checkTableID, query.advancedQuery); // advanced query
 
 
 

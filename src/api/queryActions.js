@@ -22,9 +22,11 @@ exports.selectAll = (req, res) => {
 };
 
 exports.advancedQuery = (req, res) => {
-    console.log("Trying to select * with cond " + Object.keys(req.body) + ":" + Object.values(req.body));
+    let tableID = req.params['table'].toUpperCase();
+
+    console.log("Trying to select * from " + tableID + " with cond " + Object.keys(req.body) + ":" + Object.values(req.body));
     let cond = Object.keys(req.body).reduce((acc, cur) => `${acc} AND ${cur}=${ua.varToSQL(req.body[cur])}`, '').substring(5);
-    let query = `SELECT * FROM "ALL" WHERE ${cond}`;
+    let query = `SELECT * FROM "${tableID}" WHERE ${cond}`;
     console.log(query);
     let request = new sql.Request();
     return request.query(query) // query

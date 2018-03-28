@@ -1,6 +1,6 @@
 import React from 'react';
 import {getMemberByID, update} from "../../data/databaseManager";
-import { Route } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
@@ -28,36 +28,31 @@ export default class EditMemberPage extends React.Component {
 
     render() {
         return (
-            <Route render={({history}) =>(
-                <div className="editMemberPage">
-                    {
-                        this.state.mem === undefined ? "Loading" :
-                        Object.keys(this.state.mem).map((f, i) => {
-                            return (f !== "ID") && (
-                                <div key={i}>
-                                    <label>{f + ": "}</label>
-                                    <input value={this.state.mem[f]} onChange={this.updateInputValue}
-                                           type="text" name={f}/>
-                                </div>
-                            );
-                        }
-                    )}
-                    <br/>
+            <div className="editMemberPage">
+                {
+                    this.state.mem === undefined ? "Loading" :
+                    Object.keys(this.state.mem).map((f, i) => {
+                        return (f !== "ID") && (
+                            <div key={i}>
+                                <label>{f + ": "}</label>
+                                <input value={this.state.mem[f]} onChange={this.updateInputValue}
+                                       type="text" name={f}/>
+                            </div>
+                        );
+                    }
+                )}
+                <br/><br/>
+                <Link to={`/member/${this.props.match.params.memid}`}>
                     <button onClick={() => {
-                        let id = this.state.mem.ID;
                         let pk = {id: this.state.mem.ID};
                         delete this.state.mem.ID;
                         update('Member', {...this.state.mem, PK: pk});
-                        history.push("/member/" + id);
+                        // history.push("/member/" + id);
                     }}>
                         Save
                     </button>
-                    <br/>
-                    <button onClick={() => history.push("/")}>
-                        Home
-                    </button>
-                </div>
-            )}/>
+                </Link>
+            </div>
         );
     }
 }

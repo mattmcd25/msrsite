@@ -51,7 +51,7 @@ function parseJSON(response) {
 
 
 
-// ========== Exported Functions ==========
+// ========== Exported Functions - Basics ==========
 export function getAll(table) {
     return api_get(`select*/${table}`)
         .then(json => json['recordsets'][0]);
@@ -70,13 +70,26 @@ export function update(table, data) {
     return api_patch(`update/${table}`, data);
 }
 
-export function query(data) {
-    return api_post(`query`, data)
+export function query(table, data) {
+    return api_post(`query/${table}`, data)
         .then(json => json['recordsets'][0]);
 }
 
+// ========== Exported Functions - Helpers ==========
 export function getMemberByID(id) {
-    return query({
+    return query("ALL", {
         "ID":`${id}`
     }).then(json => json[0]);
+}
+
+export function getMemberSkillsByID(id) {
+    return query("ALL_SKILLS", {
+        "ID":`${id}`
+    }).then(json => json.map(row => row.NAME));
+}
+
+export function getMemberWorkByID(id) {
+    return query("WORK_INFO", {
+        "ID":`${id}`
+    });
 }
