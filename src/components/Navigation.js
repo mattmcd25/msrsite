@@ -26,7 +26,7 @@ export default function Navigation(props) {
 }
 
 function makeNav(list) {
-    return list.map(it => <NavItem {...it}/>);
+    return list.map(it => <NavItem key={it.name} {...it}/>);
 }
 
 function NavItem(props) {

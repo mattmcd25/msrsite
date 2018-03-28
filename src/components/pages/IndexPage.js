@@ -1,5 +1,5 @@
 import React from 'react';
-import MemberTable from "../MemberTable";
+import MemberTableBody from "../MemberTableBody";
 import MemberTableHeader from '../MemberTableHeader';
 import { getAllColumns, getAll } from "../../data/databaseManager";
 import { Card } from 'react-md';
@@ -9,9 +9,13 @@ export default class IndexPage extends React.Component {
         super(props);
         this.props.f("View Members");
         this.state = {
-            members: [],
-            display: [],
+            members: [], // all members
+            match: [],   // all members that match query
+            display: [], // current display page
             headers: [],
+            start: 0,
+            page: 1,
+            rowsPerPage: 10,
             loaded: false,
             inputValue: ""
         };
@@ -25,9 +29,24 @@ export default class IndexPage extends React.Component {
         this.setState({ loaded: false });
         getAllColumns('Member').then(cols => {
             getAll('Member').then(res => {
-                this.setState({members: res, display: res, headers: cols, loaded: true});
+                this.setState(prevState => ({
+                    members: res,
+                    match: res,
+                    display: res.slice(prevState.start, prevState.rowsPerPage),
+                    headers: cols,
+                    loaded: true
+                }));
             });
         });
+    };
+
+    handlePagination = (start, rowsPerPage, currentPage) => {
+        this.setState(prevState => ({
+            start: start,
+            rowsPerPage: rowsPerPage,
+            display: prevState.match.slice(start, start + rowsPerPage),
+            page: currentPage
+        }));
     };
 
     updateInputValue = (value) => {
@@ -36,17 +55,24 @@ export default class IndexPage extends React.Component {
         });
 
         this.setState((prevState) => ({
-            display: prevState.members.filter(mem => {
+            match: prevState.members.filter(mem => {
                 let l = Object.values(mem).filter(val => val.toString().toLowerCase().indexOf(prevState.inputValue.toLowerCase()) >=0);
                 return (l.length > 0);
-            })
+            }),
+            start: 0,
+            page: 1
+        }));
+
+        this.setState(prevState => ({
+            display: prevState.match.slice(prevState.start, prevState.start + prevState.rowsPerPage)
         }));
     };
 
-    clearInput = (evt) => {
-        this.setState({
-            inputValue: ''
-        });
+    clearInput = () => {
+        this.setState((prevState) => ({
+            inputValue: '',
+            display: prevState.members
+        }));
     };
 
     render() {
@@ -55,7 +81,9 @@ export default class IndexPage extends React.Component {
                 <Card tableCard>
                     <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
                                        onChange={this.updateInputValue} onRefreshClick={this.loadTable} />
-                    <MemberTable loaded={this.state.loaded} headers={this.state.headers} display={this.state.display}/>
+                    <MemberTableBody loaded={this.state.loaded} headers={this.state.headers}
+                                     display={this.state.display} rows={this.state.match.length}
+                                     handlePagination={this.handlePagination} page={this.state.page}/>
                 </Card>
             </div>
         );
