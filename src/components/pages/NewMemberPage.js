@@ -5,7 +5,7 @@ import { insert } from '../../data/databaseManager';
 export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
-        this.props.f("Add Member");
+        this.props.setTitle("Add Member");
         this.state = {
             FIRSTNAME: "",
             SURNAME: "",
@@ -33,7 +33,7 @@ export default class NewMemberPage extends React.Component {
 
     render() {
         return (
-            <div className="newMember">
+            <div className="newMemberPage">
                 <label>New Member</label><br/>
                 <label>
                     First Name

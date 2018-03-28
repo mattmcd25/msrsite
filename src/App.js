@@ -1,15 +1,17 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import IndexPage from "./components/pages/IndexPage";
-import NewMember from "./components/pages/NewMember";
+import NewMember from "./components/pages/NewMemberPage";
 import Layout from "./components/pages/Layout";
+import MemberPage from "./components/pages/MemberPage";
+import EditMemberPage from "./components/pages/EditMemberPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
 
 export default class AppRoutes extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: "null"
+            title: ""
         }
     }
 
@@ -19,14 +21,27 @@ export default class AppRoutes extends React.Component {
         });
     };
 
+    componentWithTitle = (component) => {
+        return (
+            ({match, location, history}) => React.createElement(component, {
+                setTitle:this.updateTitle,
+                match:match,
+                location:location,
+                history:history
+            })
+        );
+    };
+
     render() {
         return (
             <Router>
                 <Layout title={this.state.title}>
                     <Switch>
-                        <Route exact path="/" render={x => <IndexPage f={this.updateTitle}/>}/>
-                        <Route path="/new" render={x => <NewMember f={this.updateTitle}/>}/>
-                        <Route render={x => <NotFoundPage f={this.updateTitle}/>}/>
+                        <Route exact path="/" render={this.componentWithTitle(IndexPage)}/>
+                        <Route path="/new" render={this.componentWithTitle(NewMember)}/>
+                        <Route exact path="/member/:memid" render={this.componentWithTitle(MemberPage)}/>
+                        <Route path="/member/:memid/edit" component={this.componentWithTitle(EditMemberPage)}/>
+                        <Route render={this.componentWithTitle(NotFoundPage)}/>
                     </Switch>
                 </Layout>
             </Router>

@@ -1,28 +1,28 @@
 // ========== Internal Functions ==========
 function api_get(call) {
-    return fetch(`api/${call}`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then(checkStatus)
-    .then(parseJSON);
+    return fetch(`/api/${call}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(checkStatus)
+        .then(parseJSON);
 }
 
 function api_post(call, body) {
-    return fetch(`api/${call}`, {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    }).then(checkStatus)
-    .then(parseJSON);
+    return fetch(`/api/${call}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        }).then(checkStatus)
+        .then(parseJSON);
 }
 
 function api_patch(call, body) {
-    return fetch(`api/${call}`, {
+    return fetch(`/api/${call}`, {
         method: 'PATCH',
         headers: {
             'Accept': 'application/json',
@@ -78,5 +78,5 @@ export function query(data) {
 export function getMemberByID(id) {
     return query({
         "ID":`${id}`
-    });
+    }).then(json => json[0]);
 }

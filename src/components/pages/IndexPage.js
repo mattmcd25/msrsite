@@ -1,18 +1,18 @@
 import React from 'react';
 import MemberTableBody from "../MemberTableBody";
 import MemberTableHeader from '../MemberTableHeader';
-import { getAllColumns, getAll } from "../../data/databaseManager";
+import { getAll } from "../../data/databaseManager";
 import { Card } from 'react-md';
+import { mem_cols as headers } from "../../index";
 
 export default class IndexPage extends React.Component {
     constructor(props) {
         super(props);
-        this.props.f("View Members");
+        this.props.setTitle("View Members");
         this.state = {
             members: [], // all members
             match: [],   // all members that match query
             display: [], // current display page
-            headers: [],
             start: 0,
             page: 1,
             rowsPerPage: 10,
@@ -27,16 +27,13 @@ export default class IndexPage extends React.Component {
 
     loadTable = () => {
         this.setState({ loaded: false });
-        getAllColumns('Member').then(cols => {
-            getAll('Member').then(res => {
-                this.setState(prevState => ({
-                    members: res,
-                    match: res,
-                    display: res.slice(prevState.start, prevState.rowsPerPage),
-                    headers: cols,
-                    loaded: true
-                }));
-            });
+        getAll('Member').then(res => {
+            this.setState(prevState => ({
+                members: res,
+                match: res,
+                display: res.slice(prevState.start, prevState.rowsPerPage),
+                loaded: true
+            }));
         });
     };
 
@@ -81,7 +78,7 @@ export default class IndexPage extends React.Component {
                 <Card tableCard>
                     <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
                                        onChange={this.updateInputValue} onRefreshClick={this.loadTable} />
-                    <MemberTableBody loaded={this.state.loaded} headers={this.state.headers}
+                    <MemberTableBody loaded={this.state.loaded} headers={headers}
                                      display={this.state.display} rows={this.state.match.length}
                                      handlePagination={this.handlePagination} page={this.state.page}/>
                 </Card>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 export default class NotFoundPage extends React.Component {
     constructor(props) {
         super(props);
-        this.props.f("Error!");
+        this.props.setTitle("Error!");
     }
 
     render() {

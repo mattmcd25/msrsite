@@ -3,6 +3,7 @@ import React from "react";
 import './style/index.css';
 import App from "./App";
 import WebFontLoader from 'webfontloader';
+import {getAllColumns} from "./data/databaseManager";
 
 WebFontLoader.load({
     google: {
@@ -10,7 +11,15 @@ WebFontLoader.load({
     },
 });
 
-ReactDOM.render(
-    <App />,
-    document.getElementById('root')
-);
+export var mem_cols = [];
+getAllColumns('Member')
+    .then(cols => {
+        mem_cols=cols;
+        console.log(mem_cols);
+    })
+    .then(x => {
+        ReactDOM.render(
+            <App />,
+            document.getElementById('root')
+        );
+    });
