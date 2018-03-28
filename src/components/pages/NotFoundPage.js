@@ -2,6 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 export default class NotFoundPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props.setTitle("Error!");
+    }
+
     render() {
         return (
             <div className="not-found">

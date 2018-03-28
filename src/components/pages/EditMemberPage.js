@@ -33,15 +33,13 @@ export default class EditMemberPage extends React.Component {
                     {
                         this.state.mem === undefined ? "Loading" :
                         Object.keys(this.state.mem).map((f, i) => {
-                            if(f != "ID") {
-                                return(
+                            return (f !== "ID") && (
                                 <div key={i}>
                                     <label>{f + ": "}</label>
-                                    <input value={this.state.mem[f]} onChange={this.updateInputValue} type="text"
-                                           name={f}/>
+                                    <input value={this.state.mem[f]} onChange={this.updateInputValue}
+                                           type="text" name={f}/>
                                 </div>
-                                )
-                            }
+                            );
                         }
                     )}
                     <br/>

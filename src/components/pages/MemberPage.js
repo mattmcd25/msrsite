@@ -12,10 +12,13 @@ export default class MemberPage extends React.Component {
     }
 
     componentDidMount(){
-        getMemberByID(
-            this.props.match.params.memid).then(
-                amem => this.setState(
-                    {mem: amem}));
+        getMemberByID(this.props.match.params.memid)
+            .then(amem => {
+                this.setState({
+                    mem: amem
+                });
+                this.props.setTitle(amem.FIRSTNAME + " " + amem.SURNAME);
+            });
     }
 
     render() {
@@ -24,13 +27,13 @@ export default class MemberPage extends React.Component {
                 <div className="memberPage">
                     {
                         this.state.mem === undefined ? "Loading" :
-                        memfields.map((f, i) =>{
-                            if(f != "ID") {
-                                return(
+                        memfields.map((f, i) => {
+                            return (f !== "ID") && (
                                 <div key={i}>
-                                    <label>{f + ": " + this.state.mem[f]}</label><br/>
-                                </div>);
-                            }
+                                    <label>{f + ": " + this.state.mem[f]}</label>
+                                    <br/>
+                                </div>
+                            );
                         }
                     )}
                     <br/>

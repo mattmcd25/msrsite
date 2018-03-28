@@ -1,8 +1,15 @@
 import ReactDOM from 'react-dom';
 import React from "react";
-import './css/index.css';
-import AppRoutes from "./App";
+import './style/index.css';
+import App from "./App";
+import WebFontLoader from 'webfontloader';
 import {getAllColumns} from "./data/databaseManager";
+
+WebFontLoader.load({
+    google: {
+        families: ['Roboto:300,400,500,700', 'Material Icons', 'Novo:300,400,500,700', 'Open Sans:300,400,500,700'],
+    },
+});
 
 export var mem_cols = [];
 getAllColumns('Member')
@@ -12,7 +19,7 @@ getAllColumns('Member')
     })
     .then(x => {
         ReactDOM.render(
-            <AppRoutes/>,
+            <App />,
             document.getElementById('root')
         );
     });

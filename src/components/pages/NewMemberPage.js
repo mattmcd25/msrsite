@@ -5,6 +5,7 @@ import { insert } from '../../data/databaseManager';
 export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
+        this.props.setTitle("Add Member");
         this.state = {
             FIRSTNAME: "",
             SURNAME: "",

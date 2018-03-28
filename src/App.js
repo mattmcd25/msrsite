@@ -8,19 +8,45 @@ import EditMemberPage from "./components/pages/EditMemberPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
 
 export default class AppRoutes extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            title: ""
+        }
+    }
+
+    updateTitle = (t) => {
+        this.setState({
+            title:t
+        });
+    };
+
+    componentWithTitle = (component) => {
+        return (
+            ({match, location, history}) => React.createElement(component, {
+                setTitle:this.updateTitle,
+                match:match,
+                location:location,
+                history:history
+            })
+        );
+    };
+
     render() {
         return (
-            <Router onUpdate={() => window.scrollTo(0, 0)}>
-                <Layout>
+            <Router>
+                <Layout title={this.state.title}>
                     <Switch>
-                        <Route exact path="/" component={IndexPage}/>
-                        <Route path="/new" component={NewMember}/>
-                        <Route exact path="/member/:memid" component={MemberPage}/>
-                        <Route path="/member/:memid/edit" component={EditMemberPage}/>
-                        <Route component={NotFoundPage}/>
+                        <Route exact path="/" render={this.componentWithTitle(IndexPage)}/>
+                        <Route path="/new" render={this.componentWithTitle(NewMember)}/>
+                        <Route exact path="/member/:memid" render={this.componentWithTitle(MemberPage)}/>
+                        <Route path="/member/:memid/edit" component={this.componentWithTitle(EditMemberPage)}/>
+                        <Route render={this.componentWithTitle(NotFoundPage)}/>
                     </Switch>
                 </Layout>
             </Router>
         );
     }
 }
+
+//onUpdate={() => window.scrollTo(0, 0)}
