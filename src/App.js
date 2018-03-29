@@ -5,7 +5,9 @@ import NewMember from "./components/pages/NewMemberPage";
 import Layout from "./components/pages/Layout";
 import MemberPage from "./components/pages/MemberPage";
 import EditMemberPage from "./components/pages/EditMemberPage";
+import LoginPage from "./components/pages/LoginPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
+import callback from "./components/pages/NotFoundPage";
 
 export default class AppRoutes extends React.Component {
     constructor(props) {
@@ -41,6 +43,8 @@ export default class AppRoutes extends React.Component {
                         <Route path="/new" render={this.componentWithTitle(NewMember)}/>
                         <Route exact path="/member/:memid" render={this.componentWithTitle(MemberPage)}/>
                         <Route path="/member/:memid/edit" component={this.componentWithTitle(EditMemberPage)}/>
+                        <Route path="/login" component={this.componentWithTitle(LoginPage)}/>
+                        <Route path="/callback" component={this.componentWithTitle(callback)}/>
                         <Route render={this.componentWithTitle(NotFoundPage)}/>
                     </Switch>
                 </Layout>

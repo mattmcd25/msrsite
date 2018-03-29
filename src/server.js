@@ -1,3 +1,5 @@
+'use strict';
+
 const express = require('express');
 const protect = require('@risingstack/protect');
 const path = require('path');
@@ -5,9 +7,25 @@ const bodyparser = require('body-parser');
 const gen = require('./api/generalActions');
 const query = require('./api/queryActions');
 const update = require('./api/updateActions');
+const jwt = require('express-jwt');
+const jwks = require('jwks-rsa');
+
+var authCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://rwwittenberg.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'https://msrapitest/',
+    issuer: "https://rwwittenberg.auth0.com/",
+    algorithms: ['RS256']
+});
 
 // ========== Configuration ==========
 const app = express(); // server app
+
+//app.use(authCheck);
 
 app.use(bodyparser.json({
     type: 'application/json',
@@ -28,11 +46,11 @@ app.get('/api', (req, res) => { // generic test
 
 
 // ========== Middleware ==========
-checkTableID = (req, res, next) => {
+let checkTableID = (req, res, next) => {
     let tableID = req.params['table'];
 
     if(!exports.ALLOWED_TABLES.includes(tableID.toUpperCase())) {
-        err = "Invalid table name/potential SQL injection: " + tableID;
+        let err = "Invalid table name/potential SQL injection: " + tableID;
         console.log(err);
         if(res) res.status(403).send(err);
         return;
@@ -43,13 +61,15 @@ checkTableID = (req, res, next) => {
 
 
 // ========== General Actions ==========
-app.get('/api/connect', gen.connect); // connect to the database
-app.get('/api/disconnect', gen.disconnect); // disconnect from the database
+console.log(authCheck);
+app.get('/api/connect', authCheck, gen.connect); // connect to the database
+app.get('/api/disconnect', authCheck, gen.disconnect); // disconnect from the database
 
 
 
 // ========== Querying Actions ==========
-app.get('/api/select*/:table', checkTableID, query.selectAll); // select all from a table or view
+
+app.get('/api/select*/:table', authCheck, checkTableID, query.selectAll); // select all from a table or view
 app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
 app.get('/api/tabnames', query.getTables); // get all table names from the db
 app.post('/api/query', query.advancedQuery); // advanced query
@@ -66,7 +86,7 @@ app.patch('/api/update/:table', checkTableID, update.update); // update a table 
 if (process.env.NODE_ENV === "production") { // if production, also host static (client) assets
     app.use(express.static(path.join(__dirname, '..', 'build')));
 
-    app.get('/*', function (req, res) {
+    app.get('/*', authCheck, function (req, res) {
         res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
     });
 }
@@ -89,3 +109,4 @@ gen.connect().then(() => { // connect to the database
     console.log("your wifi probably sucks lol");
     console.log(err);
 });
+

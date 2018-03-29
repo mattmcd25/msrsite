@@ -1,12 +1,27 @@
-// ========== Internal Functions ==========
+import axios from 'axios'
+import {getAccessToken} from "../AuthService";
+
+
+/// / ========== Internal Functions ==========
 function api_get(call) {
-    return fetch(`/api/${call}`, {
+
+
+
+    return axios.get(`/api/${call}`, {
+        headers: {
+            Authorization: `Bearer ${getAccessToken()}`,
+            'Accept': 'application/json',
+        }
+    }).then(response => response.data)
+
+    /*, {
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${getAccessToken()}`
             }
         }).then(checkStatus)
-        .then(parseJSON);
+        .then(parseJSON);*/
 }
 
 function api_post(call, body) {
@@ -35,7 +50,7 @@ function api_patch(call, body) {
 
 function checkStatus(response) {
     console.log(response);
-    if (response.status >= 200 && response.status < 300) {
+    if (response.status >= 200 && response.status < 400) {
         return response;
     }
     const error = new Error(`HTTP Error ${response.statusText}`);
