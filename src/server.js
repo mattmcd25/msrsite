@@ -68,7 +68,7 @@ app.get('/api/disconnect', authCheck, gen.disconnect); // disconnect from the da
 // ========== Querying Actions ==========
 
 app.get('/api/select*/:table', authCheck, checkTableID, query.selectAll); // select all from a table or view
-app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
+app.get('/api/colnames/:table', authCheck, checkTableID, query.getColumns); // get column names from a table or view
 app.get('/api/tabnames', authCheck, query.getTables); // get all table names from the db
 app.post('/api/query', authCheck, query.advancedQuery); // advanced query
 
