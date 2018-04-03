@@ -10,7 +10,7 @@ const update = require('./api/updateActions');
 const jwt = require('express-jwt');
 const jwks = require('jwks-rsa');
 
-var authCheck = jwt({
+let authCheck = jwt({
     secret: jwks.expressJwtSecret({
         cache: true,
         rateLimit: true,
@@ -24,8 +24,6 @@ var authCheck = jwt({
 
 // ========== Configuration ==========
 const app = express(); // server app
-
-//app.use(authCheck);
 
 app.use(bodyparser.json({
     type: 'application/json',
@@ -71,14 +69,14 @@ app.get('/api/disconnect', authCheck, gen.disconnect); // disconnect from the da
 
 app.get('/api/select*/:table', authCheck, checkTableID, query.selectAll); // select all from a table or view
 app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
-app.get('/api/tabnames', query.getTables); // get all table names from the db
-app.post('/api/query', query.advancedQuery); // advanced query
+app.get('/api/tabnames', authCheck, query.getTables); // get all table names from the db
+app.post('/api/query', authCheck, query.advancedQuery); // advanced query
 
 
 
 // ========== Update Actions ==========
-app.post('/api/insert/:table', checkTableID, update.insert); // insert on a table
-app.patch('/api/update/:table', checkTableID, update.update); // update a table row
+app.post('/api/insert/:table', authCheck, checkTableID, update.insert); // insert on a table
+app.patch('/api/update/:table', authCheck, checkTableID, update.update); // update a table row
 
 
 

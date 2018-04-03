@@ -3,49 +3,23 @@ import {getAccessToken} from "../AuthService";
 
 
 /// / ========== Internal Functions ==========
+let conf = {
+    headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+};
 function api_get(call) {
-
-
-
-    return axios.get(`/api/${call}`, {
-        headers: {
-            Authorization: `Bearer ${getAccessToken()}`,
-            'Accept': 'application/json',
-        }
-    }).then(response => response.data)
-
-    /*, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${getAccessToken()}`
-            }
-        }).then(checkStatus)
-        .then(parseJSON);*/
+    return axios.get(`/api/${call}`, conf).then(response => response.data)
 }
 
 function api_post(call, body) {
-    return fetch(`/api/${call}`, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        }).then(checkStatus)
-        .then(parseJSON);
+    return axios.post('/api/'+call, JSON.stringify(body), conf).then(checkStatus);
 }
 
 function api_patch(call, body) {
-    return fetch(`/api/${call}`, {
-        method: 'PATCH',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    }).then(checkStatus)
-    .then(parseJSON);
+    return axios.patch('/api/'+call, JSON.stringify(body), conf).then(checkStatus);
 }
 
 function checkStatus(response) {
@@ -59,12 +33,6 @@ function checkStatus(response) {
     console.log(error); // eslint-disable-line no-console
     throw error;
 }
-
-function parseJSON(response) {
-    return response.json();
-}
-
-
 
 // ========== Exported Functions ==========
 export function getAll(table) {
@@ -87,7 +55,7 @@ export function update(table, data) {
 
 export function query(data) {
     return api_post(`query`, data)
-        .then(json => json['recordsets'][0]);
+        .then(json => json['data']['recordsets'][0]);
 }
 
 export function getMemberByID(id) {

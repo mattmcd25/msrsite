@@ -4,6 +4,8 @@ import './style/index.css';
 import App from "./App";
 import WebFontLoader from 'webfontloader';
 import {getAllColumns} from "./data/databaseManager";
+//import { isLoggedIn } from "./AuthService";
+//import UnauthorizedPage from "./components/pages/UnauthorizedPage";
 
 WebFontLoader.load({
     google: {
@@ -11,15 +13,19 @@ WebFontLoader.load({
     },
 });
 
+
 export var mem_cols = [];
-getAllColumns('Member')
-    .then(cols => {
-        mem_cols=cols;
-        console.log(mem_cols);
-    })
-    .then(x => {
-        ReactDOM.render(
-            <App />,
-            document.getElementById('root')
-        );
-    });
+
+export function setMemCols(){
+    getAllColumns('Member')
+        .then(cols => {
+            mem_cols = cols;
+            console.log(mem_cols);
+        });
+}
+
+
+ReactDOM.render(
+    <App/>,
+    document.getElementById('root')
+);

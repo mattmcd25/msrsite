@@ -1,7 +1,6 @@
 import React from 'react';
 import {getMemberByID} from "../../data/databaseManager";
 import { Route } from 'react-router-dom'
-import { mem_cols as memfields } from "../../index";
 
 export default class MemberPage extends React.Component {
     constructor(props){
@@ -23,19 +22,19 @@ export default class MemberPage extends React.Component {
 
     render() {
         return (
-            <Route render={({history}) =>(
+            <Route render={({history}) => (
                 <div className="memberPage">
                     {
                         this.state.mem === undefined ? "Loading" :
-                        memfields.map((f, i) => {
-                            return (f !== "ID") && (
-                                <div key={i}>
-                                    <label>{f + ": " + this.state.mem[f]}</label>
-                                    <br/>
-                                </div>
-                            );
-                        }
-                    )}
+                            Object.keys(this.state.mem).map((f, i) => {
+                                    return (f !== "ID") && (
+                                        <div key={i}>
+                                            <label>{f + ": " + this.state.mem[f]}</label>
+                                            <br/>
+                                        </div>
+                                    );
+                                }
+                            )}
                     <br/>
                     <button onClick={() => history.push("/member/" + this.state.mem.ID + "/edit")}>
                         Edit
@@ -47,5 +46,6 @@ export default class MemberPage extends React.Component {
                 </div>
             )}/>
         );
+
     }
 }

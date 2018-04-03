@@ -28,20 +28,20 @@ export default class EditMemberPage extends React.Component {
 
     render() {
         return (
-            <Route render={({history}) =>(
+            <Route render={({history}) => (
                 <div className="editMemberPage">
                     {
                         this.state.mem === undefined ? "Loading" :
-                        Object.keys(this.state.mem).map((f, i) => {
-                            return (f !== "ID") && (
-                                <div key={i}>
-                                    <label>{f + ": "}</label>
-                                    <input value={this.state.mem[f]} onChange={this.updateInputValue}
-                                           type="text" name={f}/>
-                                </div>
-                            );
-                        }
-                    )}
+                            Object.keys(this.state.mem).map((f, i) => {
+                                    return (f !== "ID") && (
+                                        <div key={i}>
+                                            <label>{f + ": "}</label>
+                                            <input value={this.state.mem[f]} onChange={this.updateInputValue}
+                                                   type="text" name={f}/>
+                                        </div>
+                                    );
+                                }
+                            )}
                     <br/>
                     <button onClick={() => {
                         let id = this.state.mem.ID;

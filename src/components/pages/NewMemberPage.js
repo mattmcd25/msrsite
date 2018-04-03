@@ -5,6 +5,7 @@ import { insert } from '../../data/databaseManager';
 export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
+
         this.props.setTitle("Add Member");
         this.state = {
             FIRSTNAME: "",
@@ -37,31 +38,38 @@ export default class NewMemberPage extends React.Component {
                 <label>New Member</label><br/>
                 <label>
                     First Name
-                    <input maxLength="100" value={this.state.name} onChange={this.handleInputChange} type="text" name="FIRSTNAME"/>
+                    <input maxLength="100" value={this.state.name} onChange={this.handleInputChange} type="text"
+                           name="FIRSTNAME"/>
                 </label><br/>
                 <label>
                     Surname
-                    <input maxLength="100" value={this.state.surname} onChange={this.handleInputChange} type="text" name="SURNAME"/>
+                    <input maxLength="100" value={this.state.surname} onChange={this.handleInputChange} type="text"
+                           name="SURNAME"/>
                 </label><br/>
                 <label>
                     Membership
-                    <input maxLength="20" value={this.state.membership} onChange={this.handleInputChange} type="text" name="MEMBERSHIP"/>
+                    <input maxLength="20" value={this.state.membership} onChange={this.handleInputChange}
+                           type="text" name="MEMBERSHIP"/>
                 </label><br/>
                 <label>
                     Phone
-                    <input maxLength="10" value={this.state.phone} onChange={this.handleInputChange} type="number" name="MOBILE"/>
+                    <input maxLength="10" value={this.state.phone} onChange={this.handleInputChange} type="number"
+                           name="MOBILE"/>
                 </label><br/>
                 <label>
                     Address
-                    <input maxLength="100" value={this.state.address} onChange={this.handleInputChange} type="text" name="ADDRESS"/>
+                    <input maxLength="100" value={this.state.address} onChange={this.handleInputChange} type="text"
+                           name="ADDRESS"/>
                 </label><br/>
                 <label>
                     Marital
-                    <input maxLength="10" value={this.state.marital} onChange={this.handleInputChange} type="text" name="MARITAL"/>
+                    <input maxLength="10" value={this.state.marital} onChange={this.handleInputChange} type="text"
+                           name="MARITAL"/>
                 </label><br/>
                 <button name="insert" onClick={this.handleSubmit}>
                     Add Member
-                </button><br/>
+                </button>
+                <br/>
                 <Link to="/">Home</Link>
             </div>
         );

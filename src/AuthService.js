@@ -1,19 +1,14 @@
 import decode from 'jwt-decode';
 import auth0 from 'auth0-js';
-
-
-let ReactRouter = require('react-router');
-let browserHistory = ReactRouter.browserHistory;
-
 const ID_TOKEN_KEY = 'test@test.com';
 const ACCESS_TOKEN_KEY = 'password1!';
 const CLIENT_ID = 'OyYZ0FSDpdF79RETF4A53Qj7qywc457R';
 const CLIENT_DOMAIN = 'rwwittenberg.auth0.com';
-const REDIRECT = 'http://localhost:3000/';
+const REDIRECT = 'http://localhost:3000/callback';
 const SCOPE = 'access:all';
 const AUDIENCE = 'https://msrapitest/';
 
-var auth = new auth0.WebAuth({
+let auth = new auth0.WebAuth({
     clientID: CLIENT_ID,
     domain: CLIENT_DOMAIN
 });
@@ -29,14 +24,16 @@ export function login() {
 }
 
 export function logout() {
+    console.log("Signing Out");
     clearIdToken();
     clearAccessToken();
-    browserHistory.push('/');
+
 }
 
-export function requireAuth(nextState, replace) {
+export function requireAuth() {
     if (!isLoggedIn()) {
-        replace({pathname: '/'});
+        this.context.history.push('/login')
+        //window.location.href = "/login";
     }
 }
 
