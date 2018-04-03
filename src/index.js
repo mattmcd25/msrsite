@@ -4,17 +4,21 @@ import './style/index.css';
 import App from "./App";
 import WebFontLoader from 'webfontloader';
 import { getAllColumns, getAll } from "./data/databaseManager";
+import LaunchScreen from "./components/LaunchScreen";
 
 export var HEADERS = [];
 export var CONSTANTS = [];
 
-
-initialize().then(x => {
-    ReactDOM.render(
-        <App/>,
-        document.getElementById('root')
-    );
-});
+ReactDOM.render(
+    <LaunchScreen/>,
+    document.getElementById('root'),
+    () => initialize().then(x => {
+        ReactDOM.render(
+            <App/>,
+            document.getElementById('root')
+        );
+    })
+);
 
 async function initialize() {
     WebFontLoader.load({

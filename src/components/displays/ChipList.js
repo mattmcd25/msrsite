@@ -1,11 +1,27 @@
 import React from 'react';
-import { Card, Chip, CardTitle } from 'react-md';
+import { Cell, Card, Chip, CardTitle, CardText, CardActions } from 'react-md';
 
-export default function MemberDisplay(props) {
-    return (
-        <Card className="chips__list">
-            <CardTitle title={props.name} subtitle={props.subtitle}/>
-            {props.children.map(x => <Chip className="list_chip" key={x} label={x}/>)}
-        </Card>
-    );
+export default class ChipList extends React.PureComponent {
+    remove = (e) => {
+        console.log('delete me');
+    };
+
+    render() {
+        return (
+            <Cell size={4}>
+                <Card className="member-card">
+                    <CardTitle className="card-action-title" title={this.props.name} subtitle={this.props.subtitle}>
+                        <CardActions>
+                            {this.props.actions}
+                        </CardActions>
+                    </CardTitle>
+                    <CardText>
+                        {this.props.children.map(x => <Chip className="list_chip" key={x}
+                                                       label={x} removable={this.props.edit}
+                                                       onClick={this.props.edit ? this.remove : undefined}/>)}
+                    </CardText>
+                </Card>
+            </Cell>
+        );
+    }
 }
