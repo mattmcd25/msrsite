@@ -20,7 +20,7 @@ export default class EditMemberPage extends React.Component {
         getMemberSkillsByID(id, false)
             .then(skills => this.setState({ skills: skills, pastSkills: skills }))
             .then(() => getMemberWorkByID(id))
-            .then(work => this.setState({ work: PrettyWork(work), pastWork: work }))
+            .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem: mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
@@ -50,10 +50,26 @@ export default class EditMemberPage extends React.Component {
         diff(oldSkills, newSkills).forEach(sk => del('Has_Skill', {ID:id, NAME:sk})); // removed skills
         diff(newSkills, oldSkills).forEach(sk => insert('Has_Skill', {ID:id, NAME:sk})); // added skills
 
-        // Update work experience
+        // Modify pre-existing work experience
+        Object.keys(this.state.work).forEach((workName, i) => {
+            let workid = this.state.work[workName].WORKID;
+            let oldSkills = this.state.pastWork[workName].SKILLS;
+            let newSkills = this.state.work[workName].SKILLS;
+            diff(oldSkills, newSkills).forEach(sk => del('Work_skill', {WORKID:workid, NAME:sk}));
+            diff(newSkills, oldSkills).forEach(sk => insert('Work_skill', {WORKID:workid, NAME:sk}));
+            delete this.state.work[workName].WORKID;
+            delete this.state.work[workName].SKILLS;
+            update('Work', {...this.state.work[workName], PK: {WORKID:workid}});
+        });
+
+        // Adding or removing work experiences altogether
+        let oldWork = Object.keys(this.state.pastWork).map(workName => this.state.pastWork[workName].WORKID);
+        let newWork = Object.keys(this.state.work).map(workName => this.state.work[workName].WORKID);
+        console.log(diff(oldWork, newWork)); // removed
+        console.log(diff(newWork, oldWork)); // added
     };
 
-    updateInputValue = (evt) => {
+    updateMember = (evt) => {
         const target = evt.target;
         const value = target.value;
         const name = target.name;
@@ -63,8 +79,36 @@ export default class EditMemberPage extends React.Component {
         });
     };
 
+    updateWork = (workID, evt) => {
+        const target = evt.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState(prevstate => ({
+            work : {
+                ...prevstate.work,
+                [workID]: {
+                    ...prevstate.work[workID],
+                    [name]: value
+                }
+            }
+        }));
+    };
+
     setSkills = (newSkills) => {
         this.setState({ skills: newSkills });
+    };
+
+    setWorkSkills = (workID, newSkills) => {
+        this.setState(prevState => ({
+            work: {
+                ...prevState.work,
+                [workID]: {
+                    ...prevState.work[workID],
+                    'SKILLS':newSkills
+                }
+            }
+        }));
     };
 
     render() {
@@ -74,7 +118,8 @@ export default class EditMemberPage extends React.Component {
                     this.state.mem === undefined ?
                         <CircularProgress id="editMemberPage"/> :
                         <EditMemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
-                                        setSkills={this.setSkills}/>
+                                           setSkills={this.setSkills} setWorkSkills={this.setWorkSkills}
+                                           onMemChange={this.updateMember} onWorkChange={this.updateWork}/>
                 }
             </div>
         );

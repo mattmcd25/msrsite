@@ -33,6 +33,8 @@ export function PrettyWork(work) {
         else {
             return {
                 [cur.EMPLOYER]: {
+                    EMPLOYER: cur.EMPLOYER,
+                    WORKID: cur.WORKID,
                     LENGTH: cur.LENGTH,
                     SKILLS: [cur.NAME]
                 },
@@ -40,6 +42,7 @@ export function PrettyWork(work) {
             }
         }
     }, {});
+    console.log(x);
     return x;
 }
 

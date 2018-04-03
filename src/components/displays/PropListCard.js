@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, Cell, CardActions, CardTitle, CardText } from 'react-md';
-import { PrettyPair } from './DisplayUtils';
+import PropListElement from './PropListElement';
 
-export default function Props(props) {
+export default function PropsListCard(props) {
     return (
         <Cell size={4}>
             <Card className="member-card">
@@ -12,11 +12,7 @@ export default function Props(props) {
                     </CardActions>
                 </CardTitle>
                 <CardText>
-                    {Object.keys(props.data).map((f, i, a) => {
-                        return (
-                            <label key={i}>{PrettyPair(f, props.data[f])}</label>
-                        );
-                    })}
+                    <PropListElement {...props}/>
                 </CardText>
             </Card>
         </Cell>
