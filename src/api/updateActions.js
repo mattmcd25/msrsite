@@ -30,13 +30,33 @@ exports.update = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 
     console.log('Trying to update ' + tableID + ' according to ' + Object.keys(req.body) + ":" + Object.values(req.body));
-
     let pk = req.body.PK;
     delete req.body.PK;
     let vars = Object.keys(req.body).reduce((acc, cur) => `${acc}, ${cur}=${varToSQL(req.body[cur])}`, '').substring(2);
     let cond = Object.keys(pk).reduce((acc, cur) => `${acc} AND ${cur}=${varToSQL(pk[cur])}`, '').substring(5);
     let request = new sql.Request();
     let query = `UPDATE ${tableID} SET ${vars} WHERE ${cond}`;
+    return request.query(query)
+        .then(recordset => {
+            console.log("Success");
+            if(res) res.status(202).send(recordset);
+        })
+        .catch(err => {
+            console.log(err);
+            if(res) res.status(500).send(err);
+        });
+};
+
+// delete : (request :table) x result => promise
+// deletes the specified row of the table according to JSON
+// SECURITY: tableID checked by my middleware, cols/vars checked by protect/bodyparser
+exports.delete = (req, res) => {
+    let tableID = req.params['table'].toUpperCase();
+
+    console.log('Trying to delete from ' + tableID + ' according to ' + Object.keys(req.body) + ":" + Object.values(req.body));
+    let cond = Object.keys(req.body).reduce((acc, cur) => `${acc} AND ${cur}=${varToSQL(req.body[cur])}`, '').substring(5);
+    let request = new sql.Request();
+    let query = `DELETE FROM ${tableID} WHERE ${cond}`;
     return request.query(query)
         .then(recordset => {
             console.log("Success");

@@ -59,6 +59,7 @@ app.post('/api/query/:table', checkTableID, query.advancedQuery); // advanced qu
 // ========== Update Actions ==========
 app.post('/api/insert/:table', checkTableID, update.insert); // insert on a table
 app.patch('/api/update/:table', checkTableID, update.update); // update a table row
+app.delete('/api/delete/:table', checkTableID, update.delete); // delete a table row
 
 
 

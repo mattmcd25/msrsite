@@ -9,9 +9,9 @@ function api_get(call) {
         .then(parseJSON);
 }
 
-function api_post(call, body) {
+function api_post(call, body, method='POST') {
     return fetch(`/api/${call}`, {
-            method: 'POST',
+            method: method,
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
@@ -19,18 +19,6 @@ function api_post(call, body) {
             body: JSON.stringify(body)
         }).then(checkStatus)
         .then(parseJSON);
-}
-
-function api_patch(call, body) {
-    return fetch(`/api/${call}`, {
-        method: 'PATCH',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
-    }).then(checkStatus)
-    .then(parseJSON);
 }
 
 function checkStatus(response) {
@@ -67,12 +55,16 @@ export function insert(table, data) {
 }
 
 export function update(table, data) {
-    return api_patch(`update/${table}`, data);
+    return api_post(`update/${table}`, data, 'PATCH');
 }
 
 export function query(table, data) {
     return api_post(`query/${table}`, data)
         .then(json => json['recordsets'][0]);
+}
+
+export function del(table, data) {
+    return api_post(`delete/${table}`, data, 'DELETE');
 }
 
 // ========== Exported Functions - Helpers ==========

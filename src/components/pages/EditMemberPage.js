@@ -1,5 +1,5 @@
 import React from 'react';
-import {getMemberByID, getMemberSkillsByID, getMemberWorkByID, update} from "../../data/databaseManager";
+import {getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert} from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, CircularProgress } from 'react-md';
 import { PrettyWork } from "../displays/DisplayUtils";
@@ -42,13 +42,13 @@ export default class EditMemberPage extends React.Component {
 
         // Update basic member fields
         delete this.state.mem.ID;
-        update('Member', {...this.state.mem, PK: {id: id}});
+        update('Member', {...this.state.mem, PK: {ID: id}});
 
         // Update skills
         let oldSkills = this.state.pastSkills;
         let newSkills = this.state.skills;
-        let removedSkills = diff(oldSkills, newSkills);
-        let addedSkills = diff(newSkills, oldSkills);
+        diff(oldSkills, newSkills).forEach(sk => del('Has_Skill', {ID:id, NAME:sk})); // removed skills
+        diff(newSkills, oldSkills).forEach(sk => insert('Has_Skill', {ID:id, NAME:sk})); // added skills
 
         // Update work experience
     };
