@@ -3,46 +3,57 @@ import {getMemberByID, getMemberSkillsByID, getMemberWorkByID, update} from "../
 import { Link } from 'react-router-dom'
 import { Button, CircularProgress } from 'react-md';
 import { PrettyWork } from "../displays/DisplayUtils";
-import MemberDisplay from '../MemberDisplay';
+import EditMemberDisplay from '../EditMemberDisplay';
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
         super(props);
         props.setActions([]);
         this.state = {
-            mem: undefined
+            mem: undefined,
         };
 
     }
 
     componentDidMount(){
         let id = this.props.match.params.memid;
-        getMemberSkillsByID(id)
-            .then(skills => this.setState({ skills: skills }))
+        getMemberSkillsByID(id, false)
+            .then(skills => this.setState({ skills: skills, pastSkills: skills }))
             .then(() => getMemberWorkByID(id))
-            .then(work => this.setState({ work: PrettyWork(work) }))
+            .then(work => this.setState({ work: PrettyWork(work), pastWork: work }))
             .then(() => getMemberByID(id))
-            .then(mem => this.setState({ mem: mem }))
+            .then(mem => this.setState({ mem: mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(() => this.props.setActions([
                 <Link to={`/member/${id}`}>
-                    <Button raised secondary onClick={() => {
-
-                    }}>
-                        Cancel
-                    </Button>
+                    <Button raised secondary children="Cancel" />
                 </Link>,
+                <label className="spacer"/>,
                 <Link to={`/member/${id}`}>
-                    <Button raised secondary onClick={() => {
-                        delete this.state.mem.ID;
-                        update('Member', {...this.state.mem, PK: {id: id}});
-                    }}>
+                    <Button raised secondary onClick={this.saveChanges}>
                         Save
                     </Button>
                 </Link>]));
     }
 
-    updateInputValue = (evt) =>{
+    saveChanges = (evt) => {
+        let id = this.props.match.params.memid;
+        let diff = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
+
+        // Update basic member fields
+        delete this.state.mem.ID;
+        update('Member', {...this.state.mem, PK: {id: id}});
+
+        // Update skills
+        let oldSkills = this.state.pastSkills;
+        let newSkills = this.state.skills;
+        let removedSkills = diff(oldSkills, newSkills);
+        let addedSkills = diff(newSkills, oldSkills);
+
+        // Update work experience
+    };
+
+    updateInputValue = (evt) => {
         const target = evt.target;
         const value = target.value;
         const name = target.name;
@@ -52,13 +63,18 @@ export default class EditMemberPage extends React.Component {
         });
     };
 
+    setSkills = (newSkills) => {
+        this.setState({ skills: newSkills });
+    };
+
     render() {
         return (
             <div className="editMemberPage">
                 {
                     this.state.mem === undefined ?
                         <CircularProgress id="editMemberPage"/> :
-                        <MemberDisplay edit mem={this.state.mem} skills={this.state.skills} work={this.state.work} />
+                        <EditMemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
+                                        setSkills={this.setSkills}/>
                 }
             </div>
         );

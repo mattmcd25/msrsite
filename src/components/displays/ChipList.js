@@ -1,9 +1,17 @@
 import React from 'react';
-import { Cell, Card, Chip, CardTitle, CardText, CardActions } from 'react-md';
+import { Cell, Card, Chip, CardTitle, CardText, CardActions, Autocomplete } from 'react-md';
 
 export default class ChipList extends React.PureComponent {
-    remove = (e) => {
-        console.log('delete me');
+    remove = (value) => {
+        let newList = this.props.children.slice();
+        newList.splice(newList.indexOf(value), 1);
+        this.props.updateList(newList);
+    };
+
+    add = (value) => {
+        let newList = this.props.children.slice();
+        newList.push(value);
+        this.props.updateList(newList);
     };
 
     render() {
@@ -16,12 +24,29 @@ export default class ChipList extends React.PureComponent {
                         </CardActions>
                     </CardTitle>
                     <CardText>
-                        {this.props.children.map(x => <Chip className="list_chip" key={x}
+                        {this.props.children.map(x => <BetterChip className="list_chip" key={x}
                                                        label={x} removable={this.props.edit}
-                                                       onClick={this.props.edit ? this.remove : undefined}/>)}
+                                                       onRemove={this.remove}/>)}
+                        {this.props.edit ?
+                            <Autocomplete
+                                id="chips-autocomplete"
+                                label={`Add ${this.props.name}`}
+                                data={this.props.acData}
+                                onAutocomplete={this.add}
+                                clearOnAutocomplete
+                            /> :
+                            false
+                        }
                     </CardText>
                 </Card>
             </Cell>
         );
     }
+}
+
+function BetterChip(props) {
+    let {onRemove, ...rest} = props;
+    return (
+        <Chip onClick={props.removable ? () => onRemove(rest.label) : undefined} {...rest}/>
+    );
 }

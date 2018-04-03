@@ -82,8 +82,9 @@ export function getMemberByID(id) {
     }).then(json => json[0]);
 }
 
-export function getMemberSkillsByID(id) {
-    return query("ALL_SKILLS", {
+export function getMemberSkillsByID(id, all=true) {
+    let table = all ? "ALL_SKILLS" : "OTHER_SKILLS";
+    return query(table, {
         "ID":`${id}`
     }).then(json => json.map(row => row.NAME));
 }
