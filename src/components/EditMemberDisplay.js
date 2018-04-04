@@ -38,6 +38,10 @@ export default function EditMemberDisplay(props) {
                 <Button raised primary onClick={props.addWork}>
                     Add Work Experience
                 </Button>
+                <label className="vertSpacer"/>
+                <Button raised className="redButton" onClick={props.removeMember}>
+                    Delete This Member
+                </Button>
             </BlankCard>
         </Grid>
     );

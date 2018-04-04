@@ -16,6 +16,7 @@ export default class EditMemberPage extends React.Component {
 
     }
 
+    // initial loading
     componentDidMount(){
         let id = this.props.match.params.memid;
         getMemberSkillsByID(id, false)
@@ -30,14 +31,15 @@ export default class EditMemberPage extends React.Component {
                     <Button raised secondary children="Cancel" />
                 </Link>,
                 <label className="spacer"/>,
-                <Button raised secondary onClick={this.saveChanges}>
+                <Button className="blueText" raised secondary onClick={this.saveChanges}>
                     Save
                 </Button>
                 ]))
             .then(() => this.setState({ loading: false }));
     }
 
-    saveChanges = async (evt) => {
+    // save changes to the member
+    saveChanges = () => {
         this.setState({ loading: true });
         let allPromises = [];
         let ID = this.props.match.params.memid;
@@ -95,6 +97,10 @@ export default class EditMemberPage extends React.Component {
 
         Promise.all(newWorkPromises).then(() => {
             Object.keys(this.state.work).forEach(workID => {
+                console.log('past');
+                console.log(this.state.pastWork);
+                console.log('work');
+                console.log(this.state.work);
                 let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[workID];
                 let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[workID];
                 difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Work_skill', {WORKID: workID, NAME})));
@@ -107,6 +113,7 @@ export default class EditMemberPage extends React.Component {
         Promise.all(allPromises).then(() => this.props.history.push('/member/'+ID));
     };
 
+    // member text field edited
     updateMember = (evt) => {
         const target = evt.target;
         const value = target.value;
@@ -117,6 +124,7 @@ export default class EditMemberPage extends React.Component {
         });
     };
 
+    // work text field edited
     updateWork = (workID, evt) => {
         const target = evt.target;
         const value = target.value;
@@ -133,10 +141,12 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    // skills list changed
     setSkills = (newSkills) => {
         this.setState({ skills: newSkills });
     };
 
+    // work skills list changed
     setWorkSkills = (workID, newSkills) => {
         this.setState(prevState => ({
             work: {
@@ -149,6 +159,7 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    // add work
     addWork = () => {
         let newID = 'new'+this.state.nextID;
         this.setState(prevState => ({
@@ -165,11 +176,31 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    // remove work
     removeWork = (workID) => {
         let {[workID]:toDel, ...rest} = this.state.work;
         this.setState({
             work: rest
         });
+    };
+
+    removeMember = () => {
+        // TODO add a confirm dialog lol
+        this.setState({ loading: true });
+        let ID = this.state.mem.ID;
+        let promises = [];
+        Object.keys(this.state.pastWork).forEach(WORKID => {
+            promises.push(del('Work_Skill', {WORKID})
+                .then(() => del('Work', {WORKID})));
+        });
+
+        this.state.skills.forEach(NAME => {
+            promises.push(del('Has_Skill', {NAME, ID}));
+        });
+
+        Promise.all(promises)
+            .then(() => del('Member', {ID}))
+            .then(() => this.props.history.push('/'));
     };
 
     render() {
@@ -181,7 +212,8 @@ export default class EditMemberPage extends React.Component {
                         <EditMemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
                                            setSkills={this.setSkills} setWorkSkills={this.setWorkSkills}
                                            onMemChange={this.updateMember} onWorkChange={this.updateWork}
-                                           addWork={this.addWork} removeWork={this.removeWork}/>
+                                           addWork={this.addWork} removeWork={this.removeWork}
+                                           removeMember={this.removeMember}/>
                 }
             </div>
         );

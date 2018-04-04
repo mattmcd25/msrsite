@@ -10,7 +10,7 @@ exports.insert = (req, res) => {
     console.log(`[insert] ${JSON.stringify(req.body)} into ${tableID}`);
     let cols = '("' + Object.keys(req.body).reduce((acc, cur) => acc + '", "' + cur) + '")';
     let vars = '(' + Object.values(req.body).map(val => varToSQL(val)).reduce((acc, cur) => acc + ', ' + cur) + ')';
-    let output = tableID==="WORK" ? " OUTPUT Inserted.WORKID" : "";
+    let output = tableID==="WORK" ? " OUTPUT Inserted.WORKID" : tableID==="MEMBER" ? " OUTPUT Inserted.ID" : "";
     let request = new sql.Request();
     let query = `INSERT INTO ${tableID} ${cols}${output} VALUES ${vars}`;
     return request.query(query)

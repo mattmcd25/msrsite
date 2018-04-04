@@ -19,7 +19,9 @@ export default class ChipListElement extends React.Component {
 
         return (
             <div>
-                {this.props.list.map(x => <BetterChip className="list_chip" key={x}
+                {this.props.list.length===0 ?
+                    <p>None</p> :
+                    this.props.list.map(x => <BetterChip className="list_chip" key={x}
                                                           label={x} removable={this.props.edit}
                                                           onRemove={this.remove}/>)}
                 {this.props.edit ?

@@ -1,4 +1,5 @@
-import {PrettyPair} from "./DisplayUtils";
+import { PrettyPair, PrettyKey } from "./DisplayUtils";
+import { TextField } from 'react-md';
 import React from 'react';
 
 export default class PropListElement extends React.Component {
@@ -9,11 +10,11 @@ export default class PropListElement extends React.Component {
         };
     }
 
-    onChange = (evt) => {
+    onChange = (value, evt) => {
         let tgt = evt.target;
         this.setState((prevstate) => {
             return {
-                data: {...prevstate.data, [tgt.name]:tgt.value}
+                data: {...prevstate.data, [tgt.name]:value}
             };
         });
         this.props.onChange(evt);
@@ -22,15 +23,25 @@ export default class PropListElement extends React.Component {
     render() {
         return (
             <div>
-                {Object.keys(this.props.data).map((f, i, a) => {
+                {Object.keys(this.props.data).map(field => {
                     return (
                         this.props.edit ?
-                            <div key={i}>
-                                <label>{f + ": "}</label>
-                                <input value={this.state.data[f]} onChange={this.onChange}
-                                       type="text" name={f}/>
+                            <div key={field}>
+                                {/*<label>{PrettyKey(field) + ": "}</label>*/}
+                                {/*<input value={this.state.data[field]} onChange={this.onChange}*/}
+                                       {/*type="text" name={field}/>*/}
+                                <TextField
+                                    id={field}
+                                    name={field}
+                                    label={PrettyKey(field)}
+                                    // size={25}
+                                    // fullWidth={false}
+                                    value={this.state.data[field]}
+                                    onChange={this.onChange}
+                                    type="text"
+                                />
                             </div> :
-                            <label key={i}>{PrettyPair(f, this.props.data[f])}</label>
+                            <label key={field}>{PrettyPair(field, this.props.data[field])}</label>
                     );
                 })}
             </div>
