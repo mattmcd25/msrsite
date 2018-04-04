@@ -15,6 +15,8 @@ export default class ChipListElement extends React.Component {
     };
 
     render() {
+        let head = this.props.listHeader ? (this.props.listHeader+" ") : "";
+
         return (
             <div>
                 {this.props.list.map(x => <BetterChip className="list_chip" key={x}
@@ -23,7 +25,7 @@ export default class ChipListElement extends React.Component {
                 {this.props.edit ?
                     <Autocomplete
                         id="chips-autocomplete"
-                        label={`Add to ${this.props.name}`}
+                        label={`Add ${head}to ${this.props.name}`}
                         data={this.props.acData.filter(s => !this.props.list.includes(s))}
                         onAutocomplete={this.add}
                         clearOnAutocomplete

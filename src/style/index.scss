@@ -44,6 +44,9 @@
 }
 
 .card-action-title {
+  div {
+    width: 100%;
+  }
   h2 {
     width: 100%;
   }
@@ -56,4 +59,9 @@
 
 .spacer {
   padding: 6px;
+}
+
+.redButton {
+  background: $md-red-200;
+  color: $md-white-base;
 }

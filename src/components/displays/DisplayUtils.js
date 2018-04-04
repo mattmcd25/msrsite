@@ -26,23 +26,23 @@ export function PrettyPair(key, val) {
 
 export function PrettyWork(work) {
     let x = work.reduce((acc, cur) => {
-        if(acc!==undefined && acc.hasOwnProperty(cur.EMPLOYER)) {
-            acc[cur.EMPLOYER].SKILLS.push(cur.NAME);
+        if(acc!==undefined && acc.hasOwnProperty(cur.WORKID)) {
+            acc[cur.WORKID].SKILLS.push(cur.NAME);
             return acc;
         }
         else {
+            let sks = cur.NAME ? [cur.NAME] : [];
             return {
-                [cur.EMPLOYER]: {
+                [cur.WORKID]: {
                     EMPLOYER: cur.EMPLOYER,
                     WORKID: cur.WORKID,
                     LENGTH: cur.LENGTH,
-                    SKILLS: [cur.NAME]
+                    SKILLS: sks
                 },
                 ...acc
             }
         }
     }, {});
-    console.log(x);
     return x;
 }
 

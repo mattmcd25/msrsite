@@ -16,11 +16,11 @@ export default class MemberDisplay extends React.PureComponent {
                 <ChipListCard name="Skills"
                               list={this.props.skills} updateList={this.props.setSkills}/>
 
-                {Object.keys(this.props.work).map(work => {
-                    let {WORKID, EMPLOYER, SKILLS, ...props} = this.props.work[work];
+                {Object.keys(this.props.work).map(workID => {
+                    let {WORKID, EMPLOYER, SKILLS, ...rest} = this.props.work[workID];
                     return (
-                        <PropsAndChipsCard key={work} name={work} subtitle="Work Experience"
-                                           list={SKILLS} data={props} listHeader="Skills Learned:"/>
+                        <PropsAndChipsCard key={workID} name={EMPLOYER} subtitle="Work Experience"
+                                           list={SKILLS} data={rest} listHeader="Skills Learned"/>
                     );
                 })}
             </Grid>

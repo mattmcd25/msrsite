@@ -10,8 +10,9 @@ exports.insert = (req, res) => {
     console.log("Trying to insert " + Object.keys(req.body) + ":" + Object.values(req.body) + " into " + tableID);
     let cols = '("' + Object.keys(req.body).reduce((acc, cur) => acc + '", "' + cur) + '")';
     let vars = '(' + Object.values(req.body).map(val => varToSQL(val)).reduce((acc, cur) => acc + ', ' + cur) + ')';
+    let output = tableID==="WORK" ? " OUTPUT Inserted.WORKID" : "";
     let request = new sql.Request();
-    let query = `INSERT INTO ${tableID} ${cols} VALUES ${vars}`;
+    let query = `INSERT INTO ${tableID} ${cols}${output} VALUES ${vars}`;
     return request.query(query)
         .then(recordset => {
             console.log("Success");

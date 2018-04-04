@@ -10,7 +10,8 @@ export default class EditMemberPage extends React.Component {
         super(props);
         props.setActions([]);
         this.state = {
-            mem: undefined,
+            loading: true,
+            nextID: 1
         };
 
     }
@@ -29,44 +30,81 @@ export default class EditMemberPage extends React.Component {
                     <Button raised secondary children="Cancel" />
                 </Link>,
                 <label className="spacer"/>,
-                <Link to={`/member/${id}`}>
-                    <Button raised secondary onClick={this.saveChanges}>
-                        Save
-                    </Button>
-                </Link>]));
+                <Button raised secondary onClick={this.saveChanges}>
+                    Save
+                </Button>
+                ]))
+            .then(() => this.setState({ loading: false }));
     }
 
-    saveChanges = (evt) => {
-        let id = this.props.match.params.memid;
-        let diff = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
+    saveChanges = async (evt) => {
+        this.setState({ loading: true });
+        let allPromises = [];
+        let ID = this.props.match.params.memid;
+        let difference = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
 
         // Update basic member fields
-        delete this.state.mem.ID;
-        update('Member', {...this.state.mem, PK: {ID: id}});
+        if(JSON.stringify(this.state.mem) !== JSON.stringify(this.state.pastMem)) {
+            let {ID, ...restMem} = this.state.mem;
+            allPromises.push(update('Member', {...restMem, PK: {ID: ID}}));
+        }
 
-        // Update skills
+        // Update other skills
         let oldSkills = this.state.pastSkills;
         let newSkills = this.state.skills;
-        diff(oldSkills, newSkills).forEach(sk => del('Has_Skill', {ID:id, NAME:sk})); // removed skills
-        diff(newSkills, oldSkills).forEach(sk => insert('Has_Skill', {ID:id, NAME:sk})); // added skills
-
-        // Modify pre-existing work experience
-        Object.keys(this.state.work).forEach((workName, i) => {
-            let workid = this.state.work[workName].WORKID;
-            let oldSkills = this.state.pastWork[workName].SKILLS;
-            let newSkills = this.state.work[workName].SKILLS;
-            diff(oldSkills, newSkills).forEach(sk => del('Work_skill', {WORKID:workid, NAME:sk}));
-            diff(newSkills, oldSkills).forEach(sk => insert('Work_skill', {WORKID:workid, NAME:sk}));
-            delete this.state.work[workName].WORKID;
-            delete this.state.work[workName].SKILLS;
-            update('Work', {...this.state.work[workName], PK: {WORKID:workid}});
-        });
+        difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Has_Skill', {ID, NAME}))); // removed skills
+        difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Has_Skill', {ID, NAME}))); // added skills
 
         // Adding or removing work experiences altogether
-        let oldWork = Object.keys(this.state.pastWork).map(workName => this.state.pastWork[workName].WORKID);
-        let newWork = Object.keys(this.state.work).map(workName => this.state.work[workName].WORKID);
-        console.log(diff(oldWork, newWork)); // removed
-        console.log(diff(newWork, oldWork)); // added
+        let newWorkPromises = [];
+        let oldWork = Object.keys(this.state.pastWork);
+        let newWork = Object.keys(this.state.work);
+        difference(newWork, oldWork).forEach(workID => {
+            let {WORKID, SKILLS, ...restWork} = this.state.work[workID];
+            newWorkPromises.push(insert('Work', {
+                ID,
+                ...restWork
+            }).then(res => {
+                let newID = res.recordset[0].WORKID;
+                let {[workID]:oldObject, ...workWithoutFakeID} = this.state.work;
+                this.setState(prevState => ({
+                    ...prevState,
+                    work: {
+                        ...workWithoutFakeID,
+                        [newID]: {
+                            ...oldObject,
+                            WORKID: newID
+                        }
+                    },
+                    pastWork: {
+                        ...prevState.pastWork,
+                        [newID]: {
+                            ...oldObject,
+                            WORKID: newID,
+                            SKILLS: []
+                        }
+                    }
+                }));
+            }));
+        });
+
+        difference(oldWork, newWork).forEach(WORKID => {
+            allPromises.push(del('Work_Skill', {WORKID})
+                .then(() => del('Work', {WORKID})));
+        });
+
+        Promise.all(newWorkPromises).then(() => {
+            Object.keys(this.state.work).forEach(workID => {
+                let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[workID];
+                let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[workID];
+                difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Work_skill', {WORKID: workID, NAME})));
+                difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Work_skill', {WORKID: workID, NAME})));
+                if(JSON.stringify(restWork) !== JSON.stringify(restPast))
+                    allPromises.push(update('Work', {...restWork, PK: {WORKID: workID}}));
+            });
+        });
+
+        Promise.all(allPromises).then(() => this.props.history.push('/member/'+ID));
     };
 
     updateMember = (evt) => {
@@ -111,15 +149,39 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    addWork = () => {
+        let newID = 'new'+this.state.nextID;
+        this.setState(prevState => ({
+            work: {
+                ...prevState.work,
+                [newID]: {
+                    WORKID: newID,
+                    EMPLOYER: 'Untitled',
+                    LENGTH: 0,
+                    SKILLS: []
+                }
+            },
+            nextID: prevState.nextID + 1
+        }));
+    };
+
+    removeWork = (workID) => {
+        let {[workID]:toDel, ...rest} = this.state.work;
+        this.setState({
+            work: rest
+        });
+    };
+
     render() {
         return (
             <div className="editMemberPage">
                 {
-                    this.state.mem === undefined ?
+                    this.state.loading ?
                         <CircularProgress id="editMemberPage"/> :
                         <EditMemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
                                            setSkills={this.setSkills} setWorkSkills={this.setWorkSkills}
-                                           onMemChange={this.updateMember} onWorkChange={this.updateWork}/>
+                                           onMemChange={this.updateMember} onWorkChange={this.updateWork}
+                                           addWork={this.addWork} removeWork={this.removeWork}/>
                 }
             </div>
         );
