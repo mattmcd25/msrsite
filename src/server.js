@@ -78,15 +78,15 @@ gen.connect().then(() => { // connect to the database
         console.log(exports.ALLOWED_TABLES);
     }).then(() => {
         app.listen(app.get("port"), () => { // listen on the port
-            console.log('Server is running...');
+            console.log('[general] Server is running...');
             app.on('close', () => { // on close, disconnect from db
                 gen.disconnect().then(() => {
-                    console.log('Server is stopped.');
+                    console.log('[general] Server is stopped.');
                 });
             });
         });
     });
 }).catch(err => {
-    console.log("your wifi probably sucks lol");
+    console.log("[general] your wifi probably sucks lol");
     console.log(err);
 });

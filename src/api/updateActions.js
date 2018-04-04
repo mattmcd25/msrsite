@@ -7,7 +7,7 @@ const server = require("../server");
 exports.insert = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 
-    console.log("Trying to insert " + Object.keys(req.body) + ":" + Object.values(req.body) + " into " + tableID);
+    console.log(`[insert] ${JSON.stringify(req.body)} into ${tableID}`);
     let cols = '("' + Object.keys(req.body).reduce((acc, cur) => acc + '", "' + cur) + '")';
     let vars = '(' + Object.values(req.body).map(val => varToSQL(val)).reduce((acc, cur) => acc + ', ' + cur) + ')';
     let output = tableID==="WORK" ? " OUTPUT Inserted.WORKID" : "";
@@ -15,11 +15,11 @@ exports.insert = (req, res) => {
     let query = `INSERT INTO ${tableID} ${cols}${output} VALUES ${vars}`;
     return request.query(query)
         .then(recordset => {
-            console.log("Success");
+            console.log("[insert] Success");
             if(res) res.status(201).send(recordset);
         })
         .catch(err => {
-            console.log(err);
+            console.log('[insert] '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -30,7 +30,7 @@ exports.insert = (req, res) => {
 exports.update = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 
-    console.log('Trying to update ' + tableID + ' according to ' + Object.keys(req.body) + ":" + Object.values(req.body));
+    console.log(`[update] ${tableID} according to ${JSON.stringify(req.body)}`);
     let pk = req.body.PK;
     delete req.body.PK;
     let vars = Object.keys(req.body).reduce((acc, cur) => `${acc}, ${cur}=${varToSQL(req.body[cur])}`, '').substring(2);
@@ -39,11 +39,11 @@ exports.update = (req, res) => {
     let query = `UPDATE ${tableID} SET ${vars} WHERE ${cond}`;
     return request.query(query)
         .then(recordset => {
-            console.log("Success");
+            console.log("[update] Success");
             if(res) res.status(202).send(recordset);
         })
         .catch(err => {
-            console.log(err);
+            console.log('[update] '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -54,17 +54,17 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 
-    console.log('Trying to delete from ' + tableID + ' according to ' + Object.keys(req.body) + ":" + Object.values(req.body));
+    console.log(`[delete] ${JSON.stringify(req.body)} from ${tableID}`);
     let cond = Object.keys(req.body).reduce((acc, cur) => `${acc} AND ${cur}=${varToSQL(req.body[cur])}`, '').substring(5);
     let request = new sql.Request();
     let query = `DELETE FROM ${tableID} WHERE ${cond}`;
     return request.query(query)
         .then(recordset => {
-            console.log("Success");
+            console.log("[delete] Success");
             if(res) res.status(202).send(recordset);
         })
         .catch(err => {
-            console.log(err);
+            console.log('[delete] '+err);
             if(res) res.status(500).send(err);
         });
 };
