@@ -69,7 +69,7 @@ export function del(table, data) {
 
 // ========== Exported Functions - Helpers ==========
 export function getMemberByID(id) {
-    return query("ALL", {
+    return query("Member", {
         "ID":`${id}`
     }).then(json => json[0]);
 }

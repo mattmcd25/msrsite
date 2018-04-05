@@ -1,7 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { CircularProgress, Button, TextField, Grid, Cell, Card, CardTitle, CardText } from 'react-md';
 import { insert } from '../../data/databaseManager';
+import { HEADERS } from "../../index";
+import { PrettyKey } from "../displays/DisplayUtils";
 
 export default class NewMemberPage extends React.Component {
     constructor(props) {
@@ -44,18 +45,9 @@ export default class NewMemberPage extends React.Component {
                         <Card className="member-card">
                             <CardTitle className="card-action-title" title="New Member"/>
                             <CardText>
-                                <TextField size={100} value={this.state.mem.name} onChange={this.handleInputChange}
-                                           type="text" name="FIRSTNAME" label="First Name"/>
-                                <TextField size={100} value={this.state.mem.surname} onChange={this.handleInputChange}
-                                           type="text" name="SURNAME" label="Surname"/>
-                                <TextField size={20} value={this.state.mem.membership} onChange={this.handleInputChange}
-                                           type="text" name="MEMBERSHIP" label="Membership"/>
-                                <TextField size={10} value={this.state.mem.phone} onChange={this.handleInputChange}
-                                           type="number" name="MOBILE" label="Mobile"/>
-                                <TextField size={100} value={this.state.mem.address} onChange={this.handleInputChange}
-                                           type="text" name="ADDRESS" label="Address"/>
-                                <TextField size={10} value={this.state.mem.marital} onChange={this.handleInputChange}
-                                           type="text" name="MARITAL" label="Marital"/>
+                                {HEADERS['Member'].slice(1).map(field => (
+                                    <TextField size={100} value={this.state.mem[field]} onChange={this.handleInputChange}
+                                               type="text" name={field} label={PrettyKey(field)}/>))}
                                 <label className="vertSpacer"/>
                                 <Button raised primary name="insert" onClick={this.handleSubmit}>
                                     Add Member

@@ -3,7 +3,7 @@
 @include react-md-everything;
 
 .body {
-  margin: 97px 25px;
+  margin: 70px 0px;
   //font-family: 'Open Sans', sans-serif;
 }
 
@@ -30,7 +30,6 @@
 
 %member-card {
   padding: 5px;
-  margin: 10px;
 }
 
 .member-card {
@@ -52,10 +51,22 @@
   }
 }
 
-.launchMedia {
-  height: 100px;
-  width: 200px
+.launchHor {
+  display: flex;
+  justify-content: center;
+  margin-top: 10%;
+  height: 50%;
 }
+
+.launchVer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 25%;
+  margin-right: 25%;
+  width: 50%;
+}
+
 
 .spacer {
   padding: 6px;
