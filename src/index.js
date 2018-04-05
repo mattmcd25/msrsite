@@ -22,6 +22,7 @@ export function setMemCols(){
             mem_cols = cols;
             console.log(mem_cols);
         });
+    return mem_cols;
 }
 
 

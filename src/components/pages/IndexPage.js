@@ -1,9 +1,10 @@
 import React from 'react';
 import MemberTableBody from "../MemberTableBody";
 import MemberTableHeader from '../MemberTableHeader';
-import { getAll } from "../../data/databaseManager";
+import {getAll, getUserInfoByToken} from "../../data/databaseManager";
 import { Card } from 'react-md';
-import { mem_cols as headers } from "../../index";
+import { setMemCols } from "../../index";
+import {getAccessToken, getProfile} from "../../AuthService";
 
 export default class IndexPage extends React.Component {
     constructor(props) {
@@ -76,12 +77,13 @@ export default class IndexPage extends React.Component {
 
 
     render() {
+        getProfile();
         return (
             <div className="home">
                 <Card tableCard>
                     <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
                                        onChange={this.updateInputValue} onRefreshClick={this.loadTable}/>
-                    <MemberTableBody loaded={this.state.loaded} headers={headers}
+                    <MemberTableBody loaded={this.state.loaded} headers={setMemCols()}
                                      display={this.state.display} rows={this.state.match.length}
                                      handlePagination={this.handlePagination} page={this.state.page}/>
                 </Card>

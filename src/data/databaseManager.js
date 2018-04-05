@@ -63,3 +63,11 @@ export function getMemberByID(id) {
         "ID":`${id}`
     }).then(json => json[0]);
 }
+
+export function getUserInfoByToken(t){
+    return (axios.get('https://rwwittenberg.auth0.com/userinfo', {
+        headers: {
+            Authorization: `Bearer ${t}`
+        }
+    }).then(console.log));
+}

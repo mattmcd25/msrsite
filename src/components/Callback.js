@@ -1,16 +1,12 @@
 import { Component } from 'react';
-import { setIdToken, setAccessToken } from '../AuthService';
-import { setMemCols } from "../index";
+import {setIdToken, setAccessToken } from '../AuthService';
 
 class Callback extends Component {
 
     componentDidMount() {
         setAccessToken();
         setIdToken();
-        setMemCols();
         window.location.href = "/";
-
-
     }
 
     render() {

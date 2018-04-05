@@ -1,5 +1,6 @@
 import React from "react";
-import {login, logout} from "../../AuthService"
+import {getAccessToken, login, logout} from "../../AuthService"
+import {getUserInfoByToken} from "../../data/databaseManager";
 
 
 export default class LoginPage extends React.Component{
@@ -31,7 +32,7 @@ export default class LoginPage extends React.Component{
             <div>
                 <input value={this.state.username} onChange={this.updateUsername}/><br />
                 <input value={this.state.password} onChange={this.updatePassword}/><br />
-                <button onClick={() =>login()}>Sign In</button>
+                <button onClick={() => login()}>Sign In</button>
                 <button onClick={() =>logout()}>Sign Out</button>
             </div>);
     }
