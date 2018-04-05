@@ -1,30 +1,40 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import IndexPage from "./components/pages/IndexPage";
 import NewMember from "./components/pages/NewMemberPage";
 import Layout from "./components/pages/Layout";
 import MemberPage from "./components/pages/MemberPage";
 import EditMemberPage from "./components/pages/EditMemberPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
+import QueryPage from './components/pages/QueryPage';
 
 export default class AppRoutes extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: ""
+            title: "",
+            actions: []
         }
     }
 
     updateTitle = (t) => {
         this.setState({
-            title:t
+            title:t,
+            actions: [] // clear actions every time the page changes
         });
     };
 
-    componentWithTitle = (component) => {
+    updateActions = (a) => {
+        this.setState({
+            actions:a
+        });
+    };
+
+    componentWithRefs = (component) => {
         return (
             ({match, location, history}) => React.createElement(component, {
                 setTitle:this.updateTitle,
+                setActions:this.updateActions,
                 match:match,
                 location:location,
                 history:history
@@ -35,13 +45,20 @@ export default class AppRoutes extends React.Component {
     render() {
         return (
             <Router>
-                <Layout title={this.state.title}>
+                <Layout title={this.state.title} actions={this.state.actions}>
                     <Switch>
-                        <Route exact path="/" render={this.componentWithTitle(IndexPage)}/>
-                        <Route path="/new" render={this.componentWithTitle(NewMember)}/>
-                        <Route exact path="/member/:memid" render={this.componentWithTitle(MemberPage)}/>
-                        <Route path="/member/:memid/edit" component={this.componentWithTitle(EditMemberPage)}/>
-                        <Route render={this.componentWithTitle(NotFoundPage)}/>
+                        {/* Homepage */}
+                        <Route exact path="/" render={this.componentWithRefs(IndexPage)}/>
+                        {/* Other Pages */}
+                        <Route path="/new" render={this.componentWithRefs(NewMember)}/>
+                        <Route exact path="/member/:memid" render={this.componentWithRefs(MemberPage)}/>
+                        <Route path="/member/:memid/edit" render={this.componentWithRefs(EditMemberPage)}/>
+                        <Route path="/query" render={this.componentWithRefs(QueryPage)}/>
+                        {/* Redirects */}
+                        <Route path="/index.*" render={() => <Redirect to="/"/>}/>
+                        <Route path="/member" render={() => <Redirect to="/"/>}/>
+                        {/* Error - Default */}
+                        <Route render={this.componentWithRefs(NotFoundPage)}/>
                     </Switch>
                 </Layout>
             </Router>

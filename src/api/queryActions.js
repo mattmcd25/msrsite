@@ -8,32 +8,33 @@ const ua = require("./updateActions");
 exports.selectAll = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 
-    console.log("Trying to select * from " + tableID);
+    console.log(`[select*] ${tableID}`);
     let request = new sql.Request(); // create Request object
     return request.query(`SELECT * FROM `+ tableID) // query
         .then(recordset => {
-            console.log("Success");
+            console.log("[select*] Success");
             if(res) res.status(200).send(recordset); // send records as a response
         })
         .catch(err => {
-            console.log(err);
+            console.log('[select*] '+err);
             if(res) res.status(500).send(err);
         });
 };
 
 exports.advancedQuery = (req, res) => {
-    console.log("Trying to select * with cond " + Object.keys(req.body) + ":" + Object.values(req.body));
+    let tableID = req.params['table'].toUpperCase();
+
+    console.log(`[query] ${tableID} with cond ${JSON.stringify(req.body)}`);
     let cond = Object.keys(req.body).reduce((acc, cur) => `${acc} AND ${cur}=${ua.varToSQL(req.body[cur])}`, '').substring(5);
-    let query = `SELECT * FROM "ALL" WHERE ${cond}`;
-    console.log(query);
+    let query = `SELECT * FROM "${tableID}" WHERE ${cond}`;
     let request = new sql.Request();
     return request.query(query) // query
         .then(recordset => {
-            console.log("Success");
+            console.log("[query] Success");
             if(res) res.status(200).send(recordset); // send records as a response
         })
         .catch(err => {
-            console.log(err);
+            console.log('[query] '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -44,14 +45,14 @@ exports.advancedQuery = (req, res) => {
 exports.getColumns = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 
-    console.log("Trying to get column names for " + tableID);
+    console.log(`[colnames] ${tableID}`);
     let request = new sql.Request(); // create Request object
     return request.query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${tableID}'`) // query
         .then(recordset => {
-            console.log("Success");
+            console.log("[colnames] Success");
             if(res) res.status(200).send(recordset); // send records as a response
         }).catch(err => {
-            console.log(err);
+            console.log('[colnames] '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -59,15 +60,15 @@ exports.getColumns = (req, res) => {
 // getTables : request x result => promise
 // returns the names of all tables in the database
 exports.getTables = (req, res) => {
-    console.log("Trying to get all table names");
+    console.log(`[tabnames] Getting all table names`);
     let request = new sql.Request();
     return request.query(`SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES`)
         .then(recordset => {
-            console.log("Success");
+            console.log("[tabnames] Success");
             if(res) res.status(200).send(recordset);
             return recordset;
         }).catch(err => {
-            console.log(err);
+            console.log('[tabnames] '+err);
             if(res) res.status(500).send(err);
         });
 };

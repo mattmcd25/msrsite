@@ -8,6 +8,7 @@ export default function Layout(props) {
             className="container"
             drawerTitle="MSR Database"
             toolbarTitle={props.title}
+            toolbarActions={props.actions}
             navItems={[<Navigation key="nav"/>]}
         >
             <div className="body">

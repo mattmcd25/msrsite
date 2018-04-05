@@ -52,13 +52,14 @@ app.get('/api/disconnect', gen.disconnect); // disconnect from the database
 app.get('/api/select*/:table', checkTableID, query.selectAll); // select all from a table or view
 app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
 app.get('/api/tabnames', query.getTables); // get all table names from the db
-app.post('/api/query', query.advancedQuery); // advanced query
+app.post('/api/query/:table', checkTableID, query.advancedQuery); // advanced query
 
 
 
 // ========== Update Actions ==========
 app.post('/api/insert/:table', checkTableID, update.insert); // insert on a table
 app.patch('/api/update/:table', checkTableID, update.update); // update a table row
+app.delete('/api/delete/:table', checkTableID, update.delete); // delete a table row
 
 
 
@@ -77,15 +78,15 @@ gen.connect().then(() => { // connect to the database
         console.log(exports.ALLOWED_TABLES);
     }).then(() => {
         app.listen(app.get("port"), () => { // listen on the port
-            console.log('Server is running...');
+            console.log('[general] Server is running...');
             app.on('close', () => { // on close, disconnect from db
                 gen.disconnect().then(() => {
-                    console.log('Server is stopped.');
+                    console.log('[general] Server is stopped.');
                 });
             });
         });
     });
 }).catch(err => {
-    console.log("your wifi probably sucks lol");
+    console.log("[general] your wifi probably sucks lol");
     console.log(err);
 });

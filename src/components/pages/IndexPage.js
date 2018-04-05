@@ -2,8 +2,8 @@ import React from 'react';
 import MemberTableBody from "../MemberTableBody";
 import MemberTableHeader from '../MemberTableHeader';
 import { getAll } from "../../data/databaseManager";
-import { Card } from 'react-md';
-import { mem_cols as headers } from "../../index";
+import { Card, Grid, Cell } from 'react-md';
+import { HEADERS as headers } from "../../index";
 
 export default class IndexPage extends React.Component {
     constructor(props) {
@@ -75,13 +75,17 @@ export default class IndexPage extends React.Component {
     render() {
         return (
             <div className="home">
-                <Card tableCard>
-                    <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
-                                       onChange={this.updateInputValue} onRefreshClick={this.loadTable} />
-                    <MemberTableBody loaded={this.state.loaded} headers={headers}
-                                     display={this.state.display} rows={this.state.match.length}
-                                     handlePagination={this.handlePagination} page={this.state.page}/>
-                </Card>
+                <Grid>
+                    <Cell size={12}>
+                        <Card tableCard>
+                            <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
+                                               onChange={this.updateInputValue} onRefreshClick={this.loadTable} />
+                            <MemberTableBody loaded={this.state.loaded} headers={headers['Member']}
+                                             display={this.state.display} rows={this.state.match.length}
+                                             handlePagination={this.handlePagination} page={this.state.page}/>
+                        </Card>
+                    </Cell>
+                </Grid>
             </div>
         );
     }
