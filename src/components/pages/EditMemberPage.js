@@ -1,7 +1,7 @@
 import React from 'react';
 import {getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert} from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
-import { Button, CircularProgress } from 'react-md';
+import { Button, Grid, CircularProgress } from 'react-md';
 import { PrettyWork } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../EditMemberDisplay';
 
@@ -28,10 +28,10 @@ export default class EditMemberPage extends React.Component {
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(() => this.props.setActions([
                 <Link to={`/member/${id}`}>
-                    <Button raised secondary children="Cancel" />
+                    <Button style={{'color':'black'}} raised secondary children="Cancel" />
                 </Link>,
                 <label className="spacer"/>,
-                <Button className="blueText" raised secondary onClick={this.saveChanges}>
+                <Button style={{'color':'black'}} raised secondary onClick={this.saveChanges}>
                     Save
                 </Button>
                 ]))
@@ -94,13 +94,9 @@ export default class EditMemberPage extends React.Component {
             allPromises.push(del('Work_Skill', {WORKID})
                 .then(() => del('Work', {WORKID})));
         });
-
+        console.log(newWorkPromises);
         Promise.all(newWorkPromises).then(() => {
             Object.keys(this.state.work).forEach(workID => {
-                console.log('past');
-                console.log(this.state.pastWork);
-                console.log('work');
-                console.log(this.state.work);
                 let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[workID];
                 let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[workID];
                 difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Work_skill', {WORKID: workID, NAME})));
@@ -208,7 +204,7 @@ export default class EditMemberPage extends React.Component {
             <div className="editMemberPage">
                 {
                     this.state.loading ?
-                        <CircularProgress id="editMemberPage"/> :
+                        <Grid className="member-display"><CircularProgress id="editMemberPage"/></Grid> :
                         <EditMemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
                                            setSkills={this.setSkills} setWorkSkills={this.setWorkSkills}
                                            onMemChange={this.updateMember} onWorkChange={this.updateWork}

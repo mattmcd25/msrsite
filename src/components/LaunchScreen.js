@@ -9,7 +9,7 @@ export default function LaunchScreen(props) {
                     <Media>
                         <img src={'/bad-msr-logo.png'} alt="msr logo"/>
                     </Media>
-                    <CircularProgress/>
+                    <CircularProgress id="launchScreen"/>
                 </Paper>
             </div>
         </div>

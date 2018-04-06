@@ -21,9 +21,9 @@ export default class ChipListElement extends React.Component {
             <div>
                 {this.props.list.length===0 ?
                     <p>None</p> :
-                    this.props.list.map(x => <BetterChip className="list_chip" key={x}
+                    <div>{this.props.list.map(x => <BetterChip className="list_chip" key={x}
                                                           label={x} removable={this.props.edit}
-                                                          onRemove={this.remove}/>)}
+                                                              onRemove={this.remove}/>)}<br/></div>}
                 {this.props.edit ?
                     <Autocomplete
                         id="chips-autocomplete"
@@ -31,6 +31,7 @@ export default class ChipListElement extends React.Component {
                         data={this.props.acData.filter(s => !this.props.list.includes(s))}
                         onAutocomplete={this.add}
                         clearOnAutocomplete
+                        size={30} fullWidth={false}
                     /> :
                     false
                 }

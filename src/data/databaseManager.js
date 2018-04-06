@@ -78,7 +78,9 @@ export function getMemberSkillsByID(id, all=true) {
     let table = all ? "ALL_SKILLS" : "OTHER_SKILLS";
     return query(table, {
         "ID":`${id}`
-    }).then(json => json.map(row => row.NAME));
+    })
+        .then(json => json.map(row => row.NAME))
+        .then(sks => ((sks.length===1 && !sks[0]) ? [] : sks));
 }
 
 export function getMemberWorkByID(id) {

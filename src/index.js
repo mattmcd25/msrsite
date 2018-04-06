@@ -8,6 +8,7 @@ import LaunchScreen from "./components/LaunchScreen";
 
 export var HEADERS = [];
 export var CONSTANTS = [];
+var searchResult = [];
 
 ReactDOM.render(
     <LaunchScreen/>,
@@ -28,5 +29,14 @@ async function initialize() {
     });
 
     HEADERS['Member'] = await getAllColumns('Member');
-    CONSTANTS['Skill'] = await getAll('Skill');
+    HEADERS['Work'] = await getAllColumns('Work');
+    CONSTANTS['Skill'] = (await getAll('Skill')).map(s => s.NAME);
+}
+
+export function storeSearch(result) {
+    searchResult = result;
+}
+
+export function reclaimSearch() {
+    return searchResult;
 }

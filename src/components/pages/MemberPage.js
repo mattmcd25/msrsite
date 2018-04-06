@@ -1,7 +1,7 @@
 import React from 'react';
 import { getMemberByID, getMemberSkillsByID, getMemberWorkByID } from "../../data/databaseManager";
 import { Link } from 'react-router-dom';
-import { Button, CircularProgress } from 'react-md';
+import { Button, Grid, CircularProgress } from 'react-md';
 import { PrettyWork } from '../displays/DisplayUtils';
 import MemberDisplay from '../MemberDisplay';
 
@@ -24,7 +24,7 @@ export default class MemberPage extends React.PureComponent {
             .then(() => this.props.setTitle(this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(() => this.props.setActions((
                 <Link to={`/member/${this.state.mem.ID}/edit`}>
-                    <Button secondary raised>Edit</Button>
+                    <Button style={{'color':'black'}} secondary raised>Edit</Button>
                 </Link>)));
     }
 
@@ -32,7 +32,7 @@ export default class MemberPage extends React.PureComponent {
         return (
             <div className="memberPage">
                 {this.state.mem === undefined ?
-                    <CircularProgress id="memberPage"/> :
+                    <Grid className="member-display"><CircularProgress id="memberPage"/></Grid> :
                     <MemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}/>}
             </div>
         );
