@@ -1,5 +1,8 @@
 import React from 'react';
-import {getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert} from "../../data/databaseManager";
+import {
+    getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert,
+    getMemberLangsByID
+} from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
 import { PrettyWork } from "../displays/DisplayUtils";
@@ -20,11 +23,13 @@ export default class EditMemberPage extends React.Component {
     componentDidMount(){
         let id = this.props.match.params.memid;
         getMemberSkillsByID(id, false)
-            .then(skills => this.setState({ skills: skills, pastSkills: skills }))
+            .then(skills => this.setState({ skills, pastSkills: skills }))
             .then(() => getMemberWorkByID(id))
             .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
+            .then(() => getMemberLangsByID(id))
+            .then(langs => this.setState({ langs, pastLangs: langs }))
             .then(() => getMemberByID(id))
-            .then(mem => this.setState({ mem: mem, pastMem: mem }))
+            .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(() => this.props.setActions([
                 <Link to={`/member/${id}`}>
@@ -209,7 +214,7 @@ export default class EditMemberPage extends React.Component {
                                            setSkills={this.setSkills} setWorkSkills={this.setWorkSkills}
                                            onMemChange={this.updateMember} onWorkChange={this.updateWork}
                                            addWork={this.addWork} removeWork={this.removeWork}
-                                           removeMember={this.removeMember}/>
+                                           removeMember={this.removeMember} langs={this.state.langs}/>
                 }
             </div>
         );
