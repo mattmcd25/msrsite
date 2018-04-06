@@ -7,7 +7,8 @@ const formats = {
     'MOBILE': ['Mobile Phone',prettyPhone],
     'ADDRESS': ['Address'],
     'MARITAL': ['Marital Status'],
-    'LENGTH': ['Worked here for',prettyYears]
+    'LENGTH': ['Worked here for',prettyYears],
+    'EMPLOYER': ['Employer Name']
 };
 
 export function PrettyKey(key) {

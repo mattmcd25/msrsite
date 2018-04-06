@@ -27,9 +27,6 @@ export default class PropListElement extends React.Component {
                     return (
                         this.props.edit ?
                             <div key={field}>
-                                {/*<label>{PrettyKey(field) + ": "}</label>*/}
-                                {/*<input value={this.state.data[field]} onChange={this.onChange}*/}
-                                       {/*type="text" name={field}/>*/}
                                 <TextField
                                     id={field}
                                     name={field}

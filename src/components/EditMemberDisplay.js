@@ -7,8 +7,7 @@ import { Grid, Button } from 'react-md';
 import { CONSTANTS } from "../index";
 
 export default function EditMemberDisplay(props) {
-    let skills = CONSTANTS['Skill'].map(s => s.NAME);
-
+    let skills = CONSTANTS['Skill'];
     return (
         <Grid className="member-display">
             {(() => {

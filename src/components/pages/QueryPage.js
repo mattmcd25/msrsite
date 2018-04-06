@@ -1,15 +1,132 @@
 import React from 'react';
+import { Grid, Button } from 'react-md';
+import {getAll, query} from "../../data/databaseManager";
+import QueryDisplay from '../displays/QueryDisplay';
+import MemberTable from '../MemberTable';
+import { storeSearch, reclaimSearch } from "../../index";
+import { HEADERS } from "../../index";
 
-export default class QueryPage extends React.PureComponent {
+export default class QueryPage extends React.Component {
     constructor(props) {
         super(props);
-        this.props.setTitle("Advanced Search");
+        this.state = {
+            mode: 'query',
+            mem: {},
+            skills: [],
+            workSkills: [],
+            work: {},
+            result: []
+        };
     }
 
+    componentDidMount() {
+        let search = reclaimSearch();
+        if(search.length === 0)
+            this.setQueryMode();
+        else
+            this.setSearchMode(search);
+    }
+
+    clear = () => {
+        this.setState({
+            mem: [],
+            skills: [],
+            workSkills: [],
+            work: {},
+            result: []
+        })
+    };
+
+    setQueryMode = () => {
+        storeSearch([]);
+        this.setState({ mode: 'query' });
+        this.clear();
+        this.props.setTitle("Advanced Search");
+        this.props.setActions([
+            <Button raised secondary style={{'color': 'black'}} onClick={this.clear}>
+                Start Over
+            </Button>,
+            <label className="spacer"/>,
+            <Button raised secondary style={{'color': 'black'}} onClick={this.search}>
+                Search
+            </Button>
+        ]);
+    };
+
+    setSearchMode = (result) => {
+        storeSearch(result);
+        this.setState({
+            mode: 'display',
+            result
+        });
+        this.props.setTitle("Advanced Search Results");
+        this.props.setActions(
+            <Button raised secondary style={{'color':'black'}} onClick={this.setQueryMode}>
+                Start New Search
+            </Button>
+        );
+    };
+
+    search = async () => {
+        this.setState({ mode: 'loading' });
+
+        let getID = member => member.ID;
+        let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
+        let filterObj = (obj) => Object.assign({}, ...Object.keys(obj).map(k => obj[k] === '' ? {} : {[k]:obj[k]}));
+        let promises = [];
+
+        // do general search
+        let genCond = filterObj(this.state.mem);
+        if(Object.keys(genCond).length > 0) {
+            promises.push(query('Member', genCond));
+        }
+
+        // do skills search
+        this.state.skills.forEach(NAME => promises.push(query('All_skills', {NAME})));
+
+        // do work search
+        let workCond = filterObj(this.state.work);
+        this.state.workSkills.forEach(NAME => promises.push(query('Work_info', {NAME, ...workCond})));
+        if(this.state.workSkills.length === 0 && Object.keys(workCond).length > 0) {
+            promises.push(query('Work_info', workCond));
+        }
+
+        // send result
+        let allMembers = await getAll('Member');
+        let matchingIDs = allMembers.map(getID);
+        for(let i in promises) {
+            let res = await promises[i];
+            matchingIDs = intersection(matchingIDs, res.map(getID));
+        }
+        let result = allMembers.filter(mem => matchingIDs.includes(mem.ID));
+        this.setSearchMode(result);
+    };
+
+    update = (head, evt) => {
+        const target = evt.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState((prevstate) => {
+            return {[head] : {...prevstate[head], [name]: value}}
+        });
+    };
+
     render() {
+        let makeDict = list => Object.assign({}, ...list.map(head => ({[head]:''})));
+        let gendata = makeDict(HEADERS['Member'].slice(1));
+        let workdata = makeDict(HEADERS['Work'].slice(2));
         return (
             <div className="queryPage">
-                <p>yuh</p>
+                <Grid>
+                    {this.state.mode==="query" ?
+                        <QueryDisplay skills={this.state.skills} updateList={li => this.setState({ skills: li })}
+                                      onMemChange={(evt) => this.update('mem', evt)} general={gendata}
+                                      onWorkChange={(evt) => this.update('work', evt)} work={workdata}
+                                      workSkills={this.state.workSkills} updateWorkList={li => this.setState({ workSkills: li })}/> :
+                        <MemberTable members={this.state.result} loaded={this.state.mode==="display"}/>
+                    }
+                </Grid>
             </div>
         );
     }

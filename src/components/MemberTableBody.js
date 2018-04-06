@@ -2,6 +2,7 @@ import React from "react";
 import { DataTable, TablePagination, TableHeader, TableRow, TableBody, TableColumn, CircularProgress } from 'react-md';
 import MemberTableRow from "./MemberTableRow";
 import { PrettyKey } from './displays/DisplayUtils';
+import { HEADERS } from "../index";
 
 export default function MemberTableBody(props) {
     return (
@@ -11,12 +12,13 @@ export default function MemberTableBody(props) {
                 <DataTable baseId="member" selectableRows={false}>
                     <TableHeader>
                         <TableRow>
-                            {props.headers.slice(1).map(head => <TableColumn key={head}>{PrettyKey(head)}</TableColumn>)}
+                            {HEADERS['Member'].slice(1).map(head => <TableColumn key={head}>{PrettyKey(head)}</TableColumn>)}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {props.display.map(mem => <MemberTableRow key={mem.ID} data={mem}/>)}
                     </TableBody>
+                    {props.display.length === 0 ? [<br/>,<h4 style={{'margin-left':'25px'}}>No results</h4>] : false}
                     <TablePagination rows={props.rows} rowsPerPageLabel="Rows per page"
                                      onPagination={props.handlePagination} page={props.page}/>
                 </DataTable>

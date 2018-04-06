@@ -17,9 +17,12 @@ export default function MemberTableHeader(props) {
                 onChange={props.onChange}
                 type={"text"}
             />
-            <Button flat primary onClick={props.onRefreshClick} iconChildren={<FontIcon>refresh</FontIcon>}>
-                Refresh
-            </Button>
+            {props.onRefreshClick===undefined ?
+                <label className="spacer"/> :
+                <Button flat primary onClick={props.onRefreshClick} iconChildren={<FontIcon>refresh</FontIcon>}>
+                    Refresh
+                </Button>
+            }
         </TableCardHeader>
     );
 };

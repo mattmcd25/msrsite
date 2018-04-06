@@ -23,9 +23,8 @@ export default class NewMemberPage extends React.Component {
             });
     };
 
-    handleInputChange = (e) => {
+    handleInputChange = (value, e) => {
         const target = e.target;
-        const value = target.value;
         const name = target.name;
 
         this.setState(prevState => ({
