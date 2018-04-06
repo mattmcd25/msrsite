@@ -24,10 +24,6 @@ export default class MemberTable extends React.Component {
     };
 
     componentWillReceiveProps(nextProps) {
-        console.log('old');
-        console.log(this.props.members);
-        console.log('new');
-        console.log(nextProps.members);
         if(nextProps.members && nextProps.members !== this.props.members) {
             this.setState(prevState => ({
                 match: nextProps.members,

@@ -18,7 +18,7 @@ export default function MemberTableHeader(props) {
                 type={"text"}
             />
             {props.onRefreshClick===undefined ?
-                false :
+                <label className="spacer"/> :
                 <Button flat primary onClick={props.onRefreshClick} iconChildren={<FontIcon>refresh</FontIcon>}>
                     Refresh
                 </Button>

@@ -70,45 +70,34 @@ export default class QueryPage extends React.Component {
     search = async () => {
         this.setState({ mode: 'loading' });
 
+        let getID = member => member.ID;
         let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
-        let allMembers = await getAll('Member');
-        let matchingIDs = allMembers.map(mem => mem.ID);
+        let filterObj = (obj) => Object.assign({}, ...Object.keys(obj).map(k => obj[k] === '' ? {} : {[k]:obj[k]}));
+        let promises = [];
 
         // do general search
-        let genCond = {};
-        Object.keys(this.state.mem).forEach(k => {
-            let v = this.state.mem[k];
-            if(v !== '') genCond[k]=v;
-        });
+        let genCond = filterObj(this.state.mem);
         if(Object.keys(genCond).length > 0) {
-            let res = await query('Member', genCond);
-            matchingIDs = intersection(matchingIDs, res.map(m => m.ID));
+            promises.push(query('Member', genCond));
         }
 
         // do skills search
-        for(let sk in this.state.skills) {
-            let NAME = this.state.skills[sk];
-            let res = await query('All_skills', {NAME});
-            matchingIDs = intersection(matchingIDs, res.map(m=>m.ID)); // AND
-        }
+        this.state.skills.forEach(NAME => promises.push(query('All_skills', {NAME})));
 
         // do work search
-        let workCond = {};
-        Object.keys(this.state.work).forEach(k => {
-            let v = this.state.work[k];
-            if(v !== '') workCond[k]=v;
-        });
-        for(let sk in this.state.workSkills) {
-            let NAME = this.state.workSkills[sk];
-            let res = await query('Work_info', {NAME, ...workCond});
-            matchingIDs = intersection(matchingIDs, res.map(m=>m.ID));
-        }
+        let workCond = filterObj(this.state.work);
+        this.state.workSkills.forEach(NAME => promises.push(query('Work_info', {NAME, ...workCond})));
         if(this.state.workSkills.length === 0 && Object.keys(workCond).length > 0) {
-            let res = await query('Work_info', workCond);
-            matchingIDs = intersection(matchingIDs, res.map(m=>m.ID));
+            promises.push(query('Work_info', workCond));
         }
 
         // send result
+        let allMembers = await getAll('Member');
+        let matchingIDs = allMembers.map(getID);
+        for(let i in promises) {
+            let res = await promises[i];
+            matchingIDs = intersection(matchingIDs, res.map(getID));
+        }
         let result = allMembers.filter(mem => matchingIDs.includes(mem.ID));
         this.setSearchMode(result);
     };
@@ -124,10 +113,9 @@ export default class QueryPage extends React.Component {
     };
 
     render() {
-        let gendata = {};
-        HEADERS['Member'].slice(1).forEach(h => gendata[h]='');
-        let workdata = {};
-        HEADERS['Work'].slice(2).forEach(h => workdata[h]='');
+        let makeDict = list => Object.assign({}, ...list.map(head => ({[head]:''})));
+        let gendata = makeDict(HEADERS['Member'].slice(1));
+        let workdata = makeDict(HEADERS['Work'].slice(2));
         return (
             <div className="queryPage">
                 <Grid>

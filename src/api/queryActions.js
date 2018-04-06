@@ -26,7 +26,7 @@ exports.advancedQuery = (req, res) => {
 
     console.log(`[query] ${tableID} with cond ${JSON.stringify(req.body)}`);
     let cond = Object.keys(req.body).reduce((acc, cur) => {
-        let op = (cur === 'LENGTH') ? '>' : '=';
+        let op = (cur === 'LENGTH') ? '>=' : '=';
         return `${acc} AND ${cur}${op}${ua.varToSQL(req.body[cur])}`
     }, '').substring(5);
     let query = `SELECT * FROM "${tableID}" WHERE ${cond}`;
