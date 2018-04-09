@@ -1,9 +1,12 @@
 import React from 'react';
-import {getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert} from "../../data/databaseManager";
+import {
+    getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert,
+    getMemberLangsByID
+} from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork } from "../displays/DisplayUtils";
-import EditMemberDisplay from '../EditMemberDisplay';
+import { PrettyWork, PrettyLangs } from "../displays/DisplayUtils";
+import EditMemberDisplay from '../displays/EditMemberDisplay';
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
@@ -20,11 +23,13 @@ export default class EditMemberPage extends React.Component {
     componentDidMount(){
         let id = this.props.match.params.memid;
         getMemberSkillsByID(id, false)
-            .then(skills => this.setState({ skills: skills, pastSkills: skills }))
+            .then(skills => this.setState({ skills, pastSkills: skills }))
             .then(() => getMemberWorkByID(id))
             .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
+            .then(() => getMemberLangsByID(id))
+            .then(langs => this.setState({ langs: PrettyLangs(langs), pastLangs: PrettyLangs(langs) }))
             .then(() => getMemberByID(id))
-            .then(mem => this.setState({ mem: mem, pastMem: mem }))
+            .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(() => this.props.setActions([
                 <Link to={`/member/${id}`}>
@@ -44,11 +49,12 @@ export default class EditMemberPage extends React.Component {
         let allPromises = [];
         let ID = this.props.match.params.memid;
         let difference = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
+        let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
 
         // Update basic member fields
         if(JSON.stringify(this.state.mem) !== JSON.stringify(this.state.pastMem)) {
             let {ID, ...restMem} = this.state.mem;
-            allPromises.push(update('Member', {...restMem, PK: {ID: ID}}));
+            allPromises.push(update('Member', {...restMem, PK: {ID}}));
         }
 
         // Update other skills
@@ -56,6 +62,22 @@ export default class EditMemberPage extends React.Component {
         let newSkills = this.state.skills;
         difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Has_Skill', {ID, NAME}))); // removed skills
         difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Has_Skill', {ID, NAME}))); // added skills
+
+        // Update langauges
+        let oldLangs = Object.keys(this.state.pastLangs);
+        let newLangs = Object.keys(this.state.langs);
+        difference(oldLangs, newLangs).forEach(lang => allPromises.push(del('Know_lang', this.state.pastLangs[lang])));
+        difference(newLangs, oldLangs).forEach(lang => allPromises.push(insert('Know_lang', this.state.langs[lang])));
+        intersection(newLangs, oldLangs).forEach(langName => {
+            let {ID, LANGUAGE, ...restNew} = this.state.langs[langName];
+            let {ID:oldID, LANGUAGE:oldLang, ...restOld} = this.state.pastLangs[langName];
+            if(JSON.stringify(restNew) !== JSON.stringify(restOld)) {
+                allPromises.push(update('Know_lang', {
+                    ...restNew,
+                    PK: {ID, LANGUAGE}
+                }));
+            }
+        });
 
         // Adding or removing work experiences altogether
         let newWorkPromises = [];
@@ -67,22 +89,22 @@ export default class EditMemberPage extends React.Component {
                 ID,
                 ...restWork
             }).then(res => {
-                let newID = res.recordset[0].WORKID;
+                let WORKID = res.recordset[0].WORKID;
                 let {[workID]:oldObject, ...workWithoutFakeID} = this.state.work;
                 this.setState(prevState => ({
                     ...prevState,
                     work: {
                         ...workWithoutFakeID,
-                        [newID]: {
+                        [WORKID]: {
                             ...oldObject,
-                            WORKID: newID
+                            WORKID
                         }
                     },
                     pastWork: {
                         ...prevState.pastWork,
-                        [newID]: {
+                        [WORKID]: {
                             ...oldObject,
-                            WORKID: newID,
+                            WORKID,
                             SKILLS: []
                         }
                     }
@@ -94,15 +116,14 @@ export default class EditMemberPage extends React.Component {
             allPromises.push(del('Work_Skill', {WORKID})
                 .then(() => del('Work', {WORKID})));
         });
-        console.log(newWorkPromises);
         Promise.all(newWorkPromises).then(() => {
-            Object.keys(this.state.work).forEach(workID => {
-                let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[workID];
-                let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[workID];
-                difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Work_skill', {WORKID: workID, NAME})));
-                difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Work_skill', {WORKID: workID, NAME})));
+            Object.keys(this.state.work).forEach(WORKID => {
+                let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[WORKID];
+                let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[WORKID];
+                difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Work_skill', {WORKID, NAME})));
+                difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Work_skill', {WORKID, NAME})));
                 if(JSON.stringify(restWork) !== JSON.stringify(restPast))
-                    allPromises.push(update('Work', {...restWork, PK: {WORKID: workID}}));
+                    allPromises.push(update('Work', {...restWork, PK: {WORKID}}));
             });
         });
 
@@ -138,31 +159,67 @@ export default class EditMemberPage extends React.Component {
     };
 
     // skills list changed
-    setSkills = (newSkills) => {
-        this.setState({ skills: newSkills });
+    setSkills = (skills) => {
+        this.setState({ skills });
     };
 
     // work skills list changed
-    setWorkSkills = (workID, newSkills) => {
+    setWorkSkills = (workID, SKILLS) => {
         this.setState(prevState => ({
             work: {
                 ...prevState.work,
                 [workID]: {
                     ...prevState.work[workID],
-                    'SKILLS':newSkills
+                    SKILLS
                 }
             }
         }));
     };
 
+    setLangs = (language, key, value) => {
+        console.log(language, key, value);
+        this.setState(prevState => ({
+            langs: {
+                ...prevState.langs,
+                [language]: {
+                    ...prevState.langs[language],
+                    [key]: value
+                }
+            }
+        }));
+    };
+
+    addLang = (LANGUAGE) => {
+        let ID = this.props.match.params.memid;
+        this.setState(prevState => ({
+            langs: {
+                ...prevState.langs,
+                [LANGUAGE]: {
+                    ID,
+                    LANGUAGE,
+                    READ:false,
+                    WRITE:false,
+                    SPEAK:false
+                }
+            }
+        }));
+    };
+
+    removeLang = (LANGUAGE) => {
+        let {[LANGUAGE]:toDel, ...langs} = this.state.langs;
+        this.setState({
+            langs
+        });
+    };
+
     // add work
     addWork = () => {
-        let newID = 'new'+this.state.nextID;
+        let WORKID = 'new'+this.state.nextID;
         this.setState(prevState => ({
             work: {
                 ...prevState.work,
-                [newID]: {
-                    WORKID: newID,
+                [WORKID]: {
+                    WORKID,
                     EMPLOYER: 'Untitled',
                     LENGTH: 0,
                     SKILLS: []
@@ -174,9 +231,9 @@ export default class EditMemberPage extends React.Component {
 
     // remove work
     removeWork = (workID) => {
-        let {[workID]:toDel, ...rest} = this.state.work;
+        let {[workID]:toDel, ...work} = this.state.work;
         this.setState({
-            work: rest
+            work
         });
     };
 
@@ -209,7 +266,9 @@ export default class EditMemberPage extends React.Component {
                                            setSkills={this.setSkills} setWorkSkills={this.setWorkSkills}
                                            onMemChange={this.updateMember} onWorkChange={this.updateWork}
                                            addWork={this.addWork} removeWork={this.removeWork}
-                                           removeMember={this.removeMember}/>
+                                           removeMember={this.removeMember} langs={this.state.langs}
+                                           setLangs={this.setLangs} addLang={this.addLang}
+                                           removeLang={this.removeLang}/>
                 }
             </div>
         );

@@ -88,3 +88,9 @@ export function getMemberWorkByID(id) {
         "ID":`${id}`
     });
 }
+
+export function getMemberLangsByID(id) {
+    return query('KNOW_LANG', {
+        "ID":`${id}`
+    });
+}

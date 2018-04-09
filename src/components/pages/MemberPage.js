@@ -1,9 +1,9 @@
 import React from 'react';
-import { getMemberByID, getMemberSkillsByID, getMemberWorkByID } from "../../data/databaseManager";
+import { getMemberByID, getMemberSkillsByID, getMemberWorkByID, getMemberLangsByID } from "../../data/databaseManager";
 import { Link } from 'react-router-dom';
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork } from '../displays/DisplayUtils';
-import MemberDisplay from '../MemberDisplay';
+import { PrettyWork, PrettyLangs } from '../displays/DisplayUtils';
+import MemberDisplay from '../displays/MemberDisplay';
 
 export default class MemberPage extends React.PureComponent {
     constructor(props) {
@@ -16,11 +16,13 @@ export default class MemberPage extends React.PureComponent {
     componentDidMount() {
         let id = this.props.match.params.memid;
         getMemberSkillsByID(id)
-            .then(skills => this.setState({ skills: skills }))
+            .then(skills => this.setState({ skills }))
             .then(() => getMemberWorkByID(id))
             .then(work => this.setState({ work: PrettyWork(work) }))
+            .then(() => getMemberLangsByID(id))
+            .then(langs => this.setState({ langs: PrettyLangs(langs) }))
             .then(() => getMemberByID(id))
-            .then(mem => this.setState({ mem: mem }))
+            .then(mem => this.setState({ mem }))
             .then(() => this.props.setTitle(this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(() => this.props.setActions((
                 <Link to={`/member/${this.state.mem.ID}/edit`}>
@@ -33,7 +35,8 @@ export default class MemberPage extends React.PureComponent {
             <div className="memberPage">
                 {this.state.mem === undefined ?
                     <Grid className="member-display"><CircularProgress id="memberPage"/></Grid> :
-                    <MemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}/>}
+                    <MemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
+                                   langs={this.state.langs}/>}
             </div>
         );
     }

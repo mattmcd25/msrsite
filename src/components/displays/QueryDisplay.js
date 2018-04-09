@@ -1,8 +1,9 @@
 import React from 'react';
 import { Cell, Card, CardTitle, CardText, Avatar, FontIcon } from 'react-md';
 import {CONSTANTS} from "../../index";
-import ChipListElement from '../displays/ChipListElement';
+import ChipListElement from './ChipListElement';
 import PropListElement from "./PropListElement";
+import CheckTableElement from './CheckTableElement';
 
 const searchCards = (props) => [
     {
@@ -14,7 +15,7 @@ const searchCards = (props) => [
         )
     },
     {
-        title:'Skills',
+        title:'Member Skills',
         subtitle:'Search for members with specific skills.',
         icon:'format_paint',
         children: (
@@ -23,7 +24,7 @@ const searchCards = (props) => [
         )
     },
     {
-        title:'Work',
+        title:'Past Work Experience',
         subtitle:'Search for members with specific past work experience.',
         icon:'business',
         children: (
@@ -33,6 +34,15 @@ const searchCards = (props) => [
                 <ChipListElement edit list={props.workSkills} acData={CONSTANTS['Skill']}
                                  name="Search Query" updateList={props.updateWorkList}/>
             </div>
+        )
+    },
+    {
+        title:'Language Proficiency',
+        subtitle:'Search for members with specific knowledge of languages.',
+        icon:'language',
+        children: (
+            <CheckTableElement edit data={props.langs} onChange={props.setLangs}
+                               acData={CONSTANTS['Language']} add={props.addLang} remove={props.removeLang}/>
         )
     }
 ];
