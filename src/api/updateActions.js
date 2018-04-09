@@ -56,7 +56,7 @@ exports.delete = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 
     console.log(`[delete] ${JSON.stringify(req.body)} from ${tableID}`);
-    let cond = Object.keys(req.body).reduce((acc, cur) => `${acc} AND ${cur}=${varToSQL(req.body[cur])}`, '').substring(5);
+    let cond = Object.keys(req.body).reduce((acc, cur) => `${acc} AND [${cur}]=${varToSQL(req.body[cur])}`, '').substring(5);
     let request = new sql.Request();
     let query = `DELETE FROM ${tableID} WHERE ${cond}`;
     return request.query(query)

@@ -47,6 +47,14 @@ export function PrettyWork(work) {
     return x;
 }
 
+export function PrettyLangs(langs) {
+    return dictFromList(langs, 'LANGUAGE');
+}
+
+function dictFromList(list, key) {
+    return Object.assign({}, ...list.map(data => ({[data[key]]:data})))
+}
+
 // id = x => x;
 
 function prettyPhone(old) {

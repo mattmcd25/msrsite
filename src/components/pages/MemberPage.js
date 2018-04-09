@@ -2,8 +2,8 @@ import React from 'react';
 import { getMemberByID, getMemberSkillsByID, getMemberWorkByID, getMemberLangsByID } from "../../data/databaseManager";
 import { Link } from 'react-router-dom';
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork } from '../displays/DisplayUtils';
-import MemberDisplay from '../MemberDisplay';
+import { PrettyWork, PrettyLangs } from '../displays/DisplayUtils';
+import MemberDisplay from '../displays/MemberDisplay';
 
 export default class MemberPage extends React.PureComponent {
     constructor(props) {
@@ -20,7 +20,7 @@ export default class MemberPage extends React.PureComponent {
             .then(() => getMemberWorkByID(id))
             .then(work => this.setState({ work: PrettyWork(work) }))
             .then(() => getMemberLangsByID(id))
-            .then(langs => this.setState({ langs }))
+            .then(langs => this.setState({ langs: PrettyLangs(langs) }))
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem }))
             .then(() => this.props.setTitle(this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))

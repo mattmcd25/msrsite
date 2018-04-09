@@ -1,7 +1,7 @@
 import React from 'react';
-import { BlankCard, ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./displays/Cards";
+import { BlankCard, ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./Cards";
 import { Grid, Button } from 'react-md';
-import { CONSTANTS } from "../index";
+import { CONSTANTS } from "../../index";
 
 export default function EditMemberDisplay(props) {
     let skills = CONSTANTS['Skill'];
@@ -30,7 +30,8 @@ export default function EditMemberDisplay(props) {
             <ChipListCard edit title="Other Skills" acData={skills}
                           list={props.skills} updateList={props.setSkills}/>
 
-            <CheckTableCard edit title="Language Proficiencies" data={props.langs} onChange={props.setLangs}/>
+            <CheckTableCard edit title="Language Proficiencies" data={props.langs} onChange={props.setLangs}
+                            acData={CONSTANTS['Language']} add={props.addLang} remove={props.removeLang}/>
 
             <BlankCard title="Other Actions">
                 <Button raised primary onClick={props.addWork}>

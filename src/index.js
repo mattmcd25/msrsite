@@ -31,6 +31,7 @@ async function initialize() {
     HEADERS['Member'] = await getAllColumns('Member');
     HEADERS['Work'] = await getAllColumns('Work');
     CONSTANTS['Skill'] = (await getAll('Skill')).map(s => s.NAME);
+    CONSTANTS['Language'] = (await getAll('Language')).map(s => s.LANGUAGE);
 }
 
 export function storeSearch(result) {

@@ -5,8 +5,8 @@ import {
 } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork } from "../displays/DisplayUtils";
-import EditMemberDisplay from '../EditMemberDisplay';
+import { PrettyWork, PrettyLangs } from "../displays/DisplayUtils";
+import EditMemberDisplay from '../displays/EditMemberDisplay';
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
@@ -27,7 +27,7 @@ export default class EditMemberPage extends React.Component {
             .then(() => getMemberWorkByID(id))
             .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
             .then(() => getMemberLangsByID(id))
-            .then(langs => this.setState({ langs, pastLangs: langs }))
+            .then(langs => this.setState({ langs: PrettyLangs(langs), pastLangs: PrettyLangs(langs) }))
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
@@ -49,6 +49,7 @@ export default class EditMemberPage extends React.Component {
         let allPromises = [];
         let ID = this.props.match.params.memid;
         let difference = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
+        let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
 
         // Update basic member fields
         if(JSON.stringify(this.state.mem) !== JSON.stringify(this.state.pastMem)) {
@@ -63,19 +64,20 @@ export default class EditMemberPage extends React.Component {
         difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Has_Skill', {ID, NAME}))); // added skills
 
         // Update langauges
-        let oldLangs = this.state.pastLangs;
-        let newLangs = this.state.langs;
-        console.log(oldLangs);
-        console.log(newLangs);
-        if(JSON.stringify(oldLangs) !== JSON.stringify(newLangs)) {
-            newLangs.map(lang => {
-                let {ID, LANGUAGE, ...restLang} = lang;
-                return allPromises.push(update('Know_lang', {
-                    ...restLang,
+        let oldLangs = Object.keys(this.state.pastLangs);
+        let newLangs = Object.keys(this.state.langs);
+        difference(oldLangs, newLangs).forEach(lang => allPromises.push(del('Know_lang', this.state.pastLangs[lang])));
+        difference(newLangs, oldLangs).forEach(lang => allPromises.push(insert('Know_lang', this.state.langs[lang])));
+        intersection(newLangs, oldLangs).forEach(langName => {
+            let {ID, LANGUAGE, ...restNew} = this.state.langs[langName];
+            let {ID:oldID, LANGUAGE:oldLang, ...restOld} = this.state.pastLangs[langName];
+            if(JSON.stringify(restNew) !== JSON.stringify(restOld)) {
+                allPromises.push(update('Know_lang', {
+                    ...restNew,
                     PK: {ID, LANGUAGE}
                 }));
-            })
-        }
+            }
+        });
 
         // Adding or removing work experiences altogether
         let newWorkPromises = [];
@@ -174,10 +176,40 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
-    setLangs = (index, key, value) => {
-        let langs = this.state.langs.slice();
-        langs[index] = {...langs[index], [key]:value};
-        this.setState({ langs });
+    setLangs = (language, key, value) => {
+        console.log(language, key, value);
+        this.setState(prevState => ({
+            langs: {
+                ...prevState.langs,
+                [language]: {
+                    ...prevState.langs[language],
+                    [key]: value
+                }
+            }
+        }));
+    };
+
+    addLang = (LANGUAGE) => {
+        let ID = this.props.match.params.memid;
+        this.setState(prevState => ({
+            langs: {
+                ...prevState.langs,
+                [LANGUAGE]: {
+                    ID,
+                    LANGUAGE,
+                    READ:false,
+                    WRITE:false,
+                    SPEAK:false
+                }
+            }
+        }));
+    };
+
+    removeLang = (LANGUAGE) => {
+        let {[LANGUAGE]:toDel, ...langs} = this.state.langs;
+        this.setState({
+            langs
+        });
     };
 
     // add work
@@ -235,7 +267,8 @@ export default class EditMemberPage extends React.Component {
                                            onMemChange={this.updateMember} onWorkChange={this.updateWork}
                                            addWork={this.addWork} removeWork={this.removeWork}
                                            removeMember={this.removeMember} langs={this.state.langs}
-                                           setLangs={this.setLangs}/>
+                                           setLangs={this.setLangs} addLang={this.addLang}
+                                           removeLang={this.removeLang}/>
                 }
             </div>
         );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./displays/Cards";
+import { ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./Cards";
 import { Grid } from 'react-md';
 
 export default function MemberDisplay(props) {

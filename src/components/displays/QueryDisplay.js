@@ -14,7 +14,7 @@ const searchCards = (props) => [
         )
     },
     {
-        title:'Skills',
+        title:'Member Skills',
         subtitle:'Search for members with specific skills.',
         icon:'format_paint',
         children: (
@@ -23,7 +23,7 @@ const searchCards = (props) => [
         )
     },
     {
-        title:'Work',
+        title:'Past Work Experience',
         subtitle:'Search for members with specific past work experience.',
         icon:'business',
         children: (
@@ -33,6 +33,14 @@ const searchCards = (props) => [
                 <ChipListElement edit list={props.workSkills} acData={CONSTANTS['Skill']}
                                  name="Search Query" updateList={props.updateWorkList}/>
             </div>
+        )
+    },
+    {
+        title:'Language Proficiency',
+        subtitle:'Search for members with specific knowledge of languages.',
+        icon:'language',
+        children: (
+            <p>yuh</p>
         )
     }
 ];
