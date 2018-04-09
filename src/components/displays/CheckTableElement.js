@@ -13,7 +13,8 @@ export default class CheckTableElement extends React.Component {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {this.props.data.map(lang => <CheckTableRow key={lang.LANGUAGE} data={lang} edit={this.props.edit}/>)}
+                    {this.props.data.map((lang, i) => <CheckTableRow index={i} key={lang.LANGUAGE} data={lang}
+                                                                edit={this.props.edit} onChange={this.props.onChange}/>)}
                 </TableBody>
             </DataTable>
         );
@@ -23,16 +24,25 @@ export default class CheckTableElement extends React.Component {
 function CheckTableRow(props) {
     return (
         <TableRow>
-            <TableColumn key="lang">{props.data.LANGUAGE}</TableColumn>
-            {Object.keys(props.data).slice(2).map(k => (
-                <TableColumn key={k}>
-                    {props.edit ?
-                        <Checkbox defaultChecked={props.data[k]}/> :
-                        props.data[k] ?
-                            <FontIcon>check</FontIcon> :
-                            <FontIcon>close</FontIcon>}
+            {Object.keys(props.data).slice(1).map(k => (
+                <TableColumn className="small" key={k}>
+                    {k === 'LANGUAGE' ?
+                        props.data.LANGUAGE :
+                        props.edit ?
+                            <Checkbox id={k} name={k} label={''} checked={props.data[k]}
+                                      onChange={(v) => props.onChange(props.index, k, v)}/> :
+                            props.data[k] ?
+                                <FontIcon>check</FontIcon> :
+                                <FontIcon>close</FontIcon>}
                 </TableColumn>
             ))}
         </TableRow>
     );
 }
+
+/*
+onChange={(v) => {
+                                console.log(v);
+                                props.onChange(props.index, k, v)}
+                            }
+ */

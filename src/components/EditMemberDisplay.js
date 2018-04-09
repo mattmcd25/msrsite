@@ -27,10 +27,10 @@ export default function EditMemberDisplay(props) {
                 );
             })}
 
-            <ChipListCard edit name="Other Skills" acData={skills}
+            <ChipListCard edit title="Other Skills" acData={skills}
                           list={props.skills} updateList={props.setSkills}/>
 
-            <CheckTableCard edit title="Language Proficiencies" data={props.langs}/>
+            <CheckTableCard edit title="Language Proficiencies" data={props.langs} onChange={props.setLangs}/>
 
             <BlankCard title="Other Actions">
                 <Button raised primary onClick={props.addWork}>

@@ -33,10 +33,11 @@ exports.update = (req, res) => {
     console.log(`[update] ${tableID} according to ${JSON.stringify(req.body)}`);
     let pk = req.body.PK;
     delete req.body.PK;
-    let vars = Object.keys(req.body).reduce((acc, cur) => `${acc}, ${cur}=${varToSQL(req.body[cur])}`, '').substring(2);
+    let vars = Object.keys(req.body).reduce((acc, cur) => `${acc}, [${cur}]=${varToSQL(req.body[cur])}`, '').substring(2);
     let cond = Object.keys(pk).reduce((acc, cur) => `${acc} AND ${cur}=${varToSQL(pk[cur])}`, '').substring(5);
     let request = new sql.Request();
     let query = `UPDATE ${tableID} SET ${vars} WHERE ${cond}`;
+    console.log(query);
     return request.query(query)
         .then(recordset => {
             console.log("[update] Success");
@@ -75,6 +76,8 @@ exports.delete = (req, res) => {
 exports.varToSQL = (val) => {
     if(typeof(val) === 'string')
         return '\''+val+'\'';
+    else if(typeof(val) === 'boolean')
+        return val ? 1 : 0;
     else
         return val;
 };
