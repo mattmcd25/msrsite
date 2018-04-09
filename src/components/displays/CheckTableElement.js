@@ -5,7 +5,7 @@ const HEADERS = edit => {
     let l = ['Language', 'Read', 'Write', 'Speak'];
     if (edit) l.push('');
     return l;
-}
+};
 
 export default class CheckTableElement extends React.Component {
     render () {

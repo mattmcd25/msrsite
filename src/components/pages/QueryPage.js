@@ -13,6 +13,7 @@ export default class QueryPage extends React.Component {
             mode: 'query',
             mem: {},
             skills: [],
+            langs: [],
             workSkills: [],
             work: {},
             result: []
@@ -31,6 +32,7 @@ export default class QueryPage extends React.Component {
         this.setState({
             mem: [],
             skills: [],
+            langs: [],
             workSkills: [],
             work: {},
             result: []
@@ -72,7 +74,9 @@ export default class QueryPage extends React.Component {
 
         let getID = member => member.ID;
         let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
-        let filterObj = (obj) => Object.assign({}, ...Object.keys(obj).map(k => obj[k] === '' ? {} : {[k]:obj[k]}));
+        let filterObj = (obj) => Object.assign({}, ...Object.keys(obj).map(k =>
+            (obj[k] === '' || obj[k] === false || obj[k] === undefined) ? {} : {[k]:obj[k]}
+        ));
         let promises = [];
 
         // do general search
@@ -91,6 +95,13 @@ export default class QueryPage extends React.Component {
             promises.push(query('Work_info', workCond));
         }
 
+        // do lang search
+        Object.keys(this.state.langs).forEach(langName => {
+            let lang = this.state.langs[langName];
+            let langCond = filterObj(lang);
+            promises.push(query('Know_lang', langCond));
+        });
+
         // send result
         let allMembers = await getAll('Member');
         let matchingIDs = allMembers.map(getID);
@@ -107,8 +118,46 @@ export default class QueryPage extends React.Component {
         const value = target.value;
         const name = target.name;
 
-        this.setState((prevstate) => {
-            return {[head] : {...prevstate[head], [name]: value}}
+        this.setState(prevState => ({
+            [head] : {
+                ...prevState[head],
+                [name]: value
+            }
+        }));
+    };
+
+    setLang = (l, k, v) => {
+        this.setState(prevState => ({
+            langs : {
+                ...prevState.langs,
+                [l] : {
+                    ...prevState.langs[l],
+                    [k]:v
+                }
+            }
+        }));
+    };
+
+    addLang = (LANGUAGE) => {
+        let ID = this.props.match.params.memid;
+        this.setState(prevState => ({
+            langs: {
+                ...prevState.langs,
+                [LANGUAGE]: {
+                    ID,
+                    LANGUAGE,
+                    READ:false,
+                    WRITE:false,
+                    SPEAK:false
+                }
+            }
+        }));
+    };
+
+    removeLang = (LANGUAGE) => {
+        let {[LANGUAGE]:toDel, ...langs} = this.state.langs;
+        this.setState({
+            langs
         });
     };
 
@@ -121,9 +170,12 @@ export default class QueryPage extends React.Component {
                 <Grid>
                     {this.state.mode==="query" ?
                         <QueryDisplay skills={this.state.skills} updateList={li => this.setState({ skills: li })}
-                                      onMemChange={(evt) => this.update('mem', evt)} general={gendata}
-                                      onWorkChange={(evt) => this.update('work', evt)} work={workdata}
-                                      workSkills={this.state.workSkills} updateWorkList={li => this.setState({ workSkills: li })}/> :
+                                      onMemChange={evt => this.update('mem', evt)} general={gendata}
+                                      onWorkChange={evt => this.update('work', evt)} work={workdata}
+                                      workSkills={this.state.workSkills} langs={this.state.langs}
+                                      addLang={this.addLang} removeLang={this.removeLang}
+                                      setLangs={(l, k, v) => this.setLang(l, k, v)}
+                                      updateWorkList={li => this.setState({ workSkills: li })}/> :
                         <MemberTable members={this.state.result} loaded={this.state.mode==="display"}/>
                     }
                 </Grid>

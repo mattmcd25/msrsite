@@ -1,8 +1,9 @@
 import React from 'react';
 import { Cell, Card, CardTitle, CardText, Avatar, FontIcon } from 'react-md';
 import {CONSTANTS} from "../../index";
-import ChipListElement from '../displays/ChipListElement';
+import ChipListElement from './ChipListElement';
 import PropListElement from "./PropListElement";
+import CheckTableElement from './CheckTableElement';
 
 const searchCards = (props) => [
     {
@@ -40,7 +41,8 @@ const searchCards = (props) => [
         subtitle:'Search for members with specific knowledge of languages.',
         icon:'language',
         children: (
-            <p>yuh</p>
+            <CheckTableElement edit data={props.langs} onChange={props.setLangs}
+                               acData={CONSTANTS['Language']} add={props.addLang} remove={props.removeLang}/>
         )
     }
 ];
