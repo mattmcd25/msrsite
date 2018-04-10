@@ -1,5 +1,4 @@
 const sql = require("mssql");
-const server = require('../server');
 
 // config for the database
 const config = {

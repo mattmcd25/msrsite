@@ -8,12 +8,12 @@ import LaunchScreen from "./components/LaunchScreen";
 
 export var HEADERS = [];
 export var CONSTANTS = [];
-var searchResult = [];
+let searchResult = [];
 
 ReactDOM.render(
     <LaunchScreen/>,
     document.getElementById('root'),
-    () => initialize().then(x => {
+    () => initialize().then(() => {
         ReactDOM.render(
             <App/>,
             document.getElementById('root')

@@ -16,9 +16,11 @@ export default class NewMemberPage extends React.Component {
 
     handleSubmit = (e) => {
         this.setState({ loading: true });
+        this.props.toast({text:'Adding member...'});
         insert("Member", this.state.mem)
             .then(res => {
                 let newID = res.recordset[0].ID;
+                this.props.toast({text:'Added!'});
                 this.props.history.push(`/member/${newID}/edit`);
             });
     };

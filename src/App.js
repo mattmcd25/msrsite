@@ -14,7 +14,8 @@ export default class AppRoutes extends React.Component {
         super(props);
         this.state = {
             title: "",
-            actions: []
+            actions: [],
+            toasts: []
         }
     }
 
@@ -31,11 +32,23 @@ export default class AppRoutes extends React.Component {
         });
     };
 
+    toast = (toast) => {
+        let toasts = this.state.toasts.slice();
+        toasts.push(toast);
+        this.setState({ toasts });
+    };
+
+    dismissToast = () => {
+        let [, ...toasts] = this.state.toasts;
+        this.setState({ toasts });
+    };
+
     componentWithRefs = (component) => {
         return (
             ({match, location, history}) => React.createElement(component, {
                 setTitle:this.updateTitle,
                 setActions:this.updateActions,
+                toast:this.toast,
                 match:match,
                 location:location,
                 history:history
@@ -46,7 +59,7 @@ export default class AppRoutes extends React.Component {
     render() {
         return (
             <Router>
-                <Layout title={this.state.title} actions={this.state.actions}>
+                <Layout {...this.state} dismissToast={this.dismissToast}>
                     <Switch>
                         {/* Homepage */}
                         <Route exact path="/" render={this.componentWithRefs(IndexPage)}/>

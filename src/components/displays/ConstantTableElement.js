@@ -72,6 +72,7 @@ export default class ConstantTableElement extends React.Component {
 
     save = () => {
         this.setState({ loading: true });
+        this.props.toast({text:`Saving ${this.props.table}s...`});
         // TODO ensure there are no duplicates
         let oldData = dictFromList(CONSTANTS[this.props.table], this.props.pk);
         let newData = dictFromList(this.state.data, this.props.pk);
@@ -100,7 +101,8 @@ export default class ConstantTableElement extends React.Component {
         Promise.all(promises)
             .then(() => getAll(this.props.table))
             .then(res => CONSTANTS[this.props.table] = res)
-            .then(() =>
+            .then(() => {
+                this.props.toast({text: 'Saved!'});
                 this.setState({
                     data: CONSTANTS[this.props.table].slice(),
                     display: CONSTANTS[this.props.table].slice(0, 10),
@@ -108,8 +110,8 @@ export default class ConstantTableElement extends React.Component {
                     start: 0,
                     pk_changed: [],
                     loading: false
-                })
-            ); // reload the page
+                });
+            }); // reload the page
     };
 
     render() {

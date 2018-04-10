@@ -11,19 +11,22 @@ export default class CheckTableElement extends React.Component {
     render () {
         return (
             <div>
-                <DataTable baseId="lang" fullWidth={false} selectableRows={false}>
-                    <TableHeader>
-                        <TableRow>
-                            {HEADERS(this.props.edit).map(head => <TableColumn className="small" key={head}>{head}</TableColumn>)}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {Object.keys(this.props.data).map(key => (
-                            <CheckTableRow key={key} data={this.props.data[key]}
-                                           edit={this.props.edit} onChange={this.props.onChange}
-                                           remove={this.props.remove}/>))}
-                    </TableBody>
-                </DataTable>
+                {Object.keys(this.props.data).length === 0 ?
+                    <h5>None</h5> :
+                    <DataTable baseId="lang" fullWidth={false} selectableRows={false}>
+                        <TableHeader>
+                            <TableRow>
+                                {HEADERS(this.props.edit).map(head => <TableColumn className="small" key={head}>{head}</TableColumn>)}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {Object.keys(this.props.data).map(key => (
+                                <CheckTableRow key={key} data={this.props.data[key]}
+                                               edit={this.props.edit} onChange={this.props.onChange}
+                                               remove={this.props.remove}/>))}
+                        </TableBody>
+                    </DataTable>
+                }
                 {this.props.edit ? <Autocomplete id="langs-autocomplete" label={`Add new language`}
                               data={this.props.acData.filter(l => !Object.keys(this.props.data).includes(l))}
                               onAutocomplete={this.props.add} clearOnAutocomplete size={30} fullWidth={false}/> : false}
@@ -43,8 +46,8 @@ function CheckTableRow(props) {
                     <Checkbox id={l+''+k} name={l+''+k} label={''} checked={props.data[k]}
                               onChange={v => props.onChange(l, k, v)}/> :
                     props.data[k] ?
-                        <FontIcon>check</FontIcon> :
-                        <FontIcon>close</FontIcon>}
+                        <FontIcon primary>check</FontIcon> :
+                        <FontIcon error>close</FontIcon>}
         </TableColumn>
     ));
 
