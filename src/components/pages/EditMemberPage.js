@@ -1,12 +1,11 @@
 import React from 'react';
-import {
-    getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert,
-    getMemberLangsByID
-} from "../../data/databaseManager";
+import { getMemberByID, getMemberSkillsByID, getMemberWorkByID,
+         update, del, insert, getMemberLangsByID } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork, PrettyLangs } from "../displays/DisplayUtils";
+import { PrettyWork } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
+import { intersection, difference, dictFromList } from "../../Utils";
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
@@ -27,7 +26,7 @@ export default class EditMemberPage extends React.Component {
             .then(() => getMemberWorkByID(id))
             .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
             .then(() => getMemberLangsByID(id))
-            .then(langs => this.setState({ langs: PrettyLangs(langs), pastLangs: PrettyLangs(langs) }))
+            .then(langs => this.setState({ langs: dictFromList(langs, 'LANGUAGE'), pastLangs: dictFromList(langs, 'LANGUAGE') }))
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
@@ -48,8 +47,6 @@ export default class EditMemberPage extends React.Component {
         this.setState({ loading: true });
         let allPromises = [];
         let ID = this.props.match.params.memid;
-        let difference = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
-        let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
 
         // Update basic member fields
         if(JSON.stringify(this.state.mem) !== JSON.stringify(this.state.pastMem)) {

@@ -4,7 +4,8 @@ import { Grid, Button } from 'react-md';
 import { CONSTANTS } from "../../index";
 
 export default function EditMemberDisplay(props) {
-    let skills = CONSTANTS['Skill'];
+    let skills = CONSTANTS['Skill'].map(s => s.NAME);
+    let langs = CONSTANTS['Language'].map(s => s.LANGUAGE);
     return (
         <Grid className="member-display">
             {(() => {
@@ -31,7 +32,7 @@ export default function EditMemberDisplay(props) {
                           list={props.skills} updateList={props.setSkills}/>
 
             <CheckTableCard edit title="Language Proficiencies" data={props.langs} onChange={props.setLangs}
-                            acData={CONSTANTS['Language']} add={props.addLang} remove={props.removeLang}/>
+                            acData={langs} add={props.addLang} remove={props.removeLang}/>
 
             <BlankCard title="Other Actions">
                 <Button raised primary onClick={props.addWork}>

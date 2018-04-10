@@ -7,6 +7,7 @@ import MemberPage from "./components/pages/MemberPage";
 import EditMemberPage from "./components/pages/EditMemberPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import QueryPage from './components/pages/QueryPage';
+import AdminPage from "./components/pages/AdminPage";
 
 export default class AppRoutes extends React.Component {
     constructor(props) {
@@ -54,6 +55,7 @@ export default class AppRoutes extends React.Component {
                         <Route exact path="/member/:memid" render={this.componentWithRefs(MemberPage)}/>
                         <Route path="/member/:memid/edit" render={this.componentWithRefs(EditMemberPage)}/>
                         <Route path="/query" render={this.componentWithRefs(QueryPage)}/>
+                        <Route path="/manage" render={this.componentWithRefs(AdminPage)}/>
                         {/* Redirects */}
                         <Route path="/index.*" render={() => <Redirect to="/"/>}/>
                         <Route path="/member" render={() => <Redirect to="/"/>}/>

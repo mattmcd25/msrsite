@@ -1,0 +1,40 @@
+import React from 'react';
+import { Grid } from 'react-md';
+import ExpandingCard from '../displays/ExpandingCard';
+import ConstantTableElement from '../displays/ConstantTableElement';
+
+const settingCards = (props) => [
+    {
+        title:'Modify Available Skills',
+        subtitle:'Add to or remove from the pre-set list of skills.',
+        icon:'format_paint',
+        children: (
+            <ConstantTableElement {...props} table="Skill" pk="NAME"/>
+        )
+    },
+    {
+        title:'Modify Available Languages',
+        subtitle:'Add to or remove from the pre-set list of languages.',
+        icon:'language',
+        children: (
+            <ConstantTableElement {...props} table="Language" pk="LANGUAGE"/>
+        )
+    }
+];
+
+export default class AdminPage extends React.Component {
+    constructor(props) {
+        super(props);
+        this.props.setTitle("Admin Settings");
+    }
+
+    render() {
+        return (
+            <div className="admin">
+                <Grid>
+                    {settingCards(this.props).map(sc => <ExpandingCard key={sc.title} {...sc}/>)};
+                </Grid>
+            </div>
+        );
+    }
+}

@@ -5,6 +5,7 @@ import QueryDisplay from '../displays/QueryDisplay';
 import MemberTable from '../MemberTable';
 import { storeSearch, reclaimSearch } from "../../index";
 import { HEADERS } from "../../index";
+import { intersection, makeDict, filterObj } from "../../Utils";
 
 export default class QueryPage extends React.Component {
     constructor(props) {
@@ -73,10 +74,6 @@ export default class QueryPage extends React.Component {
         this.setState({ mode: 'loading' });
 
         let getID = member => member.ID;
-        let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
-        let filterObj = (obj) => Object.assign({}, ...Object.keys(obj).map(k =>
-            (obj[k] === '' || obj[k] === false || obj[k] === undefined) ? {} : {[k]:obj[k]}
-        ));
         let promises = [];
 
         // do general search
@@ -162,7 +159,6 @@ export default class QueryPage extends React.Component {
     };
 
     render() {
-        let makeDict = list => Object.assign({}, ...list.map(head => ({[head]:''})));
         let gendata = makeDict(HEADERS['Member'].slice(1));
         let workdata = makeDict(HEADERS['Work'].slice(2));
         return (
