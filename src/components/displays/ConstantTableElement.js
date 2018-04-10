@@ -4,7 +4,7 @@ import { DataTable, TableCardHeader, TableHeader, TableBody, TableRow, CircularP
 import { CONSTANTS, HEADERS } from "../../index";
 import { PrettyKey } from "./DisplayUtils";
 import {del, getAll, insert, update} from "../../data/databaseManager";
-import { intersection, difference, dictFromList } from "../../Utils";
+import { intersection, difference, dictFromList, uniteRoutes } from "../../Utils";
 
 export default class ConstantTableElement extends React.Component {
     constructor(props) {
@@ -15,6 +15,7 @@ export default class ConstantTableElement extends React.Component {
             display: CONSTANTS[props.table].slice(0, 10),
             page: 1,
             start: 0,
+            pk_changed: [],
             rowsPerPage: 10,
             loading: false
         };
@@ -45,6 +46,11 @@ export default class ConstantTableElement extends React.Component {
 
     onChange = (v, k, i) => {
         let data = this.state.data.slice();
+        if(k === this.props.pk) {
+            let pk_changed = this.state.pk_changed.slice();
+            pk_changed.push({from:data[i+this.state.start][k], to:v});
+            this.setState({ pk_changed });
+        }
         data[i+this.state.start] = {
             ...data[i+this.state.start],
             [k]:v
@@ -69,6 +75,12 @@ export default class ConstantTableElement extends React.Component {
         // TODO ensure there are no duplicates
         let oldData = dictFromList(CONSTANTS[this.props.table], this.props.pk);
         let newData = dictFromList(this.state.data, this.props.pk);
+        let routes = uniteRoutes(this.state.pk_changed);
+        Object.keys(routes).forEach(to => {
+            let from = routes[to];
+            newData[from] = newData[to];
+            delete newData[to];
+        });
 
         let oldKeys = Object.keys(oldData);
         let newKeys = Object.keys(newData);
@@ -94,6 +106,7 @@ export default class ConstantTableElement extends React.Component {
                     display: CONSTANTS[this.props.table].slice(0, 10),
                     page: 1,
                     start: 0,
+                    pk_changed: [],
                     loading: false
                 })
             ); // reload the page
