@@ -32,8 +32,10 @@ async function initialize() {
     HEADERS['Work'] = await getAllColumns('Work');
     HEADERS['Skill'] = await getAllColumns('Skill');
     HEADERS['Language'] = await getAllColumns('Language');
+    HEADERS['Site'] = await getAllColumns('Site');
     CONSTANTS['Skill'] = await getAll('Skill');
     CONSTANTS['Language'] = await getAll('Language');
+    CONSTANTS['Site'] = await getAll('Site');
 }
 
 export function storeSearch(result) {
