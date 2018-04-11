@@ -12,12 +12,6 @@ export default class QueryPage extends React.Component {
         super(props);
         this.state = {
             mode: 'query',
-            mem: {},
-            skills: [],
-            langs: [],
-            workSkills: [],
-            work: {},
-            result: []
         };
     }
 
@@ -31,11 +25,12 @@ export default class QueryPage extends React.Component {
 
     clear = () => {
         this.setState({
-            mem: [],
+            mem: {},
             skills: [],
             langs: [],
             workSkills: [],
             work: {},
+            cert: {},
             result: []
         })
     };
@@ -99,6 +94,12 @@ export default class QueryPage extends React.Component {
             promises.push(query('Know_lang', langCond));
         });
 
+        // do cert search
+        let certCond = filterObj(this.state.cert);
+        if(Object.keys(certCond).length > 0) {
+            promises.push(query('Has_Cert', certCond));
+        }
+
         // send result
         let allMembers = await getAll('Member');
         let matchingIDs = allMembers.map(getID);
@@ -159,15 +160,17 @@ export default class QueryPage extends React.Component {
     };
 
     render() {
-        let gendata = makeDict(HEADERS['Member'].slice(1));
-        let workdata = makeDict(HEADERS['Work'].slice(2));
+        let genData = makeDict(HEADERS['Member'].slice(1));
+        let workData = makeDict(HEADERS['Work'].slice(2));
+        let certData = makeDict(HEADERS['Has_Cert'].slice(1));
         return (
             <div className="queryPage">
                 <Grid>
                     {this.state.mode==="query" ?
                         <QueryDisplay skills={this.state.skills} updateList={li => this.setState({ skills: li })}
-                                      onMemChange={evt => this.update('mem', evt)} general={gendata}
-                                      onWorkChange={evt => this.update('work', evt)} work={workdata}
+                                      onMemChange={evt => this.update('mem', evt)} general={genData}
+                                      onWorkChange={evt => this.update('work', evt)} work={workData}
+                                      onCertChange={evt => this.update('cert', evt)} cert={certData}
                                       workSkills={this.state.workSkills} langs={this.state.langs}
                                       addLang={this.addLang} removeLang={this.removeLang}
                                       setLangs={(l, k, v) => this.setLang(l, k, v)}

@@ -47,6 +47,14 @@ const searchCards = (props) => [
             <CheckTableElement edit data={props.langs} onChange={props.setLangs} tips={langDict}
                                acData={langs} add={props.addLang} remove={props.removeLang}/>
         )
+    },
+    {
+        title:'Certifications and Diplomas',
+        subtitle:'Search for members with specific certifications.',
+        icon:'school',
+        children: (
+            <PropListElement edit data={props.cert} onChange={props.onCertChange}/>
+        )
     }
 ];
 
