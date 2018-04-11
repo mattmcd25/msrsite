@@ -24,6 +24,10 @@ export default function MemberDisplay(props) {
                 );
             })}
 
+            {/*{Object.keys(props.certs).map(cert => {*/}
+                {/*<PropListCard title="Cert!" subtitle="Certificate"/>*/}
+            {/*})}*/}
+
             <CheckTableCard title="Language Proficiencies" data={props.langs} tips={langDict}/>
         </Grid>
     );

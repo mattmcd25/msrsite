@@ -10,7 +10,7 @@ const formats = {
     'MOBILE': ['Mobile Phone',prettyPhone],
     'ADDRESS': ['Address'],
     'MARITAL': ['Marital Status'],
-    'LENGTH': ['Worked here for',prettyYears],
+    'LENGTH': ['Worked Here For',prettyYears],
     'EMPLOYER': ['Employer Name'],
     'NAME': ['Skill Name'],
     'LANGUAGE': ['Language'],

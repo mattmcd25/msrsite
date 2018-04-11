@@ -28,7 +28,7 @@ export default class ChipListElement extends React.Component {
                 {this.props.edit ?
                     <Autocomplete
                         id="chips-autocomplete"
-                        label={`Add ${head}to ${this.props.name}`}
+                        label={`Add ${head}to ${this.props.title}`}
                         data={this.props.acData.filter(s => !this.props.list.includes(s))}
                         onAutocomplete={this.add}
                         clearOnAutocomplete
