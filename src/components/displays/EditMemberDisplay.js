@@ -34,12 +34,26 @@ export default function EditMemberDisplay(props) {
             <ChipListCard edit title="Other Skills" acData={skills} tips={skDict}
                           list={props.skills} updateList={props.setSkills}/>
 
+            {Object.keys(props.certs).map(type => {
+                let {ID, ...rest} = props.certs[type];
+                return <PropListCard edit title={rest.TYPE} subtitle="Certificate" data={rest}
+                                     onChange={evt => props.onCertChange(type, evt)} key={type}
+                                     actions={<Button raised className="redButton"
+                                                      onClick={() => props.removeCert(type)}>
+                                                    Delete
+                                              </Button>}/>
+            })}
+
             <CheckTableCard edit title="Language Proficiencies" data={props.langs} onChange={props.setLangs}
                             acData={langs} add={props.addLang} remove={props.removeLang} tips={langDict}/>
 
             <BlankCard title="Other Actions">
                 <Button raised primary onClick={props.addWork}>
                     Add Work Experience
+                </Button>
+                <label className="vertSpacer"/>
+                <Button raised primary onClick={props.addCert}>
+                    Add New Certificate
                 </Button>
                 <label className="vertSpacer"/>
                 <Button raised className="redButton" onClick={props.removeMember}>

@@ -27,7 +27,7 @@ export default function MemberDisplay(props) {
             {props.certs.map(cert => {
                 let {ID, TYPE, ...rest} = cert;
                 let DESC = dictFromList(CONSTANTS['Certificate'], 'TYPE')[TYPE].DESC;
-                return <PropListCard title={TYPE} subtitle="Certificate" data={{DESC, ...rest}}/>
+                return <PropListCard title={TYPE} key={TYPE} subtitle="Certificate" data={{DESC, ...rest}}/>
             })}
 
             <CheckTableCard title="Language Proficiencies" data={props.langs} tips={langDict}/>

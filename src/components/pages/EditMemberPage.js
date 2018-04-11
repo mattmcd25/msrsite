@@ -1,6 +1,8 @@
 import React from 'react';
-import { getMemberByID, getMemberSkillsByID, getMemberWorkByID,
-         update, del, insert, getMemberLangsByID } from "../../data/databaseManager";
+import {
+    getMemberByID, getMemberSkillsByID, getMemberWorkByID,
+    update, del, insert, getMemberLangsByID, getMemberCertsByID
+} from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
 import { PrettyWork } from "../displays/DisplayUtils";
@@ -27,6 +29,8 @@ export default class EditMemberPage extends React.Component {
             .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
             .then(() => getMemberLangsByID(id))
             .then(langs => this.setState({ langs: dictFromList(langs, 'LANGUAGE'), pastLangs: dictFromList(langs, 'LANGUAGE') }))
+            .then(() => getMemberCertsByID(id))
+            .then(certs => this.setState({ certs: dictFromList(certs, 'TYPE'), pastCerts: dictFromList(certs, 'TYPE') }))
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
@@ -74,6 +78,24 @@ export default class EditMemberPage extends React.Component {
                 promises.push(update('Know_lang', {
                     ...restNew,
                     PK: {ID, LANGUAGE}
+                }));
+            }
+        });
+
+        // Update certificates
+        // TODO check for duplicates
+        let oldCerts = Object.keys(this.state.pastCerts);
+        let newCerts = Object.keys(this.state.certs);
+        difference(newCerts, oldCerts).forEach(cert => promises.push(insert('Has_Cert', this.state.certs[cert])));
+        difference(oldCerts, newCerts).forEach(cert => promises.push(del('Has_Cert', this.state.pastCerts[cert])));
+        intersection(oldCerts, newCerts).forEach(cert => {
+            let {ID, TYPE, ...restNew} = this.state.certs[cert];
+            let {ID:oldID, TYPE:oldType, ...restOld} = this.state.pastCerts[cert];
+            if(JSON.stringify({TYPE, ...restNew}) !== JSON.stringify({TYPE:oldType, ...restOld})) {
+                promises.push(update('Has_Cert', {
+                    TYPE,
+                    ...restNew,
+                    PK: {ID, TYPE:oldType}
                 }));
             }
         });
@@ -137,6 +159,23 @@ export default class EditMemberPage extends React.Component {
                 ...prevstate.work,
                 [workID]: {
                     ...prevstate.work[workID],
+                    [name]: value
+                }
+            }
+        }));
+    };
+
+    // cert text field edited
+    updateCert = (type, evt) => {
+        const target = evt.target;
+        const value = target.value;
+        const name = target.name;
+
+        this.setState(prevstate => ({
+            certs : {
+                ...prevstate.certs,
+                [type]: {
+                    ...prevstate.certs[type],
                     [name]: value
                 }
             }
@@ -214,12 +253,31 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    addCert = () => {
+        let ID = this.props.match.params.memid;
+        let TYPE = 'new'+this.state.nextID;
+        this.setState(prevState => ({
+            certs: {
+                ...prevState.certs,
+                [TYPE]: {
+                    ID,
+                    TYPE:'',
+                    YEAR:2018,
+                    INSTITUTION:''
+                }
+            }
+        }));
+    };
+
     // remove work
     removeWork = (workID) => {
         let {[workID]:toDel, ...work} = this.state.work;
-        this.setState({
-            work
-        });
+        this.setState({ work });
+    };
+
+    removeCert = (type) => {
+        let {[type]:toDel, ...certs} = this.state.certs;
+        this.setState({ certs });
     };
 
     removeMember = () => {
@@ -252,8 +310,9 @@ export default class EditMemberPage extends React.Component {
                                            onMemChange={this.updateMember} onWorkChange={this.updateWork}
                                            addWork={this.addWork} removeWork={this.removeWork}
                                            removeMember={this.removeMember} langs={this.state.langs}
-                                           setLangs={this.setLangs} addLang={this.addLang}
-                                           removeLang={this.removeLang}/>
+                                           setLangs={this.setLangs} addLang={this.addLang} addCert={this.addCert}
+                                           removeLang={this.removeLang} certs={this.state.certs}
+                                           onCertChange={this.updateCert} removeCert={this.removeCert}/>
                 }
             </div>
         );
