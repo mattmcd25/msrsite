@@ -1,5 +1,5 @@
 import React from 'react'
-import NavigationDrawer from 'react-md/lib/NavigationDrawers';
+import { NavigationDrawer, Snackbar } from 'react-md';
 import Navigation from "../Navigation";
 
 export default function Layout(props) {
@@ -13,6 +13,7 @@ export default function Layout(props) {
         >
             <div className="body">
                 {props.children}
+                <Snackbar id="layout" autohide toasts={props.toasts} onDismiss={props.dismissToast}/>
             </div>
         </NavigationDrawer>
     );

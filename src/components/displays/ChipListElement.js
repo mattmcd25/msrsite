@@ -1,5 +1,6 @@
 import React from 'react';
 import { Chip, Autocomplete } from 'react-md';
+import Tooltip from '../Tooltip';
 
 export default class ChipListElement extends React.Component {
     remove = (value) => {
@@ -20,8 +21,8 @@ export default class ChipListElement extends React.Component {
         return (
             <div>
                 {this.props.list.length===0 ?
-                    <p>None</p> :
-                    <div>{this.props.list.map(x => <BetterChip className="list_chip" key={x}
+                    <h5>None</h5> :
+                    <div>{this.props.list.map(x => <BetterChip className="list_chip" key={x} tip={this.props.tips[x].DESC}
                                                           label={x} removable={this.props.edit}
                                                               onRemove={this.remove}/>)}<br/></div>}
                 {this.props.edit ?
@@ -43,6 +44,8 @@ export default class ChipListElement extends React.Component {
 function BetterChip(props) {
     let {onRemove, ...rest} = props;
     return (
-        <Chip onClick={props.removable ? () => onRemove(rest.label) : undefined} {...rest}/>
+        <Tooltip tooltipPosition="top" tooltipLabel={props.tip}>
+            <Chip onClick={props.removable ? () => onRemove(rest.label) : undefined} {...rest}/>
+        </Tooltip>
     );
 }

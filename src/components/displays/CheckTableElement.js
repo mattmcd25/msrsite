@@ -1,5 +1,7 @@
 import React from 'react';
-import { DataTable, TableHeader, TableBody, TableRow, TableColumn, FontIcon, Checkbox, Autocomplete, Button } from 'react-md';
+import { DataTable, TableHeader, TableBody, TableRow, TableColumn,
+         FontIcon, Checkbox, Autocomplete, Button } from 'react-md';
+import Tooltip from '../Tooltip';
 
 const HEADERS = edit => {
     let l = ['Language', 'Read', 'Write', 'Speak'];
@@ -11,19 +13,22 @@ export default class CheckTableElement extends React.Component {
     render () {
         return (
             <div>
-                <DataTable baseId="lang" fullWidth={false} selectableRows={false}>
-                    <TableHeader>
-                        <TableRow>
-                            {HEADERS(this.props.edit).map(head => <TableColumn className="small" key={head}>{head}</TableColumn>)}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {Object.keys(this.props.data).map(key => (
-                            <CheckTableRow key={key} data={this.props.data[key]}
-                                           edit={this.props.edit} onChange={this.props.onChange}
-                                           remove={this.props.remove}/>))}
-                    </TableBody>
-                </DataTable>
+                {Object.keys(this.props.data).length === 0 ?
+                    <h5>None</h5> :
+                    <DataTable baseId="lang" fullWidth={false} selectableRows={false}>
+                        <TableHeader>
+                            <TableRow>
+                                {HEADERS(this.props.edit).map(head => <TableColumn className="small" key={head}>{head}</TableColumn>)}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {Object.keys(this.props.data).map(key => (
+                                <CheckTableRow key={key} data={this.props.data[key]} tip={this.props.tips[key].DESC}
+                                               edit={this.props.edit} onChange={this.props.onChange}
+                                               remove={this.props.remove}/>))}
+                        </TableBody>
+                    </DataTable>
+                }
                 {this.props.edit ? <Autocomplete id="langs-autocomplete" label={`Add new language`}
                               data={this.props.acData.filter(l => !Object.keys(this.props.data).includes(l))}
                               onAutocomplete={this.props.add} clearOnAutocomplete size={30} fullWidth={false}/> : false}
@@ -37,22 +42,26 @@ function CheckTableRow(props) {
 
     let children = Object.keys(props.data).slice(1).map(k => (
         <TableColumn className="small" key={k}>
-            {k === 'LANGUAGE' ?
-                l :
-                props.edit ?
-                    <Checkbox id={l+''+k} name={l+''+k} label={''} checked={props.data[k]}
-                              onChange={v => props.onChange(l, k, v)}/> :
-                    props.data[k] ?
-                        <FontIcon>check</FontIcon> :
-                        <FontIcon>close</FontIcon>}
+            <Tooltip tooltipPosition="top" tooltipLabel={props.tip}>
+                {k === 'LANGUAGE' ?
+                    l :
+                    props.edit ?
+                        <Checkbox id={l+''+k} name={l+''+k} label={''} checked={props.data[k]}
+                                  onChange={v => props.onChange(l, k, v)}/> :
+                        props.data[k] ?
+                            <FontIcon primary>check</FontIcon> :
+                            <FontIcon error>close</FontIcon>}
+            </Tooltip>
         </TableColumn>
     ));
 
     if(props.edit) children.push(
         <TableColumn className="small">
-            <Button icon primary onClick={() => props.remove(l)}>
-                close
-            </Button>
+            <Tooltip tooltipPosition="top" tooltipLabel={props.tip}>
+                <Button icon primary onClick={() => props.remove(l)}>
+                    close
+                </Button>
+            </Tooltip>
         </TableColumn>
     );
 

@@ -8,7 +8,10 @@ const formats = {
     'ADDRESS': ['Address'],
     'MARITAL': ['Marital Status'],
     'LENGTH': ['Worked here for',prettyYears],
-    'EMPLOYER': ['Employer Name']
+    'EMPLOYER': ['Employer Name'],
+    'NAME': ['Skill Name'],
+    'LANGUAGE': ['Language'],
+    'DESC': ['Description']
 };
 
 export function PrettyKey(key) {
@@ -26,7 +29,7 @@ export function PrettyPair(key, val) {
 }
 
 export function PrettyWork(work) {
-    let x = work.reduce((acc, cur) => {
+    return work.reduce((acc, cur) => {
         if(acc!==undefined && acc.hasOwnProperty(cur.WORKID)) {
             acc[cur.WORKID].SKILLS.push(cur.NAME);
             return acc;
@@ -44,18 +47,7 @@ export function PrettyWork(work) {
             }
         }
     }, {});
-    return x;
 }
-
-export function PrettyLangs(langs) {
-    return dictFromList(langs, 'LANGUAGE');
-}
-
-function dictFromList(list, key) {
-    return Object.assign({}, ...list.map(data => ({[data[key]]:data})))
-}
-
-// id = x => x;
 
 function prettyPhone(old) {
     let phone = old.padStart(10, '0');

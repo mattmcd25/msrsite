@@ -32,7 +32,7 @@ export default class MemberTable extends React.Component {
         }
     }
 
-        handlePagination = (start, rowsPerPage, currentPage) => {
+    handlePagination = (start, rowsPerPage, currentPage) => {
         this.setState(prevState => ({
             start: start,
             rowsPerPage: rowsPerPage,

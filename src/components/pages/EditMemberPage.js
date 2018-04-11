@@ -1,12 +1,11 @@
 import React from 'react';
-import {
-    getMemberByID, getMemberSkillsByID, getMemberWorkByID, update, del, insert,
-    getMemberLangsByID
-} from "../../data/databaseManager";
+import { getMemberByID, getMemberSkillsByID, getMemberWorkByID,
+         update, del, insert, getMemberLangsByID } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork, PrettyLangs } from "../displays/DisplayUtils";
+import { PrettyWork } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
+import { intersection, difference, dictFromList } from "../../Utils";
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
@@ -27,7 +26,7 @@ export default class EditMemberPage extends React.Component {
             .then(() => getMemberWorkByID(id))
             .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
             .then(() => getMemberLangsByID(id))
-            .then(langs => this.setState({ langs: PrettyLangs(langs), pastLangs: PrettyLangs(langs) }))
+            .then(langs => this.setState({ langs: dictFromList(langs, 'LANGUAGE'), pastLangs: dictFromList(langs, 'LANGUAGE') }))
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
@@ -46,88 +45,74 @@ export default class EditMemberPage extends React.Component {
     // save changes to the member
     saveChanges = () => {
         this.setState({ loading: true });
-        let allPromises = [];
+        this.props.toast({text:'Saving changes...'});
+
+        let promises = [];
         let ID = this.props.match.params.memid;
-        let difference = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
-        let intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
 
         // Update basic member fields
         if(JSON.stringify(this.state.mem) !== JSON.stringify(this.state.pastMem)) {
             let {ID, ...restMem} = this.state.mem;
-            allPromises.push(update('Member', {...restMem, PK: {ID}}));
+            promises.push(update('Member', {...restMem, PK: {ID}}));
         }
 
         // Update other skills
         let oldSkills = this.state.pastSkills;
         let newSkills = this.state.skills;
-        difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Has_Skill', {ID, NAME}))); // removed skills
-        difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Has_Skill', {ID, NAME}))); // added skills
+        difference(oldSkills, newSkills).forEach(NAME => promises.push(del('Has_Skill', {ID, NAME}))); // removed skills
+        difference(newSkills, oldSkills).forEach(NAME => promises.push(insert('Has_Skill', {ID, NAME}))); // added skills
 
         // Update langauges
         let oldLangs = Object.keys(this.state.pastLangs);
         let newLangs = Object.keys(this.state.langs);
-        difference(oldLangs, newLangs).forEach(lang => allPromises.push(del('Know_lang', this.state.pastLangs[lang])));
-        difference(newLangs, oldLangs).forEach(lang => allPromises.push(insert('Know_lang', this.state.langs[lang])));
+        difference(oldLangs, newLangs).forEach(lang => promises.push(del('Know_lang', this.state.pastLangs[lang])));
+        difference(newLangs, oldLangs).forEach(lang => promises.push(insert('Know_lang', this.state.langs[lang])));
         intersection(newLangs, oldLangs).forEach(langName => {
             let {ID, LANGUAGE, ...restNew} = this.state.langs[langName];
             let {ID:oldID, LANGUAGE:oldLang, ...restOld} = this.state.pastLangs[langName];
             if(JSON.stringify(restNew) !== JSON.stringify(restOld)) {
-                allPromises.push(update('Know_lang', {
+                promises.push(update('Know_lang', {
                     ...restNew,
                     PK: {ID, LANGUAGE}
                 }));
             }
         });
 
-        // Adding or removing work experiences altogether
-        let newWorkPromises = [];
+        // Adding new work
         let oldWork = Object.keys(this.state.pastWork);
         let newWork = Object.keys(this.state.work);
         difference(newWork, oldWork).forEach(workID => {
-            let {WORKID, SKILLS, ...restWork} = this.state.work[workID];
-            newWorkPromises.push(insert('Work', {
+            let {WORKID:fakeID, SKILLS, ...restWork} = this.state.work[workID];
+            promises.push(insert('Work', {
                 ID,
                 ...restWork
             }).then(res => {
                 let WORKID = res.recordset[0].WORKID;
-                let {[workID]:oldObject, ...workWithoutFakeID} = this.state.work;
-                this.setState(prevState => ({
-                    ...prevState,
-                    work: {
-                        ...workWithoutFakeID,
-                        [WORKID]: {
-                            ...oldObject,
-                            WORKID
-                        }
-                    },
-                    pastWork: {
-                        ...prevState.pastWork,
-                        [WORKID]: {
-                            ...oldObject,
-                            WORKID,
-                            SKILLS: []
-                        }
-                    }
-                }));
+                SKILLS.forEach(NAME => promises.push(insert('Work_skill', {WORKID, NAME})));
             }));
         });
 
+        // Removing old work
         difference(oldWork, newWork).forEach(WORKID => {
-            allPromises.push(del('Work_Skill', {WORKID})
+            promises.push(del('Work_Skill', {WORKID})
                 .then(() => del('Work', {WORKID})));
         });
-        Promise.all(newWorkPromises).then(() => {
-            Object.keys(this.state.work).forEach(WORKID => {
-                let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[WORKID];
-                let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[WORKID];
-                difference(oldSkills, newSkills).forEach(NAME => allPromises.push(del('Work_skill', {WORKID, NAME})));
-                difference(newSkills, oldSkills).forEach(NAME => allPromises.push(insert('Work_skill', {WORKID, NAME})));
-                if(JSON.stringify(restWork) !== JSON.stringify(restPast))
-                    allPromises.push(update('Work', {...restWork, PK: {WORKID}}));
-            });
+
+        // Updating old&&new work
+        intersection(oldWork, newWork).forEach(WORKID => {
+            let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[WORKID];
+            let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[WORKID];
+            difference(oldSkills, newSkills).forEach(NAME => promises.push(del('Work_skill', {WORKID, NAME})));
+            difference(newSkills, oldSkills).forEach(NAME => promises.push(insert('Work_skill', {WORKID, NAME})));
+            if(JSON.stringify(restWork) !== JSON.stringify(restPast))
+                promises.push(update('Work', {...restWork, PK: {WORKID}}));
         });
 
-        Promise.all(allPromises).then(() => this.props.history.push('/member/'+ID));
+        // fin
+        Promise.all(promises).then(() => {
+            this.props.toast({text:'Saved!'});
+            this.props.history.push('/member/'+ID)
+        });
     };
 
     // member text field edited
