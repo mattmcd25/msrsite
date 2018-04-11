@@ -39,23 +39,24 @@ export default class NewMemberPage extends React.Component {
 
     render() {
         return (
-            this.state.loading ?
-                <CircularProgress id="newMemberPage"/> :
                 <Grid className="newMemberPage">
-                    <Cell size={4}>
-                        <Card className="member-card">
-                            <CardTitle className="card-action-title" title="New Member"/>
-                            <CardText>
-                                {HEADERS['Member'].slice(1).map(field => (
-                                    <TextField size={100} value={this.state.mem[field]} onChange={this.handleInputChange}
-                                               type="text" name={field} label={PrettyKey(field)}/>))}
-                                <label className="vertSpacer"/>
-                                <Button raised primary name="insert" onClick={this.handleSubmit}>
-                                    Add Member
-                                </Button><br/>
-                            </CardText>
-                        </Card>
-                    </Cell>
+                    {this.state.loading ?
+                        <Cell size={12}><CircularProgress id="newMemberPage"/></Cell> :
+                        <Cell size={4}>
+                            <Card className="member-card">
+                                <CardTitle className="card-action-title" title="New Member"/>
+                                <CardText>
+                                    {HEADERS['Member'].slice(1).map(field => (
+                                        <TextField size={100} value={this.state.mem[field]} onChange={this.handleInputChange}
+                                                   type="text" name={field} label={PrettyKey(field)}/>))}
+                                    <label className="vertSpacer"/>
+                                    <Button raised primary name="insert" onClick={this.handleSubmit}>
+                                        Add Member
+                                    </Button><br/>
+                                </CardText>
+                            </Card>
+                        </Cell>
+                    }
                 </Grid>
         );
     }

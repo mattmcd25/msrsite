@@ -19,6 +19,22 @@ const settingCards = (props) => [
         children: (
             <ConstantTableElement {...props} table="Language" pk="LANGUAGE"/>
         )
+    },
+    {
+        title:'Modify Recruitment Sites',
+        subtitle:'Add to or remove from the pre-set list of recruitment sites.',
+        icon:'map',
+        children: (
+            <ConstantTableElement {...props} table="Site" pk="ABBR"/>
+        )
+    },
+    {
+        title:'Modify Certificate Types',
+        subtitle:'Add to or remove from the pre-set list of certificate types.',
+        icon:'school',
+        children: (
+            <ConstantTableElement {...props} table="Certificate" pk="TYPE"/>
+        )
     }
 ];
 

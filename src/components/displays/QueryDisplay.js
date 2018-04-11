@@ -4,8 +4,11 @@ import ChipListElement from './ChipListElement';
 import PropListElement from "./PropListElement";
 import CheckTableElement from './CheckTableElement';
 import ExpandingCard from './ExpandingCard';
+import { dictFromList } from "../../Utils";
 
-const searchCards = (props, skills, langs) => [
+let skills, langs, skDict, langDict;
+
+const searchCards = (props) => [
     {
         title:'General Information',
         subtitle:'Search by name, address, member number, etc.',
@@ -19,7 +22,7 @@ const searchCards = (props, skills, langs) => [
         subtitle:'Search for members with specific skills.',
         icon:'format_paint',
         children: (
-            <ChipListElement edit list={props.skills} acData={skills}
+            <ChipListElement edit list={props.skills} acData={skills} tips={skDict}
                              name="Search Query" updateList={props.updateList}/>
         )
     },
@@ -31,7 +34,7 @@ const searchCards = (props, skills, langs) => [
             <div>
                 <PropListElement edit data={props.work} onChange={props.onWorkChange}/>
                 <br/><b>Skills Learned:</b><br/>
-                <ChipListElement edit list={props.workSkills} acData={skills}
+                <ChipListElement edit list={props.workSkills} acData={skills} tips={skDict}
                                  name="Search Query" updateList={props.updateWorkList}/>
             </div>
         )
@@ -41,14 +44,16 @@ const searchCards = (props, skills, langs) => [
         subtitle:'Search for members with specific knowledge of languages.',
         icon:'language',
         children: (
-            <CheckTableElement edit data={props.langs} onChange={props.setLangs}
+            <CheckTableElement edit data={props.langs} onChange={props.setLangs} tips={langDict}
                                acData={langs} add={props.addLang} remove={props.removeLang}/>
         )
     }
 ];
 
 export default function QueryDisplay(props) {
-    let skills = CONSTANTS['Skill'].map(s => s.NAME);
-    let langs = CONSTANTS['Language'].map(s => s.LANGUAGE);
-    return searchCards(props, skills, langs).map(sc => <ExpandingCard key={sc.title} {...sc}/>);
+    skills = CONSTANTS['Skill'].map(s => s.NAME);
+    langs = CONSTANTS['Language'].map(s => s.LANGUAGE);
+    skDict = dictFromList(CONSTANTS['Skill'], 'NAME');
+    langDict = dictFromList(CONSTANTS['Language'], 'LANGUAGE');
+    return searchCards(props).map(sc => <ExpandingCard key={sc.title} {...sc}/>);
 }

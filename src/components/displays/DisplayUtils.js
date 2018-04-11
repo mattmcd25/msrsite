@@ -1,4 +1,7 @@
 import React from "react";
+import Tooltip from '../Tooltip';
+import { CONSTANTS } from "../../index";
+import { dictFromList } from "../../Utils";
 
 const formats = {
     'FIRSTNAME': ['First Name'],
@@ -7,11 +10,13 @@ const formats = {
     'MOBILE': ['Mobile Phone',prettyPhone],
     'ADDRESS': ['Address'],
     'MARITAL': ['Marital Status'],
-    'LENGTH': ['Worked here for',prettyYears],
+    'LENGTH': ['Worked Here For',prettyYears],
     'EMPLOYER': ['Employer Name'],
     'NAME': ['Skill Name'],
     'LANGUAGE': ['Language'],
-    'DESC': ['Description']
+    'DESC': ['Description'],
+    'NATID': ['National ID'],
+    'SITE': ['Recruitment Site',prettySite]
 };
 
 export function PrettyKey(key) {
@@ -55,6 +60,14 @@ function prettyPhone(old) {
     let next = phone.slice(3,6);
     let last = phone.slice(6);
     return `(${area}) ${next}-${last}`;
+}
+
+function prettySite (old) {
+    return (
+      <Tooltip tooltipLabel={`Site Code '${old}'`} tooltipPosition="top">
+          {dictFromList(CONSTANTS['Site'],'ABBR')[old].DESC}
+      </Tooltip>
+    );
 }
 
 function prettyYears(years) {

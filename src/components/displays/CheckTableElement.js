@@ -29,7 +29,7 @@ export default class CheckTableElement extends React.Component {
                         </TableBody>
                     </DataTable>
                 }
-                {this.props.edit ? <Autocomplete id="langs-autocomplete" label={`Add new language`}
+                {this.props.edit ? <Autocomplete id="langs-autocomplete" label={`Add New Language`}
                               data={this.props.acData.filter(l => !Object.keys(this.props.data).includes(l))}
                               onAutocomplete={this.props.add} clearOnAutocomplete size={30} fullWidth={false}/> : false}
         </div>
