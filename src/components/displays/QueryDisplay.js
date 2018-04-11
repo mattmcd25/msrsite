@@ -35,7 +35,7 @@ const searchCards = (props) => [
                 <PropListElement edit data={props.work} onChange={props.onWorkChange}/>
                 <br/><b>Skills Learned:</b><br/>
                 <ChipListElement edit list={props.workSkills} acData={skills} tips={skDict}
-                                 name="Search Query" updateList={props.updateWorkList}/>
+                                 title="Search Query" updateList={props.updateWorkList}/>
             </div>
         )
     },

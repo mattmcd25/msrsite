@@ -69,7 +69,7 @@ export function del(table, data) {
 
 // ========== Exported Functions - Helpers ==========
 export function getMemberByID(id) {
-    return query("Member", {
+    return query("MEMBER", {
         "ID":`${id}`
     }).then(json => json[0]);
 }
@@ -91,6 +91,12 @@ export function getMemberWorkByID(id) {
 
 export function getMemberLangsByID(id) {
     return query('KNOW_LANG', {
+        "ID":`${id}`
+    });
+}
+
+export function getMemberCertsByID(id) {
+    return query('HAS_CERT', {
         "ID":`${id}`
     });
 }
