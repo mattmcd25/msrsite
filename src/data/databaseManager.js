@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {getAccessToken} from "../AuthService";
+import {getAccessToken} from "../components/AuthMan";
 
 
 /// / ========== Internal Functions ==========

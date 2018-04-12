@@ -8,7 +8,7 @@ import EditMemberPage from "./components/pages/EditMemberPage";
 import LoginPage from "./components/pages/LoginPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import Callback from "./components/Callback";
-import {isLoggedIn} from "./AuthService";
+import {isLoggedIn} from "./components/AuthMan";
 
 
 export default class AppRoutes extends React.Component {

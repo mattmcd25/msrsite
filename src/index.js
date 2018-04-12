@@ -4,8 +4,7 @@ import './style/index.css';
 import App from "./App";
 import WebFontLoader from 'webfontloader';
 import {getAllColumns} from "./data/databaseManager";
-//import { isLoggedIn } from "./AuthService";
-//import UnauthorizedPage from "./components/pages/UnauthorizedPage";
+
 
 WebFontLoader.load({
     google: {

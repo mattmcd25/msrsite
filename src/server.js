@@ -22,8 +22,15 @@ let authCheck = jwt({
     algorithms: ['RS256']
 });
 
+/*const authCheck = jwt({
+    secret: new Buffer(process.env.AUTH0_SECRET, 'base64'),
+    audience: process.env.AUTH0_CLIENT_ID
+});*/
+
 // ========== Configuration ==========
 const app = express(); // server app
+
+app.use(authCheck);
 
 app.use(bodyparser.json({
     type: 'application/json',

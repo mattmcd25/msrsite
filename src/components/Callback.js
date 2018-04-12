@@ -1,11 +1,13 @@
 import { Component } from 'react';
-import {setIdToken, setAccessToken } from '../AuthService';
+import {setIdToken, setAccessToken, getIdToken} from './AuthMan';
 
 class Callback extends Component {
 
     componentDidMount() {
         setAccessToken();
         setIdToken();
+        console.log(getIdToken());
+
         window.location.href = "/";
     }
 
