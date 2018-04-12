@@ -10,22 +10,6 @@ const update = require('./api/updateActions');
 const jwt = require('express-jwt');
 const jwks = require('jwks-rsa');
 
-let authCheck = jwt({
-    secret: jwks.expressJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: "https://rwwittenberg.auth0.com/.well-known/jwks.json"
-    }),
-    audience: 'https://msrapitest/',
-    issuer: "https://rwwittenberg.auth0.com/",
-    algorithms: ['RS256']
-});
-
-/*const authCheck = jwt({
-    secret: new Buffer(process.env.AUTH0_SECRET, 'base64'),
-    audience: process.env.AUTH0_CLIENT_ID
-});*/
 
 // ========== Configuration ==========
 const app = express(); // server app
@@ -51,7 +35,7 @@ app.get('/api', (req, res) => { // generic test
 
 
 // ========== Middleware ==========
-let checkTableID = (req, res, next) => {
+const checkTableID = (req, res, next) => {
     let tableID = req.params['table'];
 
     if(!exports.ALLOWED_TABLES.includes(tableID.toUpperCase())) {
@@ -63,27 +47,37 @@ let checkTableID = (req, res, next) => {
     next();
 };
 
+const authCheck = jwt({
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: "https://rwwittenberg.auth0.com/.well-known/jwks.json"
+    }),
+    audience: 'https://msrapitest/',
+    issuer: "https://rwwittenberg.auth0.com/",
+    algorithms: ['RS256']
+});
 
 
 // ========== General Actions ==========
-console.log(authCheck);
-app.get('/api/connect', authCheck, gen.connect); // connect to the database
-app.get('/api/disconnect', authCheck, gen.disconnect); // disconnect from the database
+app.get('/api/connect', gen.connect); // connect to the database
+app.get('/api/disconnect', gen.disconnect); // disconnect from the database
 
 
 
 // ========== Querying Actions ==========
-
-app.get('/api/select*/:table', authCheck, checkTableID, query.selectAll); // select all from a table or view
-app.get('/api/colnames/:table', authCheck, checkTableID, query.getColumns); // get column names from a table or view
-app.get('/api/tabnames', authCheck, query.getTables); // get all table names from the db
-app.post('/api/query', authCheck, query.advancedQuery); // advanced query
+app.get('/api/select*/:table', checkTableID, query.selectAll); // select all from a table or view
+app.get('/api/colnames/:table', checkTableID, query.getColumns); // get column names from a table or view
+app.get('/api/tabnames', query.getTables); // get all table names from the db
+app.post('/api/query/:table', checkTableID, query.advancedQuery); // advanced query
 
 
 
 // ========== Update Actions ==========
-app.post('/api/insert/:table', authCheck, checkTableID, update.insert); // insert on a table
-app.patch('/api/update/:table', authCheck, checkTableID, update.update); // update a table row
+app.post('/api/insert/:table', checkTableID, update.insert); // insert on a table
+app.patch('/api/update/:table', checkTableID, update.update); // update a table row
+app.delete('/api/delete/:table', checkTableID, update.delete); // delete a table row
 
 
 
@@ -91,7 +85,7 @@ app.patch('/api/update/:table', authCheck, checkTableID, update.update); // upda
 if (process.env.NODE_ENV === "production") { // if production, also host static (client) assets
     app.use(express.static(path.join(__dirname, '..', 'build')));
 
-    app.get('/*', authCheck, function (req, res) {
+    app.get('/*', function (req, res) {
         res.sendFile(path.join(__dirname, '..', 'build', 'index.html'));
     });
 }
@@ -102,16 +96,16 @@ gen.connect().then(() => { // connect to the database
         console.log(exports.ALLOWED_TABLES);
     }).then(() => {
         app.listen(app.get("port"), () => { // listen on the port
-            console.log('Server is running...');
+            console.log('[general] Server is running...');
             app.on('close', () => { // on close, disconnect from db
                 gen.disconnect().then(() => {
-                    console.log('Server is stopped.');
+                    console.log('[general] Server is stopped.');
                 });
             });
         });
     });
 }).catch(err => {
-    console.log("your wifi probably sucks lol");
+    console.log("[general] your wifi probably sucks lol");
     console.log(err);
 });
 

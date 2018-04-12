@@ -11,15 +11,19 @@ let conf = {
     }
 };
 function api_get(call) {
-    return axios.get(`/api/${call}`, conf).then(response => response.data)
+    return axios.get(`/api/${call}`, conf).then(checkStatus).then(response => response.data);
 }
 
 function api_post(call, body) {
-    return axios.post('/api/'+call, JSON.stringify(body), conf).then(checkStatus);
+    return axios.post('/api/'+call, JSON.stringify(body), conf).then(checkStatus).then(response => response.data);
 }
 
 function api_patch(call, body) {
-    return axios.patch('/api/'+call, JSON.stringify(body), conf).then(checkStatus);
+    return axios.patch('/api/'+call, JSON.stringify(body), conf).then(checkStatus).then(response => response.data);
+}
+
+function api_delete(call, body){
+    return axios.delete('/api/'+call, JSON.stringify(body), conf).then(checkStatus).then(response => response.data);
 }
 
 function checkStatus(response) {
@@ -53,13 +57,18 @@ export function update(table, data) {
     return api_patch(`update/${table}`, data);
 }
 
-export function query(data) {
-    return api_post(`query`, data)
-        .then(json => json['data']['recordsets'][0]);
+export function query(table, data) {
+    return api_post(`query/${table}`, data)
+        .then(json => json['recordsets'][0]);
 }
 
+export function del(table, data) {
+    return api_delete(`delete/${table}`, data);
+}
+
+// ========== Exported Functions - Helpers ==========
 export function getMemberByID(id) {
-    return query({
+    return query("MEMBER", {
         "ID":`${id}`
     }).then(json => json[0]);
 }
@@ -70,4 +79,31 @@ export function getUserInfoByToken(t){
             Authorization: `Bearer ${t}`
         }
     }).then(console.log));
+}
+
+export function getMemberSkillsByID(id, all=true) {
+    let table = all ? "ALL_SKILLS" : "OTHER_SKILLS";
+    return query(table, {
+        "ID":`${id}`
+    })
+        .then(json => json.map(row => row.NAME))
+        .then(sks => ((sks.length===1 && !sks[0]) ? [] : sks));
+}
+
+export function getMemberWorkByID(id) {
+    return query("WORK_INFO", {
+        "ID":`${id}`
+    });
+}
+
+export function getMemberLangsByID(id) {
+    return query('KNOW_LANG', {
+        "ID":`${id}`
+    });
+}
+
+export function getMemberCertsByID(id) {
+    return query('HAS_CERT', {
+        "ID":`${id}`
+    });
 }

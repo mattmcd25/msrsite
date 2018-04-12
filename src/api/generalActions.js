@@ -11,15 +11,15 @@ const config = {
 // connect : request x result => (promise connectionpool)
 // connects to the database
 exports.connect = (req, res) => {
-    console.log("Trying to connect...");
+    console.log("[general] Connecting...");
     return sql.connect(config)
         .then(conn => {
-            console.log("Connected successfully.");
+            console.log("[general] Success");
             if(res) res.status(200).send("Successfully connected to database.");
             return conn;
         })
         .catch(err => {
-            console.log(err);
+            console.log('[general] '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -27,13 +27,13 @@ exports.connect = (req, res) => {
 // disconnect : request x result => (promise)
 // disconnects from the database
 exports.disconnect = (req, res) => {
-    console.log("Trying to disconnect...");
+    console.log("[general] Disconnecting...");
     return sql.close()
         .then(() => {
-            console.log("Disconnected successfully.");
+            console.log("[general] Success");
             if(res) res.status(200).send("Successfully disconnected from database.");
         }).catch(err => {
-            console.log(err);
+            console.log('[general] '+err);
             if(res) res.status(500).send(err);
         });
 };

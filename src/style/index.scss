@@ -2,107 +2,107 @@
 
 @include react-md-everything;
 
-//body {
-//    //font-family: 'Roboto', sans-serif;
-//    margin: 0px;
-//    padding: 0px;
-//    height: 100%;
-//    position: relative;
-//    padding-bottom: 20px;
-//    min-height: 100%;
-//}
-
-//table {
-//    border-collapse: collapse;
-//    width: 80%;
-//    border: 1px solid #999;
-//}
-//
-//td {
-//    text-align: center;
-//    padding: 10px;
-//    /*border: 1px solid #999;*/
-//}
-//
-//th {
-//    padding: 10px;
-//    /*border: 1px solid #999;*/
-//    background-color: #fdd835;
-//    color: #000000;
-//}
-//
-//tr {
-//    border: 1px solid #999;
-//}
-//
-//tr:hover {
-//    background-color: #f5f5f5;
-//}
-
-//.indexButton {
-//    background-color: #5472d3;
-//    color: #ffffff;
-//    height: 24px;
-//    border: 1px solid #ffffff;
-//}
-//
-//.indexButton:focus {
-//    outline: none;
-//}
-
-//.layout {
-//    margin: 0px;
-//    height: 100%;
-//}
-
-//.container {
-//    height:100%;
-//    min-height:100%;
-//    position:relative;
-//}
-
 .body {
-    margin: 97px 25px;
-    //font-family: 'Open Sans', sans-serif;
+  margin: 70px 0px;
+  //font-family: 'Open Sans', sans-serif;
 }
-
-//.navigation {
-//    background-color: #0d47a1;
-//    width: 100%;
-//}
-
-//.navItem {
-//    height: 50px;
-//    background-color: #5472d3;
-//    color: #ffffff;
-//    font-size: 16px;
-//    font-weight: normal;
-//    padding: 10px;
-//    border: none;
-//}
-//
-//.navItem:focus {
-//    outline: none;
-//    /*border-bottom: 2px solid #fdd835;*/
-//}
 
 .header-title {
-    padding: 10px;
-    font-weight: bold;
+  padding: 10px;
+  font-weight: bold;
 }
 
-.md-list--nested-1 .md-list-tile {
-    padding-left: 16px;
+.md-list--nested-1 .md-list-tile { // fix nav item alignment
+  padding-left: 16px;
 }
 
-.navItem {
-    text-decoration: none;
+.navItem { // remove underline from linked nav items
+  text-decoration: none;
 }
 
-.inline-btn {
-    top: 20px;
+.inline-btn { // button in line with text field
+  top: 20px;
 }
 
-.md-text-field-icon-container {
-    padding-bottom: 16px;
+.md-text-field-icon-container { // table header text field alignment
+  padding-bottom: 16px;
+}
+
+%member-card {
+  padding: 5px;
+}
+
+.member-card {
+  @extend %member-card;
+  height:100%;
+}
+
+.list_chip {
+  margin: 5px;
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2)
+}
+
+.card-action-title {
+  div {
+    width: 100%;
+  }
+  h2 {
+    width: 100%;
+  }
+}
+
+.launchHor {
+  display: flex;
+  justify-content: center;
+  margin-top: 10%;
+  height: 50%;
+}
+
+.launchVer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 25%;
+  margin-right: 25%;
+  width: 50%;
+}
+
+
+.spacer {
+  padding: 6px;
+}
+
+.black {
+  color: black;
+}
+
+.vertSpacer {
+  padding: 300px;
+}
+
+.redButton {
+  background: $md-red-200;
+  color: $md-white-base;
+}
+
+.small {
+  padding-right: 16px;
+}
+
+.smallHeader {
+  div {
+    padding-left: 10px;
+  }
+}
+
+.table1 {
+  div {
+    max-width: 20px;
+  }
+}
+
+.table3 {
+  div {
+    max-width: 220px;
+  }
 }
