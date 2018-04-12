@@ -16,7 +16,11 @@ const formats = {
     'LANGUAGE': ['Language'],
     'DESC': ['Description'],
     'NATID': ['National ID'],
-    'SITE': ['Recruitment Site',prettySite]
+    'SITE': ['Recruitment Site',prettySite],
+    'ABBR': ['Site Code'],
+    'TYPE': ['Certificate Type'],
+    'YEAR': ['Completion Year'],
+    'INSTITUTION': ['Completed at']
 };
 
 export function PrettyKey(key) {

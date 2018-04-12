@@ -35,7 +35,7 @@ const searchCards = (props) => [
                 <PropListElement edit data={props.work} onChange={props.onWorkChange}/>
                 <br/><b>Skills Learned:</b><br/>
                 <ChipListElement edit list={props.workSkills} acData={skills} tips={skDict}
-                                 name="Search Query" updateList={props.updateWorkList}/>
+                                 title="Search Query" updateList={props.updateWorkList}/>
             </div>
         )
     },
@@ -46,6 +46,14 @@ const searchCards = (props) => [
         children: (
             <CheckTableElement edit data={props.langs} onChange={props.setLangs} tips={langDict}
                                acData={langs} add={props.addLang} remove={props.removeLang}/>
+        )
+    },
+    {
+        title:'Certifications and Diplomas',
+        subtitle:'Search for members with specific certifications.',
+        icon:'school',
+        children: (
+            <PropListElement edit data={props.cert} onChange={props.onCertChange}/>
         )
     }
 ];

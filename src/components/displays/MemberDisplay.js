@@ -24,9 +24,11 @@ export default function MemberDisplay(props) {
                 );
             })}
 
-            {/*{Object.keys(props.certs).map(cert => {*/}
-                {/*<PropListCard title="Cert!" subtitle="Certificate"/>*/}
-            {/*})}*/}
+            {props.certs.map(cert => {
+                let {ID, TYPE, ...rest} = cert;
+                let DESC = dictFromList(CONSTANTS['Certificate'], 'TYPE')[TYPE].DESC;
+                return <PropListCard title={TYPE} key={TYPE} subtitle="Certificate" data={{DESC, ...rest}}/>
+            })}
 
             <CheckTableCard title="Language Proficiencies" data={props.langs} tips={langDict}/>
         </Grid>

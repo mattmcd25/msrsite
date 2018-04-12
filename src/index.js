@@ -34,6 +34,7 @@ async function initialize() {
     HEADERS['Language'] = await getAllColumns('Language');
     HEADERS['Site'] = await getAllColumns('Site');
     HEADERS['Certificate'] = await getAllColumns('Certificate');
+    HEADERS['Has_Cert'] = await getAllColumns('Has_Cert');
     CONSTANTS['Skill'] = await getAll('Skill');
     CONSTANTS['Language'] = await getAll('Language');
     CONSTANTS['Site'] = await getAll('Site');
