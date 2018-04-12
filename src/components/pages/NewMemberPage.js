@@ -2,14 +2,15 @@ import React from 'react';
 import { CircularProgress, Button, TextField, Grid, Cell, Card, CardTitle, CardText } from 'react-md';
 import { insert } from '../../data/databaseManager';
 import { HEADERS } from "../../index";
-import { PrettyKey } from "../displays/DisplayUtils";
+import { PrettyKey, textValidation, invalidFields } from "../displays/DisplayUtils";
+import { makeDict } from "../../Utils";
 
 export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
         this.props.setTitle("Add Member");
         this.state = {
-            mem: {},
+            mem: makeDict(Object.keys(HEADERS['Member'])),
             loading: false
         };
     };
@@ -38,6 +39,7 @@ export default class NewMemberPage extends React.Component {
     };
 
     render() {
+        let fields = [];
         return (
                 <Grid className="newMemberPage">
                     {this.state.loading ?
@@ -46,13 +48,20 @@ export default class NewMemberPage extends React.Component {
                             <Card className="member-card">
                                 <CardTitle className="card-action-title" title="New Member"/>
                                 <CardText>
-                                    {HEADERS['Member'].slice(1).map(field => (
-                                        <TextField size={100} value={this.state.mem[field]} onChange={this.handleInputChange}
-                                                   type="text" name={field} label={PrettyKey(field)}/>))}
-                                    <label className="vertSpacer"/>
-                                    <Button raised primary name="insert" onClick={this.handleSubmit}>
-                                        Add Member
-                                    </Button><br/>
+                                    <form onSubmit={this.handleSubmit}>
+                                        {Object.keys(HEADERS['Member']).slice(1).map(field => {
+                                            let x = <TextField value={this.state.mem[field]} label={PrettyKey(field)}
+                                                               onChange={this.handleInputChange} id={field} name={field}
+                                                               key={field} {...textValidation('Member', field)}
+                                                               fullWidth={false} className="padRight"/>
+                                            fields.push(x);
+                                            return x;
+                                        })}
+                                        <label className="vertSpacer"/>
+                                        <Button raised primary name="insert" disabled={invalidFields(fields)} type="submit">
+                                            Add Member
+                                        </Button><br/>
+                                    </form>
                                 </CardText>
                             </Card>
                         </Cell>

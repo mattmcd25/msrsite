@@ -50,7 +50,7 @@ exports.getColumns = (req, res) => {
 
     console.log(`[colnames] ${tableID}`);
     let request = new sql.Request(); // create Request object
-    return request.query(`SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${tableID}'`) // query
+    return request.query(`SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='${tableID}'`) // query
         .then(recordset => {
             console.log("[colnames] Success");
             if(res) res.status(200).send(recordset); // send records as a response

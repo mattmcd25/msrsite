@@ -2,8 +2,8 @@ import React from 'react';
 import { DataTable, TableCardHeader, TableHeader, TableBody, TableRow, CircularProgress,
          TableColumn, EditDialogColumn, TablePagination, Button, FontIcon } from 'react-md';
 import { CONSTANTS, HEADERS } from "../../index";
-import { PrettyKey } from "./DisplayUtils";
-import {del, getAll, insert, update} from "../../data/databaseManager";
+import { invalidData, PrettyKey, textValidation } from "./DisplayUtils";
+import { del, getAll, insert, update } from "../../data/databaseManager";
 import { intersection, difference, dictFromList, uniteRoutes } from "../../Utils";
 
 export default class ConstantTableElement extends React.Component {
@@ -11,7 +11,7 @@ export default class ConstantTableElement extends React.Component {
         super(props);
         this.state = {
             data: CONSTANTS[props.table].slice(),
-            headers: HEADERS[props.table].slice(),
+            headers: Object.keys(HEADERS[props.table]).slice(),
             display: CONSTANTS[props.table].slice(0, 10),
             page: 1,
             start: 0,
@@ -19,6 +19,7 @@ export default class ConstantTableElement extends React.Component {
             rowsPerPage: 10,
             loading: false
         };
+        this.limits = HEADERS[props.table]; //).map(k => ({[k]:HEADERS[props.table][k].CHARACTER_MAXIMUM_LENGTH})));
     }
 
     handlePagination = (start, rowsPerPage, currentPage) => {
@@ -85,9 +86,6 @@ export default class ConstantTableElement extends React.Component {
 
         let oldKeys = Object.keys(oldData);
         let newKeys = Object.keys(newData);
-        console.log(oldData);
-        console.log(newData);
-
         let promises = [];
 
         difference(oldKeys, newKeys).forEach(key => promises.push(del(this.props.table, {[this.props.pk]:key}))); // removed
@@ -119,13 +117,35 @@ export default class ConstantTableElement extends React.Component {
                                                                key={h}>{PrettyKey(h)}</TableColumn>);
         headers.push(<TableColumn/>);
 
+        let fields = [];
+        let body = this.state.display.map((d,i) => {
+            let children = Object.keys(d).map(k => {
+                let x = (
+                    <EditDialogColumn style={{'paddingLeft': '10px', 'paddingRight': '10px'}}
+                                      className="table3" key={k} value={d[k]}
+                                      onChange={v => this.onChange(v, k, i)} placeholder={PrettyKey(k)}
+                                      {...textValidation(this.props.table, k)} />
+                );
+                fields.push(x);
+                return x;
+            });
+            children.push(
+                <TableColumn key='x' className="table1" style={{'paddingLeft':'10px','paddingRight':'10px'}}>
+                    <Button icon primary onClick={() => this.remove(i)}>
+                        close
+                    </Button>
+                </TableColumn>
+            );
+            return <TableRow key={i} children={children}/>
+        });
         return (this.state.loading ? <CircularProgress id="settingsTable"/> :
             <div>
                 <TableCardHeader className='smallHeader' visible={false} title={this.props.table+'s'}>
                     <Button flat primary onClick={this.addClick} iconChildren={<FontIcon>add</FontIcon>}>
                         Add
                     </Button>
-                    <Button flat primary onClick={this.save} iconChildren={<FontIcon>save</FontIcon>}>
+                    <Button flat primary onClick={this.save} disabled={invalidData(this.state.data, this.limits)}
+                            iconChildren={<FontIcon>save</FontIcon>}>
                         Save
                     </Button>
                 </TableCardHeader>
@@ -134,22 +154,7 @@ export default class ConstantTableElement extends React.Component {
                         <TableRow children={headers}/>
                     </TableHeader>
                     <TableBody>
-                        {this.state.display.map((d,i) => {
-                            let children = Object.keys(d).map(k => (
-                                <EditDialogColumn style={{'paddingLeft':'10px','paddingRight':'10px'}} className="table3" inline key={k}
-                                                  value={d[k]} onChange={v => this.onChange(v, k, i)}
-                                                  placeholder={PrettyKey(k)}/>
-                            ));
-                            children.push(
-                                <TableColumn key='x' className="table1" style={{'paddingLeft':'10px','paddingRight':'10px'}}>
-                                    <Button icon primary onClick={() => this.remove(i)}>
-                                        close
-                                    </Button>
-                                </TableColumn>
-                            );
-
-                            return <TableRow key={i} children={children}/>
-                        })}
+                        {body}
                     </TableBody>
                     <TablePagination rows={this.state.data.length} rowsPerPageLabel="Rows per page"
                                      onPagination={this.handlePagination} page={this.state.page}/>

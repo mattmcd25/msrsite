@@ -1,4 +1,4 @@
-import { PrettyPair, PrettyKey } from "./DisplayUtils";
+import {PrettyPair, PrettyKey, textValidation} from "./DisplayUtils";
 import { TextField } from 'react-md';
 import React from 'react';
 
@@ -31,11 +31,10 @@ export default class PropListElement extends React.Component {
                                     id={field}
                                     name={field}
                                     label={PrettyKey(field)}
-                                    // size={25}
-                                    // fullWidth={false}
+                                    fullWidth={false}
                                     value={this.state.data[field]}
                                     onChange={this.onChange}
-                                    type="text"
+                                    {...textValidation(this.props.table, field)}
                                 />
                             </div> :
                             <label key={field}>{PrettyPair(field, this.props.data[field])}</label>

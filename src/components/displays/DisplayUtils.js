@@ -1,7 +1,7 @@
 import React from "react";
 import Tooltip from '../Tooltip';
-import { CONSTANTS } from "../../index";
-import { dictFromList } from "../../Utils";
+import { CONSTANTS, HEADERS } from "../../index";
+import { dictFromList, or } from "../../Utils";
 
 const formats = {
     'FIRSTNAME': ['First Name'],
@@ -56,6 +56,28 @@ export function PrettyWork(work) {
             }
         }
     }, {});
+}
+
+export function textValidation(table, field) {
+    let info = HEADERS[table][field];
+    let result = {};
+    switch(info.DATA_TYPE) {
+        case 'int':
+        case 'float': result.type = 'number'; break;
+        case 'bit':
+        case 'varchar':
+        default: result.type = 'text'; break;
+    }
+    result.maxLength = info.CHARACTER_MAXIMUM_LENGTH || 100;
+    return result;
+}
+
+export function invalidFields(fields) {
+    return fields.filter(field => field.props.value.length > field.props.maxLength).length > 0;
+}
+
+export function invalidData(data, limits) {
+    return or(data.map(d => or(Object.keys(d).map(k => (typeof(d[k]) === 'string' && d[k].length > limits[k].CHARACTER_MAXIMUM_LENGTH)))));
 }
 
 function prettyPhone(old) {
