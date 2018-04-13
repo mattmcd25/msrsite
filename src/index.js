@@ -21,24 +21,19 @@ ReactDOM.render(
     })
 );
 
-async function initialize() {
+function initialize() {
     WebFontLoader.load({
         google: {
             families: ['Roboto:300,400,500,700', 'Material Icons', 'Novo:300,400,500,700', 'Open Sans:300,400,500,700'],
         },
     });
 
-    HEADERS['Member'] = await getAllColumns('Member');
-    HEADERS['Work'] = await getAllColumns('Work');
-    HEADERS['Skill'] = await getAllColumns('Skill');
-    HEADERS['Language'] = await getAllColumns('Language');
-    HEADERS['Site'] = await getAllColumns('Site');
-    HEADERS['Certificate'] = await getAllColumns('Certificate');
-    HEADERS['Has_Cert'] = await getAllColumns('Has_Cert');
-    CONSTANTS['Skill'] = await getAll('Skill');
-    CONSTANTS['Language'] = await getAll('Language');
-    CONSTANTS['Site'] = await getAll('Site');
-    CONSTANTS['Certificate'] = await getAll('Certificate');
+    let headers = ['Member', 'Work', 'Skill', 'Language', 'Site', 'Certificate', 'Has_Cert'];
+    let constants = ['Skill', 'Language', 'Site', 'Certificate'];
+    let promises = [];
+    headers.map(table => promises.push(getAllColumns(table).then(res => HEADERS[table] = res)));
+    constants.map(table => promises.push(getAll(table).then(res => CONSTANTS[table] = res)));
+    return Promise.all(promises);
 }
 
 export function storeSearch(result) {

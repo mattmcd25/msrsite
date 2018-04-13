@@ -5,7 +5,7 @@ import {
 } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork } from "../displays/DisplayUtils";
+import { PrettyWork, invalidData } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
 import { intersection, difference, dictFromList } from "../../Utils";
 
@@ -15,10 +15,32 @@ export default class EditMemberPage extends React.Component {
         props.setActions([]);
         this.state = {
             loading: true,
+            disabled: false,
             nextID: 1
         };
-
     }
+
+    actions = () => {
+        return [
+            <Link to={`/member/${this.props.match.params.memid}`}>
+                <Button style={{'color':'black'}} raised secondary children="Cancel" />
+            </Link>,
+            <label className="spacer"/>,
+            <Button style={{'color':'black'}} raised secondary disabled={this.state.disabled}
+                    onClick={this.saveChanges}>
+                Save
+            </Button>
+        ];
+    };
+
+    componentDidUpdate = () => {
+        let disabled = invalidData([this.state.mem], 'Member')
+                            || invalidData(this.state.work, 'Work')
+                            || invalidData(this.state.certs, 'Has_Cert');
+        if(disabled !== this.state.disabled) {
+            this.setState({ disabled }, () => this.props.setActions(this.actions()));
+        }
+    };
 
     // initial loading
     componentDidMount(){
@@ -34,15 +56,7 @@ export default class EditMemberPage extends React.Component {
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
-            .then(() => this.props.setActions([
-                <Link to={`/member/${id}`}>
-                    <Button style={{'color':'black'}} raised secondary children="Cancel" />
-                </Link>,
-                <label className="spacer"/>,
-                <Button style={{'color':'black'}} raised secondary onClick={this.saveChanges}>
-                    Save
-                </Button>
-                ]))
+            .then(() => this.props.setActions(this.actions()))
             .then(() => this.setState({ loading: false }));
     }
 
@@ -201,7 +215,6 @@ export default class EditMemberPage extends React.Component {
     };
 
     setLangs = (language, key, value) => {
-        console.log(language, key, value);
         this.setState(prevState => ({
             langs: {
                 ...prevState.langs,

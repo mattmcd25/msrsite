@@ -160,9 +160,9 @@ export default class QueryPage extends React.Component {
     };
 
     render() {
-        let genData = makeDict(HEADERS['Member'].slice(1));
-        let workData = makeDict(HEADERS['Work'].slice(2));
-        let certData = makeDict(HEADERS['Has_Cert'].slice(1));
+        let genData = makeDict(Object.keys(HEADERS['Member']).slice(1));
+        let workData = makeDict(Object.keys(HEADERS['Work']).slice(2));
+        let certData = makeDict(Object.keys(HEADERS['Has_Cert']).slice(1));
         return (
             <div className="queryPage">
                 <Grid>
