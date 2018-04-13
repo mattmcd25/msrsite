@@ -76,8 +76,10 @@ export function invalidFields(fields) {
     return fields.filter(field => field.props.value.length > field.props.maxLength).length > 0;
 }
 
-export function invalidData(data, limits) {
-    return or(data.map(d => or(Object.keys(d).map(k => (typeof(d[k]) === 'string' && d[k].length > limits[k].CHARACTER_MAXIMUM_LENGTH)))));
+export function invalidData(data, table) {
+    return data && or(Object.values(data).map(d =>
+        d && or(Object.keys(d).map(k =>
+            (typeof(d[k]) === 'string' && d[k].length > HEADERS[table][k].CHARACTER_MAXIMUM_LENGTH)))));
 }
 
 function prettyPhone(old) {

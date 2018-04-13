@@ -26,17 +26,9 @@ export default class PropListElement extends React.Component {
                 {Object.keys(this.props.data).map(field => {
                     return (
                         this.props.edit ?
-                            <div key={field}>
-                                <TextField
-                                    id={field}
-                                    name={field}
-                                    label={PrettyKey(field)}
-                                    fullWidth={false}
-                                    value={this.state.data[field]}
-                                    onChange={this.onChange}
-                                    {...textValidation(this.props.table, field)}
-                                />
-                            </div> :
+                            <TextField className="padRight" key={field} id={field} name={field} label={PrettyKey(field)}
+                                       fullWidth={false} value={this.state.data[field]} onChange={this.onChange}
+                                       {...textValidation(this.props.table, field)}/> :
                             <label key={field}>{PrettyPair(field, this.props.data[field])}</label>
                     );
                 })}

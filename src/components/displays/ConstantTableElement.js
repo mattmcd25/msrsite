@@ -19,7 +19,6 @@ export default class ConstantTableElement extends React.Component {
             rowsPerPage: 10,
             loading: false
         };
-        this.limits = HEADERS[props.table]; //).map(k => ({[k]:HEADERS[props.table][k].CHARACTER_MAXIMUM_LENGTH})));
     }
 
     handlePagination = (start, rowsPerPage, currentPage) => {
@@ -144,7 +143,7 @@ export default class ConstantTableElement extends React.Component {
                     <Button flat primary onClick={this.addClick} iconChildren={<FontIcon>add</FontIcon>}>
                         Add
                     </Button>
-                    <Button flat primary onClick={this.save} disabled={invalidData(this.state.data, this.limits)}
+                    <Button flat primary onClick={this.save} disabled={invalidData(this.state.data, this.props.table)}
                             iconChildren={<FontIcon>save</FontIcon>}>
                         Save
                     </Button>
