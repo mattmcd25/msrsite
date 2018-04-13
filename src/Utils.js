@@ -1,6 +1,8 @@
 // Lists
 export const intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
 export const difference = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
+export const or = (list) => list.reduce((acc, cur) => acc || cur, false);
+export const and = (list) => list.reduce((acc, cur) => acc && cur, true);
 
 // Dictionaries
 export const makeDict = list => Object.assign({}, ...list.map(head => ({[head]:''})));

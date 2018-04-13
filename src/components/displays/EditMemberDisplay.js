@@ -14,14 +14,15 @@ export default function EditMemberDisplay(props) {
             {(() => {
                 let {ID, ...rest} = props.mem;
                 return (<PropListCard edit title={rest.FIRSTNAME + " " + rest.SURNAME} data={rest}
-                                      onChange={props.onMemChange}/>)
+                                      onChange={props.onMemChange} table='Member'
+                                      acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR)}}/>)
             })()}
 
             {Object.keys(props.work).map(workID => {
                 let {WORKID, SKILLS, ...rest} = props.work[workID];
                 return (
                     <PropsAndChipsCard edit key={workID} title={rest.EMPLOYER} subtitle="Work Experience"
-                                       list={SKILLS} data={rest} listHeader="Skills Learned"
+                                       list={SKILLS} data={rest} listHeader="Skills Learned" table='Work'
                                        updateList={(list) => props.setWorkSkills(workID, list)} acData={skills}
                                        onChange={(evt) => props.onWorkChange(workID, evt)} tips={skDict}
                                        actions={<Button raised className="redButton"
@@ -36,7 +37,7 @@ export default function EditMemberDisplay(props) {
 
             {Object.keys(props.certs).map(type => {
                 let {ID, ...rest} = props.certs[type];
-                return <PropListCard edit title={rest.TYPE} subtitle="Certificate" data={rest}
+                return <PropListCard edit title={rest.TYPE} subtitle="Certificate" data={rest} table='Has_Cert'
                                      onChange={evt => props.onCertChange(type, evt)} key={type}
                                      actions={<Button raised className="redButton"
                                                       onClick={() => props.removeCert(type)}>

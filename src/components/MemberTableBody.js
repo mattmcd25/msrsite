@@ -12,7 +12,7 @@ export default function MemberTableBody(props) {
                 <DataTable baseId="member" selectableRows={false}>
                     <TableHeader>
                         <TableRow>
-                            {HEADERS['Member'].slice(1).map(head => <TableColumn key={head}>{PrettyKey(head)}</TableColumn>)}
+                            {Object.keys(HEADERS['Member']).slice(1).map(head => <TableColumn key={head}>{PrettyKey(head)}</TableColumn>)}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
