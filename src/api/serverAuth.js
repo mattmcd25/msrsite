@@ -1,5 +1,7 @@
 exports.sysToken = '';
 exports.userLevelServerSide = '';
+exports.recentUsers = [];
+exports.recentAdmins = [];
 
 exports.getLevel = function(user_id){
     let request = require("request-promise");

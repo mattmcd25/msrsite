@@ -26,15 +26,25 @@ const checkTableID = (req, res, next) => {
 };
 
 const validateUser = (req, res, next) => {
-    auth0Calls.getSysToken().then(() => auth0Calls.getLevel(req.user['sub'])).then(() => {
-        console.log("[Middleware] user level: " + auth0Calls.userLevelServerSide);
-        if(auth0Calls.userLevelServerSide === 'user' || auth0Calls.userLevelServerSide === 'admin') {
-            next();
-        }else{
-            console.log("Invalid User Level: "+ auth0Calls.userLevelServerSide);
-            res.sendStatus(401);
-        }
-    });
+    let u = req.user['sub'];
+    if(auth0Calls.recentUsers.indexOf(u) >= 0){
+        console.log("[Middleware] Recent User with ID: "+ u);
+        next();
+    }else{
+        auth0Calls.getSysToken().then(() => auth0Calls.getLevel(u)).then(() => {
+            console.log("[Middleware] user level: " + auth0Calls.userLevelServerSide);
+            if(auth0Calls.userLevelServerSide === 'user' || auth0Calls.userLevelServerSide === 'admin') {
+                auth0Calls.recentUsers.push(u);
+                next();
+            }else{
+                console.log("Invalid User Level: "+ auth0Calls.userLevelServerSide);
+                res.sendStatus(401);
+            }
+        });
+
+    }
+
+
 };
 
 const authCheck = jwt({
