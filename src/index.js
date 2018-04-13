@@ -4,7 +4,9 @@ import './style/index.css';
 import App from "./App";
 import WebFontLoader from 'webfontloader';
 import { getAllColumns, getAll } from "./data/databaseManager";
+import LoginPage from './components/pages/LoginPage';
 import LaunchScreen from "./components/LaunchScreen";
+import LockedApp from "./LockedApp";
 
 export var HEADERS = [];
 export var CONSTANTS = [];
@@ -15,13 +17,14 @@ let searchResult = [];
 //     document.getElementById('root'),
 //     () => initialize().then(() => {
         ReactDOM.render(
-            <App/>,
+            <LockedApp/>,
             document.getElementById('root')
         );
 //     })
 // );
 
 export async function initialize() {
+    console.log("initialize...");
     WebFontLoader.load({
         google: {
             families: ['Roboto:300,400,500,700', 'Material Icons', 'Novo:300,400,500,700', 'Open Sans:300,400,500,700'],

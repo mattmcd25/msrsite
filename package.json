@@ -26,6 +26,7 @@
     "react-md": "^1.2.12",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
+    "request-promise": "^4.2.2",
     "webfontloader": "^1.6.28"
   },
   "author": "mattmcd25 & wittenber0",

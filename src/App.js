@@ -13,7 +13,7 @@ import Callback from "./components/Callback";
 import {isLoggedIn} from "./components/AuthMan";
 
 
-export default class AppRoutes extends React.Component {
+export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {

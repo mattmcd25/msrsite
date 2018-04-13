@@ -11,29 +11,6 @@ const jwt = require('express-jwt');
 const jwks = require('jwks-rsa');
 
 
-// ========== Configuration ==========
-const app = express(); // server app
-
-app.use(authCheck);
-
-app.use(bodyparser.json({
-    type: 'application/json',
-    extended: false
-})); // use bodyparser for JSON
-
-app.use(protect.express.sqlInjection({
-    body: true,
-    loggerFunction: console.error
-})); // use protect for security
-
-app.set("port", process.env.PORT || 3005); // select port based on heroku settings
-
-app.get('/api', (req, res) => { // generic test
-    res.send("hello from the api!");
-});
-
-
-
 // ========== Middleware ==========
 const checkTableID = (req, res, next) => {
     let tableID = req.params['table'];
@@ -58,6 +35,32 @@ const authCheck = jwt({
     issuer: "https://rwwittenberg.auth0.com/",
     algorithms: ['RS256']
 });
+
+
+// ========== Configuration ==========
+const app = express(); // server app
+
+app.use(authCheck);
+
+app.use(bodyparser.json({
+    type: 'application/json',
+    extended: false
+})); // use bodyparser for JSON
+
+app.use(protect.express.sqlInjection({
+    body: true,
+    loggerFunction: console.error
+})); // use protect for security
+
+app.set("port", process.env.PORT || 3005); // select port based on heroku settings
+
+app.get('/api', (req, res) => { // generic test
+    res.send("hello from the api!");
+});
+
+
+
+
 
 
 // ========== General Actions ==========

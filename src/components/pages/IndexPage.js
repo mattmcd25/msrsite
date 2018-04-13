@@ -1,11 +1,4 @@
 import React from 'react';
-import MemberTableBody from "../MemberTableBody";
-import MemberTableHeader from '../MemberTableHeader';
-import {getAll} from "../../data/databaseManager";
-import { Card } from 'react-md';
-import { setMemCols } from "../../index";
-import {userLevel} from "../AuthMan";
-import { getLevel } from "../AuthMan";
 import MemberTable from '../MemberTable';
 import { Grid } from 'react-md';
 import {getAll} from "../../data/databaseManager";

@@ -1,5 +1,6 @@
 import React from "react";
-import AuthMan from "../AuthMan";
+import {logout, login, isLoggedIn} from "../AuthMan";
+import LaunchScreen from "../LaunchScreen";
 
 
 export default class LoginPage extends React.Component{
@@ -26,13 +27,15 @@ export default class LoginPage extends React.Component{
 
 
     render(){
-        let am = new AuthMan();
+        if(isLoggedIn()){
+            return <LaunchScreen/>;
+        }
         return (
             <div>
                 <input value={this.state.username} onChange={this.updateUsername}/><br />
                 <input value={this.state.password} onChange={this.updatePassword}/><br />
-                <button onClick={() => am.login()}>Sign In</button>
-                <button onClick={() =>am.logout()}>Sign Out</button>
+                <button onClick={() => login()}>Sign In</button>
+                <button onClick={() => logout()}>Sign Out</button>
             </div>);
     }
 }

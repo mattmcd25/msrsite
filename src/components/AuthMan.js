@@ -1,25 +1,30 @@
-import {ACCESS_TOKEN_KEY, ID_TOKEN_KEY, CLIENT_DOMAIN, CLIENT_ID, sysToken} from "../AuthConstants";
+import {ACCESS_TOKEN_KEY, ID_TOKEN_KEY, CLIENT_DOMAIN, CLIENT_ID} from "../AuthConstants";
 import React from "react";
 import auth0 from "auth0-js";
 import decode from "jwt-decode";
 export let userLevel;
-let at = '';
+export let sysToken;
 
-function getSysToken(){
-    let request = require("request");
+export function getSysToken(){
+    let request = require("request-promise");
 
     let options = { method: 'POST',
         url: 'https://rwwittenberg.auth0.com/oauth/token',
         headers: { 'content-type': 'application/json' },
-        body: '{"client_id":"fROUBRhDoOuMPdLBX2rtHxrZFPFVo171","client_secret":"-yWrqF9i6V4t9rlV-_l8bkl4fExqvml6L1b_y5_gLvD2aIdgIe1_q-FkWDzovL5O","audience":"https://msrapitest/","grant_type":"client_credentials"}' };
+        body:
+            { grant_type: 'client_credentials',
+                client_id: 'fROUBRhDoOuMPdLBX2rtHxrZFPFVo171',
+                client_secret: '-yWrqF9i6V4t9rlV-_l8bkl4fExqvml6L1b_y5_gLvD2aIdgIe1_q-FkWDzovL5O',
+                //audience: 'https://msrapitest/'},
+                audience: 'https://rwwittenberg.auth0.com/api/v2/'},
+        json: true };
 
-    request(options, function (error, response, body) {
-        if (error) throw new Error(error);
 
-        at = JSON.parse(body)["access_token"];
-        console.log("sys: ");
-        console.log(body);
-    });
+    return request(options)
+        .then(response => {
+            sysToken = response['access_token'];
+            console.log(sysToken);
+        });
 }
 
 export function getIdToken() {
@@ -77,7 +82,7 @@ function isTokenExpired(token) {
 }
 
 export function getLevel() {
-    let request = require("request");
+    let request = require("request-promise");
     let user_id = decode(getIdToken())['sub'];
     console.log(user_id);
     let options = {
@@ -91,43 +96,35 @@ export function getLevel() {
             }
     };
     console.log("requesting ...");
-    request(options, (err, response, body) => {
-        userLevel = JSON.parse(body)['app_metadata']['level'];
-        console.log(userLevel);
+    return (request(options)
+        .then(response => {
+            try {
+                userLevel = JSON.parse(response)['app_metadata']['level'];
+
+            }catch(e){
+                userLevel = "newUser";
+            }
+            console.log(userLevel);
+        }));
+}
+
+export function login() {
+    let auth = new auth0.WebAuth({
+        clientID: CLIENT_ID,
+        domain: CLIENT_DOMAIN
+    });
+
+    auth.authorize({
+        responseType: 'token id_token',
+        redirectUri: "http://localhost:3000/callback",
+        audience: "https://msrapitest/",
+        scope: "access:all"
     });
 }
 
-export default class AuthMan extends React.Component{
-    constructor() {
-        super();
-        //getSysToken();
-        this.auth = new auth0.WebAuth({
-            clientID: CLIENT_ID,
-            domain: CLIENT_DOMAIN
-        });
-
-        this.login = this.login.bind(this);
-        this.logout = this.logout.bind(this);
-
-    }
-
-    login() {
-
-        this.auth.authorize({
-            responseType: 'token id_token',
-            redirectUri: "http://localhost:3000/callback",
-            audience: "https://msrapitest/",
-            scope: "access:all"
-        });
-        getLevel();
-    }
-
-    logout(){
-        console.log("Signing Out");
-        clearIdToken();
-        clearAccessToken();
-    }
-
-
-
+export function logout(){
+    console.log("Signing Out");
+    clearIdToken();
+    clearAccessToken();
+    window.location.href = '/';
 }
