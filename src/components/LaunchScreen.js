@@ -1,14 +1,26 @@
 import React from "react";
 import { Media, Paper, CircularProgress } from 'react-md';
-import {getLevel, getSysToken} from "./AuthMan";
-import {initialize} from "../index";
 import App from "../App";
 import ReactDOM from 'react-dom'
+import {initialize} from "../index";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 export default class LaunchScreen extends React.Component{
+    constructor(props){
+        super(props);
+        this.authenticated = false;
+    }
+
     componentDidMount(){
         console.log("Loading");
-        getSysToken().then(() => getLevel()).then(() => initialize()).then(() => ReactDOM.render(<App/>, document.getElementById("root")));
+        try {
+            initialize().then(() => {
+                ReactDOM.render(<App/>, document.getElementById("root"))
+            });
+        }catch(e){
+            console.log("401 doe");
+            ReactDOM.render(<UnauthorizedPage/>);
+        }
     }
 
     render() {

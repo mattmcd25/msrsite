@@ -1,47 +1,36 @@
 import ReactDOM from 'react-dom';
 import React from "react";
 import './style/index.css';
-import App from "./App";
 import WebFontLoader from 'webfontloader';
 import { getAllColumns, getAll } from "./data/databaseManager";
-import LoginPage from './components/pages/LoginPage';
-import LaunchScreen from "./components/LaunchScreen";
 import LockedApp from "./LockedApp";
 
 export var HEADERS = [];
 export var CONSTANTS = [];
 let searchResult = [];
 
-// ReactDOM.render(
-//     <LaunchScreen/>,
-//     document.getElementById('root'),
-//     () => initialize().then(() => {
-        ReactDOM.render(
-            <LockedApp/>,
-            document.getElementById('root')
-        );
-//     })
-// );
+ReactDOM.render(
+    <LockedApp/>,
+    document.getElementById('root')
+);
 
-export async function initialize() {
-    console.log("initialize...");
+export function initialize(){
     WebFontLoader.load({
         google: {
             families: ['Roboto:300,400,500,700', 'Material Icons', 'Novo:300,400,500,700', 'Open Sans:300,400,500,700'],
         },
     });
 
-    HEADERS['Member'] = await getAllColumns('Member');
-    HEADERS['Work'] = await getAllColumns('Work');
-    HEADERS['Skill'] = await getAllColumns('Skill');
-    HEADERS['Language'] = await getAllColumns('Language');
-    HEADERS['Site'] = await getAllColumns('Site');
-    HEADERS['Certificate'] = await getAllColumns('Certificate');
-    HEADERS['Has_Cert'] = await getAllColumns('Has_Cert');
-    CONSTANTS['Skill'] = await getAll('Skill');
-    CONSTANTS['Language'] = await getAll('Language');
-    CONSTANTS['Site'] = await getAll('Site');
-    CONSTANTS['Certificate'] = await getAll('Certificate');
+    let headers = ['Member', 'Work', 'Skill', 'Language', 'Site', 'Certificate', 'Has_Cert'];
+    let constants = ['Skill', 'Language', 'Site', 'Certificate'];
+    let promises = [];
+    try {
+        headers.map(table => promises.push(getAllColumns(table).then(res => HEADERS[table] = res)));
+        constants.map(table => promises.push(getAll(table).then(res => CONSTANTS[table] = res)));
+        return Promise.all(promises);
+    }catch(e){
+        throw e;
+    }
 }
 
 export function storeSearch(result) {

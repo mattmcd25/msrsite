@@ -23,8 +23,17 @@ function api_patch(call, body) {
 }
 
 function api_delete(call, body){
-    return axios.delete('/api/'+call, JSON.stringify(body), conf).then(checkStatus).then(response => response.data);
+    let conf2 = {
+        headers: {
+            Authorization: `Bearer ${getAccessToken()}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        data: body
+    };
+    return axios.delete('/api/'+call, conf2).then(checkStatus).then(response => response.data);
 }
+
 
 function checkStatus(response) {
     console.log(response);
