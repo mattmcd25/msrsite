@@ -1,29 +1,43 @@
-// ========== Internal Functions ==========
+import axios from 'axios'
+import {getAccessToken} from "../components/AuthMan";
+
+
+/// / ========== Internal Functions ==========
+let conf = {
+    headers: {
+        Authorization: `Bearer ${getAccessToken()}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    }
+};
 function api_get(call) {
-    return fetch(`/api/${call}`, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        }).then(checkStatus)
-        .then(parseJSON);
+    return axios.get(`/api/${call}`, conf).then(checkStatus).then(response => response.data);
 }
 
-function api_post(call, body, method='POST') {
-    return fetch(`/api/${call}`, {
-            method: method,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-        }).then(checkStatus)
-        .then(parseJSON);
+function api_post(call, body) {
+    return axios.post('/api/'+call, JSON.stringify(body), conf).then(checkStatus).then(response => response.data);
 }
+
+function api_patch(call, body) {
+    return axios.patch('/api/'+call, JSON.stringify(body), conf).then(checkStatus).then(response => response.data);
+}
+
+function api_delete(call, body){
+    let conf2 = {
+        headers: {
+            Authorization: `Bearer ${getAccessToken()}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        data: body
+    };
+    return axios.delete('/api/'+call, conf2).then(checkStatus).then(response => response.data);
+}
+
 
 function checkStatus(response) {
     console.log(response);
-    if (response.status >= 200 && response.status < 300) {
+    if (response.status >= 200 && response.status < 400) {
         return response;
     }
     const error = new Error(`HTTP Error ${response.statusText}`);
@@ -33,13 +47,7 @@ function checkStatus(response) {
     throw error;
 }
 
-function parseJSON(response) {
-    return response.json();
-}
-
-
-
-// ========== Exported Functions - Basics ==========
+// ========== Exported Functions ==========
 export function getAll(table) {
     return api_get(`select*/${table}`)
         .then(json => json['recordsets'][0]);
@@ -58,7 +66,7 @@ export function insert(table, data) {
 }
 
 export function update(table, data) {
-    return api_post(`update/${table}`, data, 'PATCH');
+    return api_patch(`update/${table}`, data);
 }
 
 export function query(table, data) {
@@ -67,7 +75,7 @@ export function query(table, data) {
 }
 
 export function del(table, data) {
-    return api_post(`delete/${table}`, data, 'DELETE');
+    return api_delete(`delete/${table}`, data);
 }
 
 // ========== Exported Functions - Helpers ==========
@@ -75,6 +83,14 @@ export function getMemberByID(id) {
     return query("MEMBER", {
         "ID":`${id}`
     }).then(json => json[0]);
+}
+
+export function getUserInfoByToken(t){
+    return (axios.get('https://rwwittenberg.auth0.com/userinfo', {
+        headers: {
+            Authorization: `Bearer ${t}`
+        }
+    }).then(console.log));
 }
 
 export function getMemberSkillsByID(id, all=true) {

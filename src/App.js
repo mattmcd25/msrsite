@@ -5,11 +5,15 @@ import NewMember from "./components/pages/NewMemberPage";
 import Layout from "./components/pages/Layout";
 import MemberPage from "./components/pages/MemberPage";
 import EditMemberPage from "./components/pages/EditMemberPage";
+import LoginPage from "./components/pages/LoginPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import QueryPage from './components/pages/QueryPage';
 import AdminPage from "./components/pages/AdminPage";
+import Callback from "./components/Callback";
+import {isLoggedIn} from "./components/AuthMan";
 
-export default class AppRoutes extends React.Component {
+
+export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -45,14 +49,20 @@ export default class AppRoutes extends React.Component {
 
     componentWithRefs = (component) => {
         return (
-            ({match, location, history}) => React.createElement(component, {
-                setTitle:this.updateTitle,
-                setActions:this.updateActions,
-                toast:this.toast,
-                match:match,
-                location:location,
-                history:history
-            })
+            ({match, location, history}) => {
+                if(isLoggedIn()) {
+                    return React.createElement(component, {
+                        setTitle: this.updateTitle,
+                        setActions: this.updateActions,
+                        toast: this.toast,
+                        match: match,
+                        location: location,
+                        history: history
+                    })
+                }else{
+                    return <Redirect to='/login'/>
+                }
+            }
         );
     };
 
@@ -64,6 +74,8 @@ export default class AppRoutes extends React.Component {
                         {/* Homepage */}
                         <Route exact path="/" render={this.componentWithRefs(IndexPage)}/>
                         {/* Other Pages */}
+                        <Route path="/login" component={LoginPage}/>
+                        <Route path="/callback" component={Callback}/>
                         <Route path="/new" render={this.componentWithRefs(NewMember)}/>
                         <Route exact path="/member/:memid" render={this.componentWithRefs(MemberPage)}/>
                         <Route path="/member/:memid/edit" render={this.componentWithRefs(EditMemberPage)}/>

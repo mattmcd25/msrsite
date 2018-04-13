@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { List, ListItem, Subheader, Divider, FontIcon } from 'react-md';
+import {logout} from "./AuthMan";
 
 const NAV_ITEMS = [
     {
@@ -22,6 +23,12 @@ const NAV_ITEMS = [
         children: [
             {name:"Help", to:"/help", icon:"help", desc:"Get help with this app"}
         ]
+    },
+    {
+        head:"Account",
+        children: [
+            {name:"Sign Out", icon:'lock_outline', desc:'Sign out of the app', action:logout}
+        ]
     }
 ];
 
@@ -40,13 +47,14 @@ export default function Navigation(props) {
 }
 
 function NavItem(props) {
-    return (
-        <Link className="navItem" to={props.to}>
-            <ListItem className="navItem"
-                leftIcon={<FontIcon>{props.icon}</FontIcon>}
-                primaryText={props.name}
-                secondaryText={props.desc}
-            />
-        </Link>
+    let li = (
+        <ListItem className="navItem"
+                  leftIcon={<FontIcon>{props.icon}</FontIcon>}
+                  primaryText={props.name}
+                  secondaryText={props.desc}
+                  onClick={props.action}
+        />
     );
+
+    return props.to ? <Link className="navItem" to={props.to}>{li}</Link> : li;
 }

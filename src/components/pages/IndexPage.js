@@ -6,6 +6,7 @@ import {getAll} from "../../data/databaseManager";
 export default class IndexPage extends React.Component {
     constructor(props) {
         super(props);
+
         this.props.setTitle("View Members");
         this.state = {
             members: []
