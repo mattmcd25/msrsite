@@ -14,7 +14,8 @@ export default function EditMemberDisplay(props) {
             {(() => {
                 let {ID, ...rest} = props.mem;
                 return (<PropListCard edit title={rest.FIRSTNAME + " " + rest.SURNAME} data={rest}
-                                      onChange={props.onMemChange} table='Member'/>)
+                                      onChange={props.onMemChange} table='Member'
+                                      acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR)}}/>)
             })()}
 
             {Object.keys(props.work).map(workID => {

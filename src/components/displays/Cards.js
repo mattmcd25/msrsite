@@ -15,6 +15,7 @@ export function BlankCard(props) {
                 </CardTitle>
                 <CardText>
                     {props.children}
+                    {props.footer}
                 </CardText>
             </Card>
         </Cell>

@@ -1,21 +1,22 @@
 import React from 'react';
 import { CircularProgress, Button, TextField, Grid, Cell, Card, CardTitle, CardText } from 'react-md';
 import { insert } from '../../data/databaseManager';
-import { HEADERS } from "../../index";
+import {CONSTANTS, HEADERS} from "../../index";
 import { PrettyKey, textValidation, invalidFields } from "../displays/DisplayUtils";
 import { makeDict } from "../../Utils";
+import { PropListCard } from "../displays/Cards";
 
 export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
         this.props.setTitle("Add Member");
         this.state = {
-            mem: makeDict(Object.keys(HEADERS['Member'])),
+            mem: makeDict(Object.keys(HEADERS['Member']).slice(1)),
             loading: false
         };
     };
 
-    handleSubmit = (e) => {
+    handleSubmit = () => {
         this.setState({ loading: true });
         this.props.toast({text:'Adding member...'});
         insert("Member", this.state.mem)
@@ -26,9 +27,10 @@ export default class NewMemberPage extends React.Component {
             });
     };
 
-    handleInputChange = (value, e) => {
-        const target = e.target;
-        const name = target.name;
+    handleInputChange = (e) => {
+        let target = e.target;
+        let value = target.value;
+        let name = target.name;
 
         this.setState(prevState => ({
             mem: {
@@ -44,27 +46,14 @@ export default class NewMemberPage extends React.Component {
                 <Grid className="newMemberPage">
                     {this.state.loading ?
                         <Cell size={12}><CircularProgress id="newMemberPage"/></Cell> :
-                        <Cell size={4}>
-                            <Card className="member-card">
-                                <CardTitle className="card-action-title" title="New Member"/>
-                                <CardText>
-                                    <form onSubmit={this.handleSubmit}>
-                                        {Object.keys(HEADERS['Member']).slice(1).map(field => {
-                                            let x = <TextField value={this.state.mem[field]} label={PrettyKey(field)}
-                                                               onChange={this.handleInputChange} id={field} name={field}
-                                                               key={field} {...textValidation('Member', field)}
-                                                               fullWidth={false} className="padRight"/>
-                                            fields.push(x);
-                                            return x;
-                                        })}
-                                        <label className="vertSpacer"/>
-                                        <Button raised primary name="insert" disabled={invalidFields(fields)} type="submit">
-                                            Add Member
-                                        </Button><br/>
-                                    </form>
-                                </CardText>
-                            </Card>
-                        </Cell>
+                        <PropListCard edit title='New Member' data={this.state.mem}
+                                      onChange={this.handleInputChange} table='Member'
+                                      acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR)}}
+                                        footer={
+                                            <Button raised primary name="insert" disabled={invalidFields(fields)}
+                                                    onClick={this.handleSubmit}>
+                                                Add Member
+                                            </Button>}/>
                     }
                 </Grid>
         );
