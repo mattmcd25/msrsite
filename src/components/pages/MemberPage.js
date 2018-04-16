@@ -1,9 +1,8 @@
 import React from 'react';
 import { getMemberByID, getMemberSkillsByID, getMemberWorkByID, getMemberLangsByID,
-    getMemberCertsByID } from "../../data/databaseManager";
+    getMemberCertsByID, getMemberPlacementsByID, getMemberTrainingByID } from "../../data/databaseManager";
 import { Link } from 'react-router-dom';
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork } from '../displays/DisplayUtils';
 import MemberDisplay from '../displays/MemberDisplay';
 import {dictFromList} from "../../Utils";
 
@@ -20,7 +19,11 @@ export default class MemberPage extends React.PureComponent {
         getMemberSkillsByID(id)
             .then(skills => this.setState({ skills }))
             .then(() => getMemberWorkByID(id))
-            .then(work => this.setState({ work: PrettyWork(work) }))
+            .then(work => this.setState({ work }))
+            .then(() => getMemberPlacementsByID(id))
+            .then(placements => this.setState({ placements }))
+            .then(() => getMemberTrainingByID(id))
+            .then(training => this.setState({ training }))
             .then(() => getMemberLangsByID(id))
             .then(langs => this.setState({ langs: dictFromList(langs, 'LANGUAGE') }))
             .then(() => getMemberCertsByID(id))
@@ -40,7 +43,8 @@ export default class MemberPage extends React.PureComponent {
                 {this.state.mem === undefined ?
                     <Grid className="member-display"><CircularProgress id="memberPage"/></Grid> :
                     <MemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
-                                   langs={this.state.langs} certs={this.state.certs}/>}
+                                   langs={this.state.langs} certs={this.state.certs} placements={this.state.placements}
+                                   training={this.state.training}/>}
             </div>
         );
     }

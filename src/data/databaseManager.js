@@ -47,6 +47,28 @@ function checkStatus(response) {
     throw error;
 }
 
+function SortSkills(list, pk) {
+    return list.reduce((acc, cur) => {
+        if(acc!==undefined && acc.hasOwnProperty(cur[pk])) {
+            acc[cur[pk]].SKILLS.push(cur.NAME);
+            return acc;
+        }
+        else {
+            let {ID, NAME, ...rest} = cur;
+            let sks = NAME ? [NAME] : [];
+            return {
+                [cur[pk]]: {
+                    ...rest,
+                    SKILLS: sks
+                },
+                ...acc
+            }
+        }
+    }, {});
+}
+
+const byID = id => ({ "ID":`${id}` });
+
 // ========== Exported Functions ==========
 export function getAll(table) {
     return api_get(`select*/${table}`)
@@ -80,9 +102,7 @@ export function del(table, data) {
 
 // ========== Exported Functions - Helpers ==========
 export function getMemberByID(id) {
-    return query("MEMBER", {
-        "ID":`${id}`
-    }).then(json => json[0]);
+    return query("MEMBER", byID(id)).then(json => json[0]);
 }
 
 export function getUserInfoByToken(t){
@@ -95,27 +115,27 @@ export function getUserInfoByToken(t){
 
 export function getMemberSkillsByID(id, all=true) {
     let table = all ? "ALL_SKILLS" : "OTHER_SKILLS";
-    return query(table, {
-        "ID":`${id}`
-    })
+    return query(table, byID(id))
         .then(json => json.map(row => row.NAME))
         .then(sks => ((sks.length===1 && !sks[0]) ? [] : sks));
 }
 
 export function getMemberWorkByID(id) {
-    return query("WORK_INFO", {
-        "ID":`${id}`
-    });
+    return query("WORK_INFO", byID(id)).then(w => SortSkills(w, 'WORKID'));
+}
+
+export function getMemberPlacementsByID(id) {
+    return query('PLACEMENT_INFO', byID(id)).then(p => SortSkills(p, 'PLACEMENTID'));
+}
+
+export function getMemberTrainingByID(id) {
+    return query('TRAINING_INFO', byID(id)).then(t => SortSkills(t, 'TRAININGID'));
 }
 
 export function getMemberLangsByID(id) {
-    return query('KNOW_LANG', {
-        "ID":`${id}`
-    });
+    return query('KNOW_LANG', byID(id));
 }
 
 export function getMemberCertsByID(id) {
-    return query('HAS_CERT', {
-        "ID":`${id}`
-    });
+    return query('HAS_CERT', byID(id));
 }

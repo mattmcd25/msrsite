@@ -2,6 +2,7 @@ import React from "react";
 import Tooltip from '../Tooltip';
 import { CONSTANTS, HEADERS } from "../../index";
 import { dictFromList, or } from "../../Utils";
+import { FontIcon } from 'react-md';
 
 const formats = {
     'FIRSTNAME': ['First Name'],
@@ -20,7 +21,14 @@ const formats = {
     'ABBR': ['Site Code'],
     'TYPE': ['Certificate Type'],
     'YEAR': ['Completion Year'],
-    'INSTITUTION': ['Completed at']
+    'INSTITUTION': ['Completed at'],
+    'DEPENDENTS': ['Dependents'],
+    'DATE': ['Recruit Date'],
+    'WORKTYPE': ['Employment Type'],
+    'WORKSTATUS': ['Employment Status'],
+    'STARTDATE': ['Start Date',prettyDate],
+    'COMPLETEDATE': ['Complete Date',prettyDate],
+    'SUCCEEDED': ['Succeeded',prettyBool]
 };
 
 export function PrettyKey(key) {
@@ -35,27 +43,6 @@ export function PrettyValue(key, val) {
 
 export function PrettyPair(key, val) {
     return <div><b>{PrettyKey(key)}:</b> {PrettyValue(key, val)}</div>;
-}
-
-export function PrettyWork(work) {
-    return work.reduce((acc, cur) => {
-        if(acc!==undefined && acc.hasOwnProperty(cur.WORKID)) {
-            acc[cur.WORKID].SKILLS.push(cur.NAME);
-            return acc;
-        }
-        else {
-            let sks = cur.NAME ? [cur.NAME] : [];
-            return {
-                [cur.WORKID]: {
-                    EMPLOYER: cur.EMPLOYER,
-                    WORKID: cur.WORKID,
-                    LENGTH: cur.LENGTH,
-                    SKILLS: sks
-                },
-                ...acc
-            }
-        }
-    }, {});
 }
 
 export function textValidation(table, field) {
@@ -104,4 +91,14 @@ function prettyYears(years) {
         (years === 1) ?
             `${years} year` :
             `${years*12} months`;
+}
+
+function prettyDate(date) {
+    return new Date(date).toDateString()
+}
+
+function prettyBool(bool) {
+    return bool ?
+        <div style={{'display':'inline'}}><FontIcon primary>check</FontIcon>Yes</div> :
+        <div style={{'display':'inline'}}><FontIcon error>close</FontIcon>No</div> ;
 }

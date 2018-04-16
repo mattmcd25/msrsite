@@ -5,7 +5,7 @@ import {
 } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork, invalidData } from "../displays/DisplayUtils";
+import { invalidData } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
 import { intersection, difference, dictFromList } from "../../Utils";
 
@@ -50,7 +50,7 @@ export default class EditMemberPage extends React.Component {
         getMemberSkillsByID(id, false)
             .then(skills => this.setState({ skills, pastSkills: skills }))
             .then(() => getMemberWorkByID(id))
-            .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
+            .then(work => this.setState({ work, pastWork: work }))
             .then(() => getMemberLangsByID(id))
             .then(langs => this.setState({ langs: dictFromList(langs, 'LANGUAGE'), pastLangs: dictFromList(langs, 'LANGUAGE') }))
             .then(() => getMemberCertsByID(id))
