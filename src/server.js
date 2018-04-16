@@ -28,11 +28,11 @@ const checkTableID = (req, res, next) => {
 const validateUser = (req, res, next) => {
     let u = req.user['sub'];
     if(auth0Calls.recentUsers.indexOf(u) >= 0){
-        console.log("[Middleware] Recent User with ID: "+ u);
+        console.log("[middleware] Recent User with ID: "+ u);
         next();
     }else{
         auth0Calls.getSysToken().then(() => auth0Calls.getLevel(u)).then(() => {
-            console.log("[Middleware] user level: " + auth0Calls.userLevelServerSide);
+            console.log("[middleware] user level: " + auth0Calls.userLevelServerSide);
             if(auth0Calls.userLevelServerSide === 'user' || auth0Calls.userLevelServerSide === 'admin') {
                 auth0Calls.recentUsers.push(u);
                 next();
@@ -63,8 +63,6 @@ const authCheck = jwt({
 // ========== Configuration ==========
 const app = express(); // server app
 
-app.use(authCheck);
-
 app.use(bodyparser.json({
     type: 'application/json',
     extended: false
@@ -77,7 +75,7 @@ app.use(protect.express.sqlInjection({
 
 app.set("port", process.env.PORT || 3005); // select port based on heroku settings
 
-app.get('/apitest/', authCheck, (req, res) => { // generic test
+app.get('/api', (req, res) => { // generic test
 
     res.send("hello from the api!");
     console.log(req.user);
@@ -89,23 +87,23 @@ app.get('/apitest/', authCheck, (req, res) => { // generic test
 
 
 // ========== General Actions ==========
-app.get('/api/connect', validateUser, gen.connect); // connect to the database
-app.get('/api/disconnect', gen.disconnect); // disconnect from the database
+app.get('/api/connect', authCheck, validateUser, gen.connect); // connect to the database
+app.get('/api/disconnect', authCheck, validateUser, gen.disconnect); // disconnect from the database
 
 
 
 // ========== Querying Actions ==========
-app.get('/api/select*/:table', validateUser, checkTableID, query.selectAll); // select all from a table or view
-app.get('/api/colnames/:table', validateUser, checkTableID, query.getColumns); // get column names from a table or view
-app.get('/api/tabnames', validateUser, query.getTables); // get all table names from the db
-app.post('/api/query/:table', validateUser, checkTableID, query.advancedQuery); // advanced query
+app.get('/api/select*/:table', authCheck, validateUser, checkTableID, query.selectAll); // select all from a table or view
+app.get('/api/colnames/:table', authCheck, validateUser, checkTableID, query.getColumns); // get column names from a table or view
+app.get('/api/tabnames', authCheck, validateUser, query.getTables); // get all table names from the db
+app.post('/api/query/:table', authCheck, validateUser, checkTableID, query.advancedQuery); // advanced query
 
 
 
 // ========== Update Actions ==========
-app.post('/api/insert/:table', validateUser, checkTableID, update.insert); // insert on a table
-app.patch('/api/update/:table', validateUser, checkTableID, update.update); // update a table row
-app.delete('/api/delete/:table', validateUser, checkTableID, update.delete); // delete a table row
+app.post('/api/insert/:table', authCheck, validateUser, checkTableID, update.insert); // insert on a table
+app.patch('/api/update/:table', authCheck, validateUser, checkTableID, update.update); // update a table row
+app.delete('/api/delete/:table', authCheck, validateUser, checkTableID, update.delete); // delete a table row
 
 
 

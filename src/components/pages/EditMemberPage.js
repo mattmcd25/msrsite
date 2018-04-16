@@ -20,8 +20,9 @@ export default class EditMemberPage extends React.Component {
         };
     }
 
-    actions = () => {
-        return [
+    // Generates and updates the actions in the top bar
+    updateActions = () => {
+        this.props.setActions([
             <Link to={`/member/${this.props.match.params.memid}`}>
                 <Button style={{'color':'black'}} raised secondary children="Cancel" />
             </Link>,
@@ -30,19 +31,20 @@ export default class EditMemberPage extends React.Component {
                     onClick={this.saveChanges}>
                 Save
             </Button>
-        ];
+        ]);
     };
 
+    // When state changes; used to update actions based on invalid data
     componentDidUpdate = () => {
         let disabled = invalidData([this.state.mem], 'Member')
                             || invalidData(this.state.work, 'Work')
                             || invalidData(this.state.certs, 'Has_Cert');
         if(disabled !== this.state.disabled) {
-            this.setState({ disabled }, () => this.props.setActions(this.actions()));
+            this.setState({ disabled }, this.updateActions);
         }
     };
 
-    // initial loading
+    // Initial loading from database
     componentDidMount(){
         let id = this.props.match.params.memid;
         getMemberSkillsByID(id, false)
@@ -56,11 +58,11 @@ export default class EditMemberPage extends React.Component {
             .then(() => getMemberByID(id))
             .then(mem => this.setState({ mem, pastMem: mem }))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
-            .then(() => this.props.setActions(this.actions()))
+            .then(this.updateActions)
             .then(() => this.setState({ loading: false }));
     }
 
-    // save changes to the member
+    // Save changes to the member
     saveChanges = () => {
         this.setState({ loading: true });
         this.props.toast({text:'Saving changes...'});
@@ -151,6 +153,7 @@ export default class EditMemberPage extends React.Component {
         });
     };
 
+    /* ========== UPDATE ========== */
     // member text field edited
     updateMember = (evt) => {
         const target = evt.target;
@@ -196,6 +199,7 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    /* ========== SET ========== */
     // skills list changed
     setSkills = (skills) => {
         this.setState({ skills });
@@ -226,6 +230,7 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    /* ========== ADD ========== */
     addLang = (LANGUAGE) => {
         let ID = this.props.match.params.memid;
         this.setState(prevState => ({
@@ -240,13 +245,6 @@ export default class EditMemberPage extends React.Component {
                 }
             }
         }));
-    };
-
-    removeLang = (LANGUAGE) => {
-        let {[LANGUAGE]:toDel, ...langs} = this.state.langs;
-        this.setState({
-            langs
-        });
     };
 
     // add work
@@ -282,6 +280,13 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    /* ========== REMOVE ========== */
+    removeLang = (LANGUAGE) => {
+        let {[LANGUAGE]:toDel, ...langs} = this.state.langs;
+        this.setState({
+            langs
+        });
+    };
     // remove work
     removeWork = (workID) => {
         let {[workID]:toDel, ...work} = this.state.work;

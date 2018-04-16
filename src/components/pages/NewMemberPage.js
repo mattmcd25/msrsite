@@ -1,8 +1,8 @@
 import React from 'react';
-import { CircularProgress, Button, TextField, Grid, Cell, Card, CardTitle, CardText } from 'react-md';
+import { CircularProgress, Button, Grid, Cell } from 'react-md';
 import { insert } from '../../data/databaseManager';
 import {CONSTANTS, HEADERS} from "../../index";
-import { PrettyKey, textValidation, invalidFields } from "../displays/DisplayUtils";
+import { invalidFields } from "../displays/DisplayUtils";
 import { makeDict } from "../../Utils";
 import { PropListCard } from "../displays/Cards";
 
