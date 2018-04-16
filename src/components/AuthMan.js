@@ -64,7 +64,7 @@ export function login() {
 
     auth.authorize({
         responseType: 'token id_token',
-        redirectUri: "http://localhost:3000/callback",
+        redirectUri: `${window.location.origin}/callback`,
         audience: "https://msrapitest/",
         scope: "access:all"
     });
