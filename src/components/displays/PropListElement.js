@@ -6,18 +6,7 @@ import {HEADERS} from "../../index";
 export default class PropListElement extends React.Component {
     constructor(props) {
         super(props);
-        if(props.edit) {
-            let data = {...props.data};
-            Object.keys(data).forEach(field => {
-                if (HEADERS[this.props.table][field].DATA_TYPE === 'date') {
-                    let d = new Date(data[field]);
-                    d.setHours(12);
-                    data[field] = d;
-                }
-            });
-            this.state = {data};
-            this.refs = {};
-        }
+        this.refs = {};
     }
 
     setRef = (field, element) => {
@@ -27,6 +16,10 @@ export default class PropListElement extends React.Component {
         };
     };
 
+    clearACs = () => {
+        Object.values(this.refs).forEach(ac => ac.setState({value:''}));
+    };
+
     getRef = (field) => {
         return this.refs[field];
     };
@@ -34,11 +27,6 @@ export default class PropListElement extends React.Component {
     onChange = (name, value) => {
         if(value instanceof Date)
             value.setHours(12);
-        this.setState((prevstate) => {
-            return {
-                data: {...prevstate.data, [name]:value}
-            };
-        });
         this.props.onChange({target:{name,value}});
     };
 
@@ -49,7 +37,7 @@ export default class PropListElement extends React.Component {
                     if(this.props.edit) {
                         if(this.props.acData && this.props.acData[field]) {
                             return <Autocomplete id="props-autocomplete" label={PrettyKey(field)} ref={e => this.setRef(field, e)}
-                                                  data={this.props.acData[field]} fullWidth={false} key={field} defaultValue={this.state.data[field]}
+                                                  data={this.props.acData[field]} fullWidth={false} key={field} defaultValue={this.props.data[field]}
                                                   onBlur={() => {
                                                       let self = this.getRef(field);
                                                       let value = self.state.value;
@@ -63,17 +51,24 @@ export default class PropListElement extends React.Component {
                         }
                         else if (typeof(this.props.data[field]) === 'boolean') {
                             return <Checkbox key={field} id={field} name={field} label={PrettyKey(field)}
-                                             checked={this.state.data[field]} onChange={v => this.onChange(field, v)}/>
+                                             className="padRight" checked={this.props.data[field]}
+                                             onChange={v => this.onChange(field, v)}/>
                         }
                         else if (HEADERS[this.props.table][field].DATA_TYPE === 'date') {
+                            let value = {};
+                            if(this.props.data[field]) {
+                                let d = new Date(this.props.data[field]);
+                                d.setHours(12);
+                                value = { value:d };
+                            }
                             return <DatePicker id={`${field}-date`} label={PrettyKey(field)} displayMode="portrait"
-                                               value={this.state.data[field]} fullWidth={false} icon={false} autoOk
+                                               {...value} fullWidth={false} icon={false} autoOk key={field}
                                                onChange={(s, o) => this.onChange(field, o)} className='inlineDate'
-                                               {...textValidation(this.props.table, field)} key={field} />;
+                                               {...textValidation(this.props.table, field)}  />;
                         }
                         else {
                             return <TextField className="padRight" key={field} id={field} name={field}
-                                       label={PrettyKey(field)} fullWidth={false} value={this.state.data[field]}
+                                       label={PrettyKey(field)} fullWidth={false} value={this.props.data[field]}
                                        onChange={(v, e) => this.onChange(e.target.name, v)}
                                               {...textValidation(this.props.table, field)}/>
                         }

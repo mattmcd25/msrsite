@@ -140,7 +140,7 @@ export default class EditMemberPage extends React.Component {
         // Update Training
         this.saveJobs('training', 'TRAININGID', promises, ID);
 
-        // Wait for all api calls to finish 
+        // Wait for all api calls to finish
         Promise.all(promises).then(() => {
             this.props.toast({text:'Saved!'});
             this.props.history.push('/member/'+ID)
