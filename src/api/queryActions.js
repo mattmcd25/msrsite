@@ -16,7 +16,7 @@ exports.selectAll = (req, res) => {
             if(res) res.status(200).send(recordset); // send records as a response
         })
         .catch(err => {
-            console.log('[select*] '+err);
+            console.log('[select*] 500 '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -37,7 +37,7 @@ exports.advancedQuery = (req, res) => {
             if(res) res.status(200).send(recordset); // send records as a response
         })
         .catch(err => {
-            console.log('[query] '+err);
+            console.log('[query] 500 '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -55,7 +55,7 @@ exports.getColumns = (req, res) => {
             console.log("[colnames] Success");
             if(res) res.status(200).send(recordset); // send records as a response
         }).catch(err => {
-            console.log('[colnames] '+err);
+            console.log('[colnames] 500 '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -71,7 +71,23 @@ exports.getTables = (req, res) => {
             if(res) res.status(200).send(recordset);
             return recordset;
         }).catch(err => {
-            console.log('[tabnames] '+err);
+            console.log('[tabnames] 500 '+err);
             if(res) res.status(500).send(err);
         });
+};
+
+exports.getFKs = (req, res) => {
+    let tableID = req.params['table'].toUpperCase();
+
+    console.log(`[fks] Getting fks for ${tableID}`);
+    let request = new sql.Request();
+    let query = `SELECT OBJECT_NAME(f.parent_object_id) FROM sys.foreign_key_columns f WHERE OBJECT_NAME(f.referenced_object_id)='${tableID}'`;
+    return request.query(query)
+        .then(recordset => {
+            console.log("[fks] Success");
+            if(res) res.status(200).send(recordset);
+        }).catch(err => {
+            console.log("[fks] 500 "+err);
+            if(res) res.status(500).send(err);
+        })
 };

@@ -43,7 +43,7 @@ function checkStatus(response) {
     const error = new Error(`HTTP Error ${response.statusText}`);
     error.status = response.statusText;
     error.response = response;
-    console.log(error); // eslint-disable-line no-console
+    console.log(error);
     throw error;
 }
 
@@ -77,10 +77,12 @@ export function getAll(table) {
 
 export function getAllColumns(table) {
     return api_get(`colnames/${table}`)
-        .then(json => {
-            let info = json['recordsets'][0];
-            return Object.assign({}, ...info.map(col => ({[col.COLUMN_NAME]:col})));
-        });
+        .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
+}
+
+export function getFKs(table) {
+    return api_get(`fks/${table}`)
+        .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
 }
 
 export function insert(table, data) {

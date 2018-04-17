@@ -19,7 +19,8 @@ export default class App extends React.Component {
         this.state = {
             title: "",
             actions: [],
-            toasts: []
+            toasts: [],
+            popups: []
         }
     }
 
@@ -42,9 +43,20 @@ export default class App extends React.Component {
         this.setState({ toasts });
     };
 
+    popup = (popup) => {
+        let popups = this.state.popups.slice();
+        popups.push(popup);
+        this.setState({ popups });
+    };
+
     dismissToast = () => {
         let [, ...toasts] = this.state.toasts;
         this.setState({ toasts });
+    };
+
+    dismissPopup = () => {
+        let [, ...popups] = this.state.popups;
+        this.setState({ popups });
     };
 
     componentWithRefs = (component) => {
@@ -55,6 +67,8 @@ export default class App extends React.Component {
                         setTitle: this.updateTitle,
                         setActions: this.updateActions,
                         toast: this.toast,
+                        popup: this.popup,
+                        dismissPopup: this.dismissPopup,
                         match: match,
                         location: location,
                         history: history
@@ -69,7 +83,7 @@ export default class App extends React.Component {
     render() {
         return (
             <Router>
-                <Layout {...this.state} dismissToast={this.dismissToast}>
+                <Layout {...this.state} dismissToast={this.dismissToast} dismissPopup={this.dismissPopup}>
                     <Switch>
                         {/* Homepage */}
                         <Route exact path="/" render={this.componentWithRefs(IndexPage)}/>

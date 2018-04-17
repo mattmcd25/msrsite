@@ -2,11 +2,12 @@ import ReactDOM from 'react-dom';
 import React from "react";
 import './style/index.css';
 import WebFontLoader from 'webfontloader';
-import { getAllColumns, getAll } from "./data/databaseManager";
+import {getAllColumns, getAll, getFKs} from "./data/databaseManager";
 import LockedApp from "./LockedApp";
 
-export var HEADERS = [];
-export var CONSTANTS = [];
+export var HEADERS = {};
+export var CONSTANTS = {};
+export var FKS = {};
 export var WORKSTATUS = ['Employed', 'Released', 'Dismissed'];
 export var WORKTYPE = ['Full-time', 'Part-time', 'Temporary'];
 let searchResult = [];
@@ -26,13 +27,12 @@ export function initialize(){
     let constants = ['Skill', 'Language', 'Site', 'Certificate'];
     let headers = ['Member', 'Work', 'Has_Cert', 'Placement', 'Training'].concat(constants);
     let promises = [];
-    try {
-        headers.map(table => promises.push(getAllColumns(table).then(res => HEADERS[table] = res)));
-        constants.map(table => promises.push(getAll(table).then(res => CONSTANTS[table] = res)));
-        return Promise.all(promises);
-    }catch(e){
-        throw e;
-    }
+    headers.forEach(table => promises.push(getAllColumns(table).then(res => HEADERS[table] = res)));
+    constants.forEach(table => {
+        promises.push(getAll(table).then(res => CONSTANTS[table] = res));
+        promises.push(getFKs(table).then(res => FKS[table] = res));
+    });
+    return Promise.all(promises);
 }
 
 export function storeSearch(result) {
