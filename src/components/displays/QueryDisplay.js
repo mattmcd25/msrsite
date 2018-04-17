@@ -54,7 +54,8 @@ const searchCards = (props) => [
         subtitle:'Search for members with specific certifications.',
         icon:'school',
         children: (
-            <PropListElement edit data={props.cert} onChange={props.onCertChange} table="Has_Cert"/>
+            <PropListElement edit data={props.cert} onChange={props.onCertChange} table="Has_Cert"
+                             acData={{TYPE:CONSTANTS['Certificate'].map(c=>c.TYPE)}}/>
         )
     }
 ];

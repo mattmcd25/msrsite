@@ -28,7 +28,8 @@ const formats = {
     'WORKSTATUS': ['Employment Status'],
     'STARTDATE': ['Start Date',prettyDate],
     'COMPLETEDATE': ['Complete Date',prettyDate],
-    'SUCCEEDED': ['Succeeded',prettyBool]
+    'SUCCEEDED': ['Succeeded',prettyBool],
+    'FIELD': ['Training Field']
 };
 
 export function PrettyKey(key) {
@@ -66,7 +67,9 @@ export function invalidFields(fields) {
 export function invalidData(data, table) {
     return data && or(Object.values(data).map(d =>
         d && or(Object.keys(d).map(k =>
-            (typeof(d[k]) === 'string' && d[k].length > HEADERS[table][k].CHARACTER_MAXIMUM_LENGTH)))));
+            (typeof(d[k]) === 'string' &&
+                HEADERS[table][k].DATA_TYPE === 'varchar' &&
+                d[k].length > HEADERS[table][k].CHARACTER_MAXIMUM_LENGTH)))));
 }
 
 function prettyPhone(old) {

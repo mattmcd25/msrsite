@@ -4,7 +4,6 @@ import { getMemberByID, getMemberSkillsByID, getMemberWorkByID, getMemberLangsBy
 import { Link } from 'react-router-dom';
 import { Button, Grid, CircularProgress } from 'react-md';
 import MemberDisplay from '../displays/MemberDisplay';
-import {dictFromList} from "../../Utils";
 
 export default class MemberPage extends React.PureComponent {
     constructor(props) {
@@ -16,20 +15,13 @@ export default class MemberPage extends React.PureComponent {
 
     componentDidMount() {
         let id = this.props.match.params.memid;
-        getMemberSkillsByID(id)
-            .then(skills => this.setState({ skills }))
-            .then(() => getMemberWorkByID(id))
-            .then(work => this.setState({ work }))
-            .then(() => getMemberPlacementsByID(id))
-            .then(placements => this.setState({ placements }))
-            .then(() => getMemberTrainingByID(id))
-            .then(training => this.setState({ training }))
-            .then(() => getMemberLangsByID(id))
-            .then(langs => this.setState({ langs: dictFromList(langs, 'LANGUAGE') }))
-            .then(() => getMemberCertsByID(id))
-            .then(certs => this.setState({ certs }))
-            .then(() => getMemberByID(id))
-            .then(mem => this.setState({ mem }))
+        this.getAndSave(getMemberSkillsByID(id), 'skills')()
+            .then(this.getAndSave(getMemberWorkByID(id), 'work'))
+            .then(this.getAndSave(getMemberTrainingByID(id), 'training'))
+            .then(this.getAndSave(getMemberPlacementsByID(id), 'placement'))
+            .then(this.getAndSave(getMemberLangsByID(id), 'langs'))
+            .then(this.getAndSave(getMemberCertsByID(id), 'certs'))
+            .then(this.getAndSave(getMemberByID(id), 'mem'))
             .then(() => this.props.setTitle(this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(() => this.props.setActions((
                 <Link to={`/member/${this.state.mem.ID}/edit`}>
@@ -37,13 +29,16 @@ export default class MemberPage extends React.PureComponent {
                 </Link>)));
     }
 
+    getAndSave = (promise, name) =>
+        () => promise.then(res => this.setState({ [name]:res }));
+
     render() {
         return (
             <div className="memberPage">
                 {this.state.mem === undefined ?
                     <Grid className="member-display"><CircularProgress id="memberPage"/></Grid> :
                     <MemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
-                                   langs={this.state.langs} certs={this.state.certs} placements={this.state.placements}
+                                   langs={this.state.langs} certs={this.state.certs} placement={this.state.placement}
                                    training={this.state.training}/>}
             </div>
         );

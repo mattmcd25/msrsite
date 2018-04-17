@@ -21,12 +21,12 @@ export default function MemberDisplay(props) {
 
             {jobCards(props.work, 'WORKID', 'Past Work Experience')}
 
-            {jobCards(props.placements, 'PLACEMENTID', 'Placement through MSR')}
+            {jobCards(props.placement, 'PLACEMENTID', 'Placement through MSR')}
 
             {jobCards(props.training, 'TRAININGID', 'MSR Training Session', 'FIELD')}
 
-            {props.certs.map(cert => {
-                let {ID, TYPE, ...rest} = cert;
+            {Object.keys(props.certs).map(cert => {
+                let {ID, TYPE, ...rest} = props.certs[cert];
                 let DESC = dictFromList(CONSTANTS['Certificate'], 'TYPE')[TYPE].DESC;
                 return <PropListCard title={TYPE} key={TYPE} subtitle="Certificate" data={{DESC, ...rest}}/>
             })}

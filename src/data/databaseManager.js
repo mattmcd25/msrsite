@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {getAccessToken} from "../components/AuthMan";
+import {dictFromList} from "../Utils";
 
 
 /// / ========== Internal Functions ==========
@@ -36,7 +37,6 @@ function api_delete(call, body){
 
 
 function checkStatus(response) {
-    console.log(response);
     if (response.status >= 200 && response.status < 400) {
         return response;
     }
@@ -114,7 +114,7 @@ export function getUserInfoByToken(t){
 }
 
 export function getMemberSkillsByID(id, all=true) {
-    let table = all ? "ALL_SKILLS" : "OTHER_SKILLS";
+    let table = all ? "ALL_SKILLS" : "HAS_SKILL";
     return query(table, byID(id))
         .then(json => json.map(row => row.NAME))
         .then(sks => ((sks.length===1 && !sks[0]) ? [] : sks));
@@ -133,9 +133,9 @@ export function getMemberTrainingByID(id) {
 }
 
 export function getMemberLangsByID(id) {
-    return query('KNOW_LANG', byID(id));
+    return query('KNOW_LANG', byID(id)).then(l => dictFromList(l, 'LANGUAGE'));
 }
 
 export function getMemberCertsByID(id) {
-    return query('HAS_CERT', byID(id));
+    return query('HAS_CERT', byID(id)).then(c => dictFromList(c, 'TYPE'));
 }

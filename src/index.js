@@ -7,6 +7,8 @@ import LockedApp from "./LockedApp";
 
 export var HEADERS = [];
 export var CONSTANTS = [];
+export var WORKSTATUS = ['Employed', 'Released', 'Dismissed'];
+export var WORKTYPE = ['Full-time', 'Part-time', 'Temporary'];
 let searchResult = [];
 
 ReactDOM.render(
@@ -21,8 +23,8 @@ export function initialize(){
         },
     });
 
-    let headers = ['Member', 'Work', 'Skill', 'Language', 'Site', 'Certificate', 'Has_Cert'];
     let constants = ['Skill', 'Language', 'Site', 'Certificate'];
+    let headers = ['Member', 'Work', 'Has_Cert', 'Placement', 'Training'].concat(constants);
     let promises = [];
     try {
         headers.map(table => promises.push(getAllColumns(table).then(res => HEADERS[table] = res)));

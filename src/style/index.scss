@@ -110,3 +110,12 @@
 .padRight {
   padding-right: 20px;
 }
+
+.inlineDate {
+  display: inline;
+  div {
+    hr {
+      margin-bottom: 21px;
+    }
+  }
+}

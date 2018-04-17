@@ -43,7 +43,7 @@ export function PropsAndChipsCard(props) {
         <BlankCard {...props}>
             <PropListElement {...props}/>
             <br/><b>{props.listHeader+":"}</b><br/>
-            <ChipListElement {...props}/>
+            <ChipListElement {...props} acData={props.acData && props.acData.chips}/>
         </BlankCard>
     );
 }
