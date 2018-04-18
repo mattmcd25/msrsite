@@ -71,7 +71,7 @@ export default class MemberTable extends React.Component {
         return (
             <Cell size={12}>
                 <Card tableCard>
-                    <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
+                    <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue} title={this.props.title}
                                        onChange={this.updateInputValue} onRefreshClick={this.props.onRefreshClick}/>
                     <MemberTableBody loaded={this.props.loaded} display={this.state.display}
                                      rows={this.state.match.length} handlePagination={this.handlePagination}

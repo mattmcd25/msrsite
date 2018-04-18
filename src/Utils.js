@@ -1,8 +1,13 @@
 // Lists
 export const intersection = (arr1, arr2) => arr1.filter(x => arr2.includes(x));
 export const difference = (arr1, arr2) => arr1.filter(x => !arr2.includes(x));
-export const or = (list) => list.reduce((acc, cur) => acc || cur, false);
-export const and = (list) => list.reduce((acc, cur) => acc && cur, true);
+// export const or = (list) => list.reduce((acc, cur) => acc || cur, false);
+// export const and = (list) => list.reduce((acc, cur) => acc && cur, true);
+export const count = (list) => list.reduce((acc, cur) => Object.assign(acc, {[cur]: (acc[cur] || 0) + 1}), {});
+export const duplicates = list => {
+    let dict = count(list);
+    return Object.keys(dict).filter((a) => dict[a] > 1);
+};
 
 // Dictionaries
 export const makeDict = list => Object.assign({}, ...list.map(head => ({[head]:''})));

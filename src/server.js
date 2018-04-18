@@ -97,6 +97,7 @@ app.get('/api/select*/:table', authCheck, validateUser, checkTableID, query.sele
 app.get('/api/colnames/:table', authCheck, validateUser, checkTableID, query.getColumns); // get column names from a table or view
 app.get('/api/tabnames', authCheck, validateUser, query.getTables); // get all table names from the db
 app.post('/api/query/:table', authCheck, validateUser, checkTableID, query.advancedQuery); // advanced query
+app.get('/api/fks/:table', authCheck, validateUser, checkTableID, query.getFKs); // get foreign keys
 
 
 

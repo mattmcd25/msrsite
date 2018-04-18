@@ -4,6 +4,7 @@ import App from "../App";
 import ReactDOM from 'react-dom'
 import {initialize} from "../index";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import {isLoggedIn, logout} from "./AuthMan";
 
 export default class LaunchScreen extends React.Component{
     constructor(props){
@@ -12,14 +13,18 @@ export default class LaunchScreen extends React.Component{
     }
 
     componentDidMount(){
-        console.log("Loading");
-        try {
-            initialize().then(() => {
-                ReactDOM.render(<App/>, document.getElementById("root"))
-            });
-        }catch(e){
-            console.log("401 doe");
-            ReactDOM.render(<UnauthorizedPage/>);
+        if(!isLoggedIn()) {
+            logout();
+        }
+        else {
+            try {
+                initialize().then(() => {
+                    ReactDOM.render(<App/>, document.getElementById("root"))
+                });
+            } catch (e) {
+                console.log("401 doe");
+                ReactDOM.render(<UnauthorizedPage/>);
+            }
         }
     }
 
