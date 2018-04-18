@@ -1,7 +1,7 @@
 import React from "react";
 import Tooltip from '../Tooltip';
 import { CONSTANTS, HEADERS } from "../../index";
-import { dictFromList, or } from "../../Utils";
+import { dictFromList } from "../../Utils";
 import { FontIcon } from 'react-md';
 
 const formats = {
@@ -60,16 +60,24 @@ export function textValidation(table, field) {
     return result;
 }
 
-export function invalidFields(fields) {
-    return fields.filter(field => field.props.value.length > field.props.maxLength).length > 0;
+export function invalidDataExamples(data, table) {
+    return data ? Object.keys(data).reduce((acc, key) => {
+        let cur = data[key];
+        return acc.concat(
+            cur ? Object.keys(cur).reduce((acc, field) =>
+                (typeof(cur[field]) === 'string' &&
+                HEADERS[table][field].DATA_TYPE === 'varchar' &&
+                cur[field].length > HEADERS[table][field].CHARACTER_MAXIMUM_LENGTH) ?
+                    acc.concat({key,field,value:cur[field]}) : acc, []) : []
+        )}, []) : [];
 }
 
-export function invalidData(data, table) {
-    return data && or(Object.values(data).map(d =>
-        d && or(Object.keys(d).map(k =>
-            (typeof(d[k]) === 'string' &&
-                HEADERS[table][k].DATA_TYPE === 'varchar' &&
-                d[k].length > HEADERS[table][k].CHARACTER_MAXIMUM_LENGTH)))));
+export function issueTip(issue) {
+    console.log(issue);
+    if(!issue) return '';
+    else if(issue.duplicate) return `There are cannot be two ${PrettyKey(issue.field)} named ${issue.value}!`;
+    else if(issue.value === "") return `The ${PrettyKey(issue.field)} field cannot be empty!`;
+    else return `The ${PrettyKey(issue.field)} field is overfilled!`;
 }
 
 function prettyPhone(old) {

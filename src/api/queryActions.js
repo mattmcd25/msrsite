@@ -76,6 +76,8 @@ exports.getTables = (req, res) => {
         });
 };
 
+// getFKs : requst x result => promise
+// returns all of the foreign keys for a given table
 exports.getFKs = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
 

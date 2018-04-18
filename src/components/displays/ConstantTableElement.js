@@ -2,9 +2,10 @@ import React from 'react';
 import { DataTable, TableCardHeader, TableHeader, TableBody, TableRow, CircularProgress,
          TableColumn, EditDialogColumn, TablePagination, Button, FontIcon } from 'react-md';
 import {CONSTANTS, FKS, HEADERS} from "../../index";
-import { invalidData, PrettyKey, textValidation } from "./DisplayUtils";
+import { invalidDataExamples, PrettyKey, textValidation } from "./DisplayUtils";
 import {del, getAll, insert, update} from "../../data/databaseManager";
-import { intersection, difference, dictFromList, uniteRoutes } from "../../Utils";
+import {intersection, difference, dictFromList, uniteRoutes, duplicates} from "../../Utils";
+import IssueButton from "../IssueButton";
 
 export default class ConstantTableElement extends React.Component {
     constructor(props) {
@@ -166,16 +167,23 @@ export default class ConstantTableElement extends React.Component {
             );
             return <TableRow key={i} children={children}/>
         });
+
+        let issues = invalidDataExamples(this.state.data, this.props.table);
+        let keys = Object.values(this.state.data).map(d=>d[this.props.pk]);
+        if(keys.includes('')) issues.push({field:this.props.pk,value:''});
+        let dups = duplicates(keys);
+        if(dups.length > 0) issues.push({field:this.props.pk,value:dups[0],duplicate:true});
+
         return (this.state.loading ? <CircularProgress id="settingsTable"/> :
             <div>
                 <TableCardHeader className='smallHeader' visible={false} title={this.props.table+'s'}>
                     <Button flat primary onClick={this.addClick} iconChildren={<FontIcon>add</FontIcon>}>
                         Add
                     </Button>
-                    <Button flat primary onClick={this.save} disabled={invalidData(this.state.data, this.props.table)}
-                            iconChildren={<FontIcon>save</FontIcon>}>
+                    <IssueButton flat primary onClick={this.save} issues={issues} position="left"
+                                 iconChildren={<FontIcon>save</FontIcon>}>
                         Save
-                    </Button>
+                    </IssueButton>
                 </TableCardHeader>
                 <DataTable baseId={this.props.table} selectableRows={false}>
                     <TableHeader>

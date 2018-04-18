@@ -5,9 +5,10 @@ import {
 } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { invalidData } from "../displays/DisplayUtils";
+import { invalidDataExamples } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
-import { intersection, difference } from "../../Utils";
+import {intersection, difference, duplicates} from "../../Utils";
+import IssueButton from '../IssueButton';
 
 const defaultFor = (set, key) => {
     switch(set) {
@@ -26,7 +27,7 @@ export default class EditMemberPage extends React.Component {
         props.setActions([]);
         this.state = {
             loading: true,
-            disabled: false,
+            issues: [],
             nextID: 1
         };
     }
@@ -38,23 +39,29 @@ export default class EditMemberPage extends React.Component {
                 <Button style={{'color':'black'}} raised secondary children="Cancel" />
             </Link>,
             <label className="spacer"/>,
-            <Button style={{'color':'black'}} raised secondary disabled={this.state.disabled}
-                    onClick={this.saveChanges}>
+            <IssueButton raised secondary issues={this.state.issues} onClick={this.saveChanges}
+                         style={{'color':'black'}} position="left">
                 Save
-            </Button>
+            </IssueButton>
         ]);
     };
 
     // When state changes; used to update actions based on invalid data
     componentDidUpdate = () => {
-        let disabled = invalidData([this.state.mem], 'Member')
-                            || invalidData(this.state.work, 'Work')
-                            || invalidData(this.state.certs, 'Has_Cert')
-                            || invalidData(this.state.placement, 'Placement')
-                            || invalidData(this.state.training, 'Training');
-        // TODO             || duplicate certificate type
-        if(disabled !== this.state.disabled) {
-            this.setState({ disabled }, this.updateActions);
+        let issues = invalidDataExamples([this.state.mem], 'Member')
+                        .concat(invalidDataExamples(this.state.work, 'Work'))
+                        .concat(invalidDataExamples(this.state.certs, 'Has_Cert'))
+                        .concat(invalidDataExamples(this.state.placement, 'Placement'))
+                        .concat(invalidDataExamples(this.state.training, 'Training'));
+        if(this.state.mem && (!this.state.mem.SITE || this.state.mem.SITE === '')) issues.push({field:'SITE',value:''});
+        if(this.state.certs) {
+            let types = Object.values(this.state.certs).map(c=>c.TYPE);
+            if(types.includes('')) issues.push({field:'TYPE',value:''});
+            let dups = duplicates(types);
+            if(dups.length > 0) issues.push({field:'TYPE',value:dups[0],duplicate:true});
+        }
+        if(JSON.stringify(issues[0]) !== JSON.stringify(this.state.issues[0])) {
+            this.setState({ issues }, this.updateActions);
         }
     };
 
@@ -332,24 +339,43 @@ export default class EditMemberPage extends React.Component {
         this.setState({ certs });
     };
 
+    removeClicked = () => {
+        this.props.popup({
+            title:'Confirm Delete',
+            body:`Are you sure you want to completely remove ${this.state.mem.FIRSTNAME} ${this.state.mem.SURNAME}? This cannot be undone.`,
+            actions:[
+                <Button flat primary onClick={this.props.dismissPopup}>Cancel</Button>,
+                <Button flat primary onClick={this.removeMember}>Delete Permanently</Button>
+            ]
+        })
+    };
+
     // remove member
     removeMember = () => {
-        // TODO add a confirm dialog lol
         this.setState({ loading: true });
+        this.props.toast({text: `Deleting ${this.state.mem.FIRSTNAME} ${this.state.mem.SURNAME}...`});
+        this.props.dismissPopup();
         let ID = this.state.mem.ID;
         let promises = [];
-        Object.keys(this.state.pastWork).forEach(WORKID => {
-            promises.push(del('Work_Skill', {WORKID})
-                .then(() => del('Work', {WORKID})));
-        });
 
-        this.state.skills.forEach(NAME => {
-            promises.push(del('Has_Skill', {NAME, ID}));
-        });
-
+        this.removeJobs('work', 'WORKID', promises);
+        this.removeJobs('training', 'TRAININGID', promises);
+        this.removeJobs('placement', 'PLACEMENTID', promises);
+        Object.keys(this.state.pastLangs).forEach(LANGUAGE => promises.push(del('Know_lang', {LANGUAGE, ID})));
+        Object.keys(this.state.pastCerts).forEach(TYPE => promises.push(del('Has_Cert', {TYPE, ID})));
+        this.state.pastSkills.forEach(NAME => promises.push(del('Has_Skill', {NAME, ID})));
         Promise.all(promises)
             .then(() => del('Member', {ID}))
+            .then(() => this.props.toast({text: 'Deleted!'}))
             .then(() => this.props.history.push('/'));
+    };
+
+    removeJobs = (set, pk, promises) => {
+        let pastSet = this.past(set);
+        Object.keys(this.state[pastSet]).forEach(key => {
+            promises.push(del(`${set}_Skill`, {[pk]:key})
+                .then(() => del(set, {[pk]:key})));
+        });
     };
 
     /* ========== RENDER ========== */
@@ -366,7 +392,7 @@ export default class EditMemberPage extends React.Component {
                                            addItem={this.addItem} removeItem={this.removeItem}
 
                                            onMemChange={this.updateMember}
-                                           removeMember={this.removeMember} langs={this.state.langs}
+                                           removeMember={this.removeClicked} langs={this.state.langs}
                                            setLangs={this.setLangs} addLang={this.addLang} addCert={this.addCert}
                                            removeLang={this.removeLang} certs={this.state.certs}
                                            onCertChange={this.updateCert} removeCert={this.removeCert}
