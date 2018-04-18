@@ -40,9 +40,54 @@ exports.getSysToken = function(){
                 audience: 'https://rwwittenberg.auth0.com/api/v2/'},
         json: true };
 
-    console.log("requesting...");
     return request(options)
         .then(response => {
             exports.sysToken = response['access_token'];
         });
+};
+
+exports.getUsers = (req, res) =>{
+    let request = require("request-promise");
+    let options = {
+        method: 'GET',
+        url: 'https://rwwittenberg.auth0.com/api/v2/users',
+        //qs: {fields: 'app_metadata', include_fields: 'true'},
+        headers:
+            {
+                'content-type': 'application/json',
+                authorization: `Bearer ${exports.sysToken}`
+            }
+    };
+    console.log('[auth] Getting all of duh usuhs');
+    return (request(options)
+        .then(response => {
+            console.log('[auth] Success');
+            res.status(200).send(response);
+        }).catch(error => {
+            console.log('[auth] 500 ' + error);
+            res.status(500).send(error);
+        }));
+};
+
+exports.updateUser = (req, res) =>{
+    let request = require("request-promise");
+    let options = {
+        method: 'PATCH',
+        url: 'https://rwwittenberg.auth0.com/api/v2/user/'+req.body.user_id,
+        headers:
+            {
+                'content-type': 'application/json',
+                authorization: `Bearer ${exports.sysToken}`
+            },
+        body: {"app_metadata" : { "level": req.body.newLevel }}
+    };
+    console.log('[auth] Getting all of duh usuhs');
+    return (request(options)
+        .then(response => {
+            console.log('[auth] Success');
+            res.status(200).send(response);
+        }).catch(error => {
+            console.log('[auth] 500 ' + error);
+            res.status(500).send(error);
+        }));
 };

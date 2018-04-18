@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {getAccessToken} from "../components/AuthMan";
+import {dictFromList} from "../Utils";
 
 
 /// / ========== Internal Functions ==========
@@ -61,6 +62,33 @@ export function getAllColumns(table) {
         });
 }
 
+export function getUserPermissions() {
+    return api_get(`users`)
+        .then(r => {
+            let allUsers = Object.assign({}, ...r.map((a) => {
+                let ulevel;
+                try{
+                    ulevel = a.app_metadata.level;
+                }catch(e){
+                    ulevel = 'newUser';
+                }
+                return {
+                    [a.user_id]: {
+                        email: a.email,
+                        level: ulevel
+                    }
+                };
+            }));
+            console.log(allUsers);
+            return allUsers;
+        });
+}
+
+export function saveUserPermissions(data) {
+    return api_patch('updateuser', data);
+}
+
+
 export function insert(table, data) {
     return api_post(`insert/${table}`, data);
 }
@@ -83,14 +111,6 @@ export function getMemberByID(id) {
     return query("MEMBER", {
         "ID":`${id}`
     }).then(json => json[0]);
-}
-
-export function getUserInfoByToken(t){
-    return (axios.get('https://rwwittenberg.auth0.com/userinfo', {
-        headers: {
-            Authorization: `Bearer ${t}`
-        }
-    }).then(console.log));
 }
 
 export function getMemberSkillsByID(id, all=true) {
@@ -116,6 +136,6 @@ export function getMemberLangsByID(id) {
 
 export function getMemberCertsByID(id) {
     return query('HAS_CERT', {
-        "ID":`${id}`
+        "ID": `${id}`
     });
 }

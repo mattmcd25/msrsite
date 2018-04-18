@@ -11,7 +11,6 @@ const update = require('./api/updateActions');
 const jwt = require('express-jwt');
 const jwks = require('jwks-rsa');
 
-
 // ========== Middleware ==========
 const checkTableID = (req, res, next) => {
     let tableID = req.params['table'];
@@ -24,6 +23,29 @@ const checkTableID = (req, res, next) => {
     }
     next();
 };
+
+const validate = (level) =>
+    (req, res, next) => {
+        let u = req.user['sub'];
+        if (auth0Calls.recentUsers.indexOf(u) >= 0) {
+            console.log("[middleware] Recent User with ID: " + u);
+            next();
+        } else {
+            auth0Calls.getSysToken().then(() => auth0Calls.getLevel(u)).then(() => {
+                console.log("[middleware] user level: " + auth0Calls.userLevelServerSide);
+                if (auth0Calls.userLevelServerSide === level || auth0Calls.userLevelServerSide === 'admin') {
+                    auth0Calls.recentUsers.push(u);
+                    next();
+                } else if (level === 'user' && auth0Calls.userLevelServerSide === 'admin') {
+                    auth0Calls.recentUsers.push(u);
+                    next();
+                }else{
+                    console.log("Invalid User Level: " + auth0Calls.userLevelServerSide);
+                    res.sendStatus(401);
+                }
+            });
+        }
+    };
 
 const validateUser = (req, res, next) => {
     let u = req.user['sub'];
@@ -87,24 +109,28 @@ app.get('/api', (req, res) => { // generic test
 
 
 // ========== General Actions ==========
-app.get('/api/connect', authCheck, validateUser, gen.connect); // connect to the database
-app.get('/api/disconnect', authCheck, validateUser, gen.disconnect); // disconnect from the database
+app.get('/api/connect', authCheck, validate('admin'), gen.connect); // connect to the database
+app.get('/api/disconnect', authCheck, validate('admin'), gen.disconnect); // disconnect from the database
 
 
 
 // ========== Querying Actions ==========
-app.get('/api/select*/:table', authCheck, validateUser, checkTableID, query.selectAll); // select all from a table or view
-app.get('/api/colnames/:table', authCheck, validateUser, checkTableID, query.getColumns); // get column names from a table or view
-app.get('/api/tabnames', authCheck, validateUser, query.getTables); // get all table names from the db
-app.post('/api/query/:table', authCheck, validateUser, checkTableID, query.advancedQuery); // advanced query
+app.get('/api/select*/:table', authCheck, validate('admin'), checkTableID, query.selectAll); // select all from a table or view
+app.get('/api/colnames/:table', authCheck, validate('admin'), checkTableID, query.getColumns); // get column names from a table or view
+app.get('/api/tabnames', authCheck, validate('admin'), query.getTables); // get all table names from the db
+app.post('/api/query/:table', authCheck, validate('admin'), checkTableID, query.advancedQuery); // advanced query
 
 
 
 // ========== Update Actions ==========
-app.post('/api/insert/:table', authCheck, validateUser, checkTableID, update.insert); // insert on a table
-app.patch('/api/update/:table', authCheck, validateUser, checkTableID, update.update); // update a table row
-app.delete('/api/delete/:table', authCheck, validateUser, checkTableID, update.delete); // delete a table row
+app.post('/api/insert/:table', authCheck, validate('admin'), checkTableID, update.insert); // insert on a table
+app.patch('/api/update/:table', authCheck, validate('admin'), checkTableID, update.update); // update a table row
+app.delete('/api/delete/:table', authCheck, validate('admin'), checkTableID, update.delete); // delete a table row
 
+
+//++++++++++++ Auth Actions ++++++++++++
+app.get('/api/users', authCheck, validateUser, auth0Calls.getUsers);
+app.patch('/api/saveuser', authCheck, validateUser, auth0Calls.updateUser);
 
 
 // ========== Launching Server ==========
