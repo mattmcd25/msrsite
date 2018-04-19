@@ -132,7 +132,7 @@ app.delete('/api/delete/:table', authCheck, validate('admin'), checkTableID, upd
 
 // ========== Auth Actions ==========
 app.get('/api/users', authCheck, validateUser, auth0Calls.getUsers);
-app.patch('/api/saveuser', /*authCheck, validateUser,*/ auth0Calls.updateUser);
+app.patch('/api/saveuser', authCheck, validateUser, auth0Calls.updateUser);
 
 
 

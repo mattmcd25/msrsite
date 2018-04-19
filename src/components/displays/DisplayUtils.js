@@ -34,8 +34,9 @@ const formats = {
     'WRITE': ['Write'],
     'SPEAK': ['Speak'],
     'email': ['Email Address'],
-    'basic': ['Basic Permissions'],
-    'admin': ['Admin Permissions']
+    'none': ['No Access'],
+    'basic': ['Limited Access'],
+    'admin': ['Full Access']
 };
 
 export function PrettyKey(key) {

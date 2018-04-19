@@ -3,11 +3,20 @@ import IssueButton from '../IssueButton';
 import { FontIcon, CircularProgress } from 'react-md';
 import { getUserPermissions, saveUserPermissions } from "../../data/databaseManager";
 import CheckTableElement from './CheckTableElement';
+import {getUserID} from "../AuthMan";
 
 const levelFrom = perms => {
     if(perms.admin) return 'admin';
     else if(perms.basic) return 'user';
     else return 'newUser';
+};
+
+const updateRadios = key => {
+    let allFalse = {'none':false, 'basic':false, 'admin':false};
+    return {
+        ...allFalse,
+        [key]:true
+    };
 };
 
 export default class AccountManager extends React.PureComponent {
@@ -17,6 +26,7 @@ export default class AccountManager extends React.PureComponent {
     }
 
     componentDidMount() {
+        console.log('me',getUserID());
         getUserPermissions().then(r => {
             this.setState({
                 users: r,
@@ -27,12 +37,13 @@ export default class AccountManager extends React.PureComponent {
     }
 
     onChange = (email, key, value) => {
+        let newChecks = updateRadios(key);
         this.setState(prevState => ({
             users: {
                 ...prevState.users,
                 [email]: {
                     ...prevState.users[email],
-                    [key]: value
+                    ...newChecks
                 }
             }
         }));
@@ -64,10 +75,10 @@ export default class AccountManager extends React.PureComponent {
 
     render() {
         let issues = [];
-        !this.state.loading && Object.values(this.state.users).forEach(user => {
-            if (user.admin && !user.basic)
-                issues.push({custom: true, message: `${user.email} must also have basic permissions to be an admin!`});
-        });
+        // !this.state.loading && Object.values(this.state.users).forEach(user => {
+        //     if (user.admin && !user.basic)
+        //         issues.push({custom: true, message: `${user.email} must also have basic permissions to be an admin!`});
+        // });
         return (
             this.state.loading ? <CircularProgress id='accountManager'/> :
                 <div>
@@ -76,7 +87,8 @@ export default class AccountManager extends React.PureComponent {
                                  iconChildren={<FontIcon>save</FontIcon>}>
                         Save
                     </IssueButton>
-                    <CheckTableElement edit title="Account Management" data={this.state.users} onChange={this.onChange}/>
+                    <CheckTableElement edit exclusive title="Account Management" data={this.state.users} onChange={this.onChange}
+                                       shouldDisable={ID => ID===getUserID()}/>
                 </div>
         );
     }

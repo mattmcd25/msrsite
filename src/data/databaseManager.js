@@ -74,15 +74,16 @@ function cleanUsers(r) {
 function cleanUser(a) {
     let ulevel;
     let isadmin = false;
-    let isuser= false;
+    let isuser = false;
+    let isnone = true;
     try{
         ulevel = a.app_metadata.level;
         if(ulevel === 'admin'){
             isadmin = true;
-            isuser = true;
+            isnone = false;
         }else if(ulevel === 'user'){
-            isadmin = false;
             isuser = true;
+            isnone = false;
         }
     }catch(e){
         ulevel = 'newUser';
@@ -91,6 +92,7 @@ function cleanUser(a) {
         [a.email]: {
             user_id: a.user_id,
             email: a.email,
+            none: isnone,
             basic: isuser,
             admin: isadmin
         }

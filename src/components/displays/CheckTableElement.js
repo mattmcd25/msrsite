@@ -1,6 +1,6 @@
 import React from 'react';
 import { DataTable, TableHeader, TableBody, TableRow, TableColumn,
-         FontIcon, Checkbox, Autocomplete, Button } from 'react-md';
+         FontIcon, Checkbox, Autocomplete, Button, Radio } from 'react-md';
 import Tooltip from '../Tooltip';
 import {PrettyKey} from "./DisplayUtils";
 
@@ -16,7 +16,7 @@ export default class CheckTableElement extends React.Component {
             <div>
                 {Object.keys(this.props.data).length === 0 ?
                     <h5>None</h5> :
-                    <DataTable baseId="lang" fullWidth={false} selectableRows={false}>
+                    <DataTable baseId="checkTable" fullWidth={false} selectableRows={false}>
                         <TableHeader>
                             <TableRow>
                                 {HEADERS(this.props.edit, this.props).map(head => (
@@ -27,9 +27,10 @@ export default class CheckTableElement extends React.Component {
                         </TableHeader>
                         <TableBody>
                             {Object.keys(this.props.data).map(key => (
-                                <CheckTableRow key={key} data={this.props.data[key]} tip={this.props.tips && this.props.tips[key].DESC}
-                                               edit={this.props.edit} onChange={this.props.onChange}
-                                               remove={this.props.remove}/>))}
+                                <CheckTableRow key={key} data={this.props.data[key]} edit={this.props.edit}
+                                               tip={this.props.tips && this.props.tips[key].DESC}
+                                               onChange={this.props.onChange} exclusive={this.props.exclusive}
+                                               remove={this.props.remove} shouldDisable={this.props.shouldDisable}/>))}
                         </TableBody>
                     </DataTable>
                 }
@@ -44,6 +45,8 @@ export default class CheckTableElement extends React.Component {
 function CheckTableRow(props) {
     let titleKey = Object.keys(props.data)[1];
     let title = props.data[titleKey];
+    let ID = Object.values(props.data)[0];
+    console.log('id',ID);
 
     let children = Object.keys(props.data).slice(1).map(k => (
         <TableColumn className="small" key={k}>
@@ -51,11 +54,14 @@ function CheckTableRow(props) {
                 {k === titleKey ?
                     title :
                     props.edit ?
-                        <Checkbox id={title+''+k} name={title+''+k} label={''} checked={props.data[k]}
-                                  onChange={v => props.onChange(title, k, v)}/> :
-                        props.data[k] ?
+                        (!props.exclusive ?
+                            <Checkbox id={title+''+k} name={title+''+k} label={''} checked={props.data[k]}
+                                      onChange={v => props.onChange(title, k, v)} disabled={props.shouldDisable(ID)}/> :
+                            <Radio id={title+''+k} name={title+''+k} label={''} checked={props.data[k]}
+                                   onChange={v => props.onChange(title, k, v)} disabled={props.shouldDisable(ID)}/>) :
+                        (props.data[k] ?
                             <FontIcon primary>check</FontIcon> :
-                            <FontIcon error>close</FontIcon>}
+                            <FontIcon error>close</FontIcon>)}
             </Tooltip>
         </TableColumn>
     ));
