@@ -22,7 +22,7 @@ export default class TrainingPage extends React.Component {
     };
 
     componentDidMount = () => {
-        let name = member => ({[`${member.FIRSTNAME} ${member.SURNAME} (${member.ID})`]:member.ID});
+        let name = member => ({[`${member.FIRSTNAME} ${member.SURNAME} (M# ${member.MEMBERSHIP})`]:member.ID});
         getAll('Member').then(ms => this.setState({ people: Object.assign({}, ...ms.map(name)), loading: false }));
     };
 
@@ -68,7 +68,7 @@ export default class TrainingPage extends React.Component {
     render() {
         let issues = dataLengthIssues([this.state.training], 'Training');
         let intersect = intersection(this.state.successMembers, this.state.failMembers);
-        if(intersect.length > 0) issues.push({duplicate:true,field:'members',value:intersect[0]});
+        if(intersect.length > 0) issues.push({custom:true,message:`${intersect[0]} cannot both pass and fail the training!`});
         let skDict = dictFromList(CONSTANTS['Skill'], 'NAME');
         let chips = CONSTANTS['Skill'].map(s => s.NAME);
         let people = this.state.people && Object.keys(this.state.people);

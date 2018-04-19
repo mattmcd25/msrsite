@@ -97,9 +97,9 @@ export default class ConstantTableElement extends React.Component {
             }
         }); // potentially modified
 
-            Promise.all(promises) // reload the page
-                .then(this.refreshTable)
-                .then(() => this.props.toast({text: 'Saved!'}));
+        Promise.all(promises) // reload the page
+            .then(this.refreshTable)
+            .then(() => this.props.toast({text: 'Saved!'}));
     };
 
     refreshTable = () => {

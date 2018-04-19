@@ -10,6 +10,10 @@ export function getAccessToken() {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
+export function getUserID() {
+    return decode(getAccessToken()).sub;
+}
+
 function clearIdToken() {
     localStorage.removeItem(ID_TOKEN_KEY);
 }

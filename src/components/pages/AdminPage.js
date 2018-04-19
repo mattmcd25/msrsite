@@ -2,6 +2,7 @@ import React from 'react';
 import { Grid } from 'react-md';
 import ExpandingCard from '../displays/ExpandingCard';
 import ConstantTableElement from '../displays/ConstantTableElement';
+import AccountManagerElement from '../displays/AccountManagerElement';
 
 const settingCards = (props) => [
     {
@@ -35,6 +36,14 @@ const settingCards = (props) => [
         children: (
             <ConstantTableElement {...props} table="Certificate" pk="TYPE"/>
         )
+    },
+    {
+        title:'Account Management',
+        subtitle:'Add to or remove from the pre-set list of certificate types.',
+        icon:'school',
+        children: (
+            <AccountManagerElement {...props}/>
+        )
     }
 ];
 
@@ -48,7 +57,7 @@ export default class AdminPage extends React.Component {
         return (
             <div className="admin">
                 <Grid>
-                    {settingCards(this.props).map(sc => <ExpandingCard key={sc.title} {...sc}/>)};
+                    {settingCards(this.props).map(sc => <ExpandingCard key={sc.title} {...sc}/>)}
                 </Grid>
             </div>
         );

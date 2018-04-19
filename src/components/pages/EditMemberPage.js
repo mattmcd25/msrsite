@@ -68,16 +68,23 @@ export default class EditMemberPage extends React.Component {
     // Initial loading from database
     componentDidMount(){
         let id = this.props.match.params.memid;
-        this.getAndSave(getMemberSkillsByID(id, false), 'skills')()
-            .then(this.getAndSave(getMemberWorkByID(id), 'work'))
-            .then(this.getAndSave(getMemberTrainingByID(id), 'training'))
-            .then(this.getAndSave(getMemberPlacementsByID(id), 'placement'))
-            .then(this.getAndSave(getMemberLangsByID(id), 'langs'))
-            .then(this.getAndSave(getMemberCertsByID(id), 'certs'))
-            .then(this.getAndSave(getMemberByID(id), 'mem'))
-            .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
-            .then(this.updateActions)
-            .then(() => this.setState({ loading: false }));
+        this.getAndSave(getMemberByID(id), 'mem')()
+            .then(() => {
+                if(this.state.mem === undefined) {
+                    this.props.history.push('/');
+                }
+                else {
+                    this.getAndSave(getMemberSkillsByID(id), 'skills')()
+                        .then(this.getAndSave(getMemberWorkByID(id), 'work'))
+                        .then(this.getAndSave(getMemberTrainingByID(id), 'training'))
+                        .then(this.getAndSave(getMemberPlacementsByID(id), 'placement'))
+                        .then(this.getAndSave(getMemberLangsByID(id), 'langs'))
+                        .then(this.getAndSave(getMemberCertsByID(id), 'certs'))
+                        .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
+                        .then(this.updateActions)
+                        .then(() => this.setState({ loading: false }));
+                }
+            });
     }
 
     past = (name) => `past${name[0].toUpperCase() + name.slice(1)}`;

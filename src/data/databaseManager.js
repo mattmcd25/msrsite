@@ -1,9 +1,11 @@
 import axios from 'axios'
-import {getAccessToken} from "../components/AuthMan";
-import {dictFromList} from "../Utils";
+import { getAccessToken } from "../components/AuthMan";
+import { dictFromList } from "../Utils";
+import { isAdmin } from "../index";
 
 
-/// / ========== Internal Functions ==========
+
+// ========== Internal Functions ==========
 let conf = {
     headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -67,22 +69,80 @@ function SortSkills(list, pk) {
     }, {});
 }
 
+function cleanUsers(r) {
+    return Object.assign({}, ...r.map(a => cleanUser(a)));
+}
+
+function cleanUser(a) {
+    let ulevel;
+    let isadmin = false;
+    let isuser = false;
+    let isnone = true;
+    try{
+        ulevel = a.app_metadata.level;
+        if(ulevel === 'admin'){
+            isadmin = true;
+            isnone = false;
+        }else if(ulevel === 'user'){
+            isuser = true;
+            isnone = false;
+        }
+    }catch(e){
+        ulevel = 'newUser';
+    }
+    return {
+        [a.email]: {
+            user_id: a.user_id,
+            email: a.email,
+            none: isnone,
+            basic: isuser,
+            admin: isadmin
+        }
+    };
+}
+
 const byID = id => ({ "ID":`${id}` });
 
 // ========== Exported Functions ==========
 export function getAll(table) {
-    return api_get(`select*/${table}`)
-        .then(json => json['recordsets'][0]);
+    if(isAdmin())
+        return api_get(`select*/${table}`)
+            .then(json => json['recordsets'][0]);
+    else
+        return api_get(`limselect/${table}`)
+            .then(json => json['recordsets'][0]);
 }
 
 export function getAllColumns(table) {
-    return api_get(`colnames/${table}`)
-        .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
+    if(isAdmin())
+        return api_get(`colnames/${table}`)
+            .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
+    else
+        return api_get(`limcolnames/${table}`)
+            .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
 }
 
 export function getFKs(table) {
-    return api_get(`fks/${table}`)
-        .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
+    if(isAdmin())
+        return api_get(`fks/${table}`)
+            .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
+    else
+        return api_get(`limfks/${table}`)
+            .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
+}
+
+export function getUserPermissions() {
+    return api_get(`users`)
+        .then(r => cleanUsers(r));
+}
+
+export function saveUserPermissions(data) {
+    return api_patch('saveuser', data)
+        .then(r => cleanUser(r));
+}
+
+export function getUserLevel() {
+    return api_get('getperms');
 }
 
 export function insert(table, data) {
@@ -94,8 +154,12 @@ export function update(table, data) {
 }
 
 export function query(table, data) {
-    return api_post(`query/${table}`, data)
-        .then(json => json['recordsets'][0]);
+    if(isAdmin())
+        return api_post(`query/${table}`, data)
+            .then(json => json['recordsets'][0]);
+    else
+        return api_post(`limquery/${table}`, data)
+            .then(json => json['recordsets'][0]);
 }
 
 export function del(table, data) {
@@ -105,14 +169,6 @@ export function del(table, data) {
 // ========== Exported Functions - Helpers ==========
 export function getMemberByID(id) {
     return query("MEMBER", byID(id)).then(json => json[0]);
-}
-
-export function getUserInfoByToken(t){
-    return (axios.get('https://rwwittenberg.auth0.com/userinfo', {
-        headers: {
-            Authorization: `Bearer ${t}`
-        }
-    }).then(console.log));
 }
 
 export function getMemberSkillsByID(id, all=true) {

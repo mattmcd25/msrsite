@@ -29,7 +29,14 @@ const formats = {
     'STARTDATE': ['Start Date',prettyDate],
     'COMPLETEDATE': ['Complete Date',prettyDate],
     'SUCCEEDED': ['Succeeded',prettyBool],
-    'FIELD': ['Training Field']
+    'FIELD': ['Training Field'],
+    'READ': ['Read'],
+    'WRITE': ['Write'],
+    'SPEAK': ['Speak'],
+    'email': ['Email Address'],
+    'none': ['No Access'],
+    'basic': ['Limited Access'],
+    'admin': ['Full Access']
 };
 
 export function PrettyKey(key) {
@@ -73,8 +80,8 @@ export function dataLengthIssues(data, table) {
 }
 
 export function issueTip(issue) {
-    console.log(issue);
     if(!issue) return '';
+    else if(issue.custom) return issue.message;
     else if(issue.duplicate) return `There are cannot be two ${PrettyKey(issue.field)} named ${issue.value}!`;
     else if(issue.value === "") return `The ${PrettyKey(issue.field)} field cannot be empty!`;
     else return `The ${PrettyKey(issue.field)} field is overfilled!`;

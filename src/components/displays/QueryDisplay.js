@@ -1,5 +1,5 @@
 import React from 'react';
-import { CONSTANTS, WORKTYPE, WORKSTATUS } from "../../index";
+import {CONSTANTS, WORKTYPE, WORKSTATUS, isAdmin} from "../../index";
 import ChipListElement from './ChipListElement';
 import PropListElement from "./PropListElement";
 import CheckTableElement from './CheckTableElement';
@@ -12,7 +12,7 @@ let refs = {};
 const searchCards = (props) => [
     {
         title:'General Information',
-        subtitle:'Search by name, address, member number, etc.',
+        subtitle: isAdmin() ? 'Search by name, address, member number, etc.' : 'Search by name or member number.',
         icon:'person',
         children: (
             <PropListElement edit data={props.general} onChange={e => props.update('mem', e)} table="Member"
