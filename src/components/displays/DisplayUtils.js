@@ -60,7 +60,7 @@ export function textValidation(table, field) {
     return result;
 }
 
-export function invalidDataExamples(data, table) {
+export function dataLengthIssues(data, table) {
     return data ? Object.keys(data).reduce((acc, key) => {
         let cur = data[key];
         return acc.concat(

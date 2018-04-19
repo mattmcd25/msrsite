@@ -5,7 +5,7 @@ import {
 } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { invalidDataExamples } from "../displays/DisplayUtils";
+import { dataLengthIssues } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
 import {intersection, difference, duplicates} from "../../Utils";
 import IssueButton from '../IssueButton';
@@ -48,11 +48,11 @@ export default class EditMemberPage extends React.Component {
 
     // When state changes; used to update actions based on invalid data
     componentDidUpdate = () => {
-        let issues = invalidDataExamples([this.state.mem], 'Member')
-                        .concat(invalidDataExamples(this.state.work, 'Work'))
-                        .concat(invalidDataExamples(this.state.certs, 'Has_Cert'))
-                        .concat(invalidDataExamples(this.state.placement, 'Placement'))
-                        .concat(invalidDataExamples(this.state.training, 'Training'));
+        let issues = dataLengthIssues([this.state.mem], 'Member')
+                        .concat(dataLengthIssues(this.state.work, 'Work'))
+                        .concat(dataLengthIssues(this.state.certs, 'Has_Cert'))
+                        .concat(dataLengthIssues(this.state.placement, 'Placement'))
+                        .concat(dataLengthIssues(this.state.training, 'Training'));
         if(this.state.mem && (!this.state.mem.SITE || this.state.mem.SITE === '')) issues.push({field:'SITE',value:''});
         if(this.state.certs) {
             let types = Object.values(this.state.certs).map(c=>c.TYPE);

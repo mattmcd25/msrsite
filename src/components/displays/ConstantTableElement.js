@@ -2,7 +2,7 @@ import React from 'react';
 import { DataTable, TableCardHeader, TableHeader, TableBody, TableRow, CircularProgress,
          TableColumn, EditDialogColumn, TablePagination, Button, FontIcon } from 'react-md';
 import {CONSTANTS, FKS, HEADERS} from "../../index";
-import { invalidDataExamples, PrettyKey, textValidation } from "./DisplayUtils";
+import { dataLengthIssues, PrettyKey, textValidation } from "./DisplayUtils";
 import {del, getAll, insert, update} from "../../data/databaseManager";
 import {intersection, difference, dictFromList, uniteRoutes, duplicates} from "../../Utils";
 import IssueButton from "../IssueButton";
@@ -168,7 +168,7 @@ export default class ConstantTableElement extends React.Component {
             return <TableRow key={i} children={children}/>
         });
 
-        let issues = invalidDataExamples(this.state.data, this.props.table);
+        let issues = dataLengthIssues(this.state.data, this.props.table);
         let keys = Object.values(this.state.data).map(d=>d[this.props.pk]);
         if(keys.includes('')) issues.push({field:this.props.pk,value:''});
         let dups = duplicates(keys);

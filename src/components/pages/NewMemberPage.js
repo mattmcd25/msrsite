@@ -3,7 +3,7 @@ import { CircularProgress, Grid, Cell } from 'react-md';
 import IssueButton from '../IssueButton';
 import { insert } from '../../data/databaseManager';
 import { CONSTANTS, HEADERS } from "../../index";
-import { invalidDataExamples } from "../displays/DisplayUtils";
+import { dataLengthIssues } from "../displays/DisplayUtils";
 import { makeDict } from "../../Utils";
 import { PropListCard } from "../displays/Cards";
 
@@ -43,7 +43,7 @@ export default class NewMemberPage extends React.Component {
     };
 
     render() {
-        let issues = invalidDataExamples([this.state.mem], 'Member');
+        let issues = dataLengthIssues([this.state.mem], 'Member');
         if(!this.state.mem.SITE || this.state.mem.SITE === '') issues.push({field:'SITE',value:''});
         return (
                 <Grid className="newMemberPage">

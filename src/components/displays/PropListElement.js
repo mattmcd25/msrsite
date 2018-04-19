@@ -62,7 +62,7 @@ export default class PropListElement extends React.Component {
                                 value = { value:d };
                             }
                             return <DatePicker id={`${field}-date`} label={PrettyKey(field)} displayMode="portrait"
-                                               {...value} fullWidth={false} icon={undefined} autoOk key={field}
+                                               {...value} fullWidth={false} icon={false} autoOk key={field}
                                                onChange={(s, o) => this.onChange(field, o)} className='inlineDate'
                                                {...textValidation(this.props.table, field)}  />;
                         }

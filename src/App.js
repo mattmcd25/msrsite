@@ -11,6 +11,7 @@ import QueryPage from './components/pages/QueryPage';
 import AdminPage from "./components/pages/AdminPage";
 import Callback from "./components/Callback";
 import {isLoggedIn} from "./components/AuthMan";
+import TrainingPage from "./components/pages/TrainingPage";
 
 
 export default class App extends React.Component {
@@ -95,6 +96,7 @@ export default class App extends React.Component {
                         <Route path="/member/:memid/edit" render={this.componentWithRefs(EditMemberPage)}/>
                         <Route path="/query" render={this.componentWithRefs(QueryPage)}/>
                         <Route path="/manage" render={this.componentWithRefs(AdminPage)}/>
+                        <Route path="/training" render={this.componentWithRefs(TrainingPage)}/>
                         {/* Redirects */}
                         <Route path="/index.*" render={() => <Redirect to="/"/>}/>
                         <Route path="/member" render={() => <Redirect to="/"/>}/>

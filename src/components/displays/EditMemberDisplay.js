@@ -1,6 +1,6 @@
 import React from 'react';
 import { BlankCard, ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./Cards";
-import { Grid, Button } from 'react-md';
+import { Grid, Button, FontIcon } from 'react-md';
 import { CONSTANTS, WORKSTATUS, WORKTYPE } from "../../index";
 import { dictFromList } from "../../Utils";
 
@@ -31,10 +31,9 @@ export default function EditMemberDisplay(props) {
                 return <PropListCard edit title={rest.TYPE} subtitle="Certificate" data={rest} table='Has_Cert'
                                      onChange={evt => props.onCertChange(type, evt)} key={type}
                                      acData={{TYPE:CONSTANTS['Certificate'].map(c=>c.TYPE)}}
-                                     actions={<Button raised className="redButton"
-                                                      onClick={() => props.removeCert(type)}>
-                                                    Delete
-                                              </Button>}/>
+                                     actions={<Button flat iconChildren={<FontIcon>delete</FontIcon>} iconBefore={false}
+                                                      className="redButton" onClick={() => props.removeCert(type)}>
+                                         Delete</Button>}/>
             })}
 
             <CheckTableCard edit title="Language Proficiencies" data={props.langs} onChange={props.setLangs}
@@ -44,20 +43,24 @@ export default function EditMemberDisplay(props) {
                           list={props.skills} updateList={props.setSkills}/>
 
             <BlankCard title="Other Actions">
-                <Button raised primary onClick={() => props.addItem('work')}>
+                <Button raised primary onClick={() => props.addItem('work')}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
                     Add Work Experience
                 </Button><label className="vertSpacer"/>
-                <Button raised primary onClick={() => props.addItem('placement')}>
+                <Button raised primary onClick={() => props.addItem('placement')}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
                     Add Placement
                 </Button><label className="vertSpacer"/>
-                <Button raised primary onClick={() => props.addItem('training')}>
+                <Button raised primary onClick={() => props.addItem('training')}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
                     Add Training
                 </Button><label className="vertSpacer"/>
-                <Button raised primary onClick={props.addCert}>
+                <Button raised primary onClick={props.addCert}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
                     Add New Certificate
                 </Button><label className="vertSpacer"/>
-                <Button raised className="redButton" onClick={props.removeMember}>
-                    Delete This Member
+                <Button raised className="raisedRedButton" iconChildren={<FontIcon>delete</FontIcon>} onClick={props.removeMember}>
+                    delete
                 </Button>
             </BlankCard>
         </Grid>
@@ -74,7 +77,7 @@ function jobCards(props, set, pk, subtitle, title='EMPLOYER') {
                                updateList={list => props.setItemSkills(set, key, list)}
                                acData={{chips, WORKTYPE, WORKSTATUS}}
                                onChange={evt => props.updateItem(set, key, evt)} tips={skDict}
-                               actions={<Button raised className="redButton"
+                               actions={<Button flat iconChildren={<FontIcon>delete</FontIcon>} iconBefore={false} className="redButton"
                                                 onClick={() => props.removeItem(set, key)}>
                                    Delete
                                </Button>}/>
