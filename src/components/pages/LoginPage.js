@@ -40,7 +40,7 @@ export default class LoginPage extends React.Component{
                             <img src={'/bad-msr-logo.png'} alt="msr logo"/>
                         </Media>
                         <label className="vertSpacer"/><br/>
-                        <div className='launchHor' style={{'margin-top':'0px'}}>
+                        <div className='launchHor' style={{'marginTop':'0px'}}>
                             <Button flat primary onClick={login}>
                                 Sign In
                             </Button><br/>

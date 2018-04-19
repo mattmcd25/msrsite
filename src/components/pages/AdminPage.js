@@ -67,13 +67,12 @@ export default class AdminPage extends React.Component {
 
     render() {
         return (
-
             <div className="admin">
                 <Grid>
                     {
                         this.state.loaded ?
                             settingCards(this.props, this.state).map(sc => <ExpandingCard key={sc.title} {...sc}/>) :
-                            <CircularProgress/>
+                            <CircularProgress id='admin-page'/>
                     }
                 </Grid>
             </div>

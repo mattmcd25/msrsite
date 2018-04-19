@@ -67,15 +67,26 @@ export function getUserPermissions() {
         .then(r => {
             let allUsers = Object.assign({}, ...r.map((a) => {
                 let ulevel;
+                let isadmin = false;
+                let isuser= false;
                 try{
                     ulevel = a.app_metadata.level;
+                    if(ulevel === 'admin'){
+                        isadmin = true;
+                        isuser = true;
+                    }else if(ulevel === 'user'){
+                        isadmin = false;
+                        isuser = true;
+                    }
                 }catch(e){
                     ulevel = 'newUser';
                 }
                 return {
                     [a.user_id]: {
+                        uid: a.user_id,
                         email: a.email,
-                        level: ulevel
+                        basic: isuser,
+                        admin: isadmin
                     }
                 };
             }));
