@@ -13,6 +13,13 @@ const jwks = require('jwks-rsa');
 
 
 
+// ========== Constants ==========
+const TABLE_REBINDINGS = {
+    'MEMBER': 'MEMBER_RESTRICTED'
+};
+
+
+
 // ========== Middleware ==========
 const checkTableID = (req, res, next) => {
     let tableID = req.params['table'];
@@ -26,50 +33,35 @@ const checkTableID = (req, res, next) => {
     next();
 };
 
+const restrictTableID = (req, res, next) => {
+    let tableID = req.params['table'].toUpperCase();
+
+    if(!exports.ALLOWED_TABLES.includes(tableID.toUpperCase())) {
+        let err = "Invalid table name/potential SQL injection: " + tableID;
+        console.log(err);
+        if(res) res.status(403).send(err);
+        return;
+    }
+
+    if(Object.keys(TABLE_REBINDINGS).includes(tableID))
+        req.params['table'] = TABLE_REBINDINGS[tableID];
+    next();
+};
+
 const validate = (level) =>
     (req, res, next) => {
         let u = req.user['sub'];
-        if (auth0Calls.recentUsers.indexOf(u) >= 0) {
-            console.log("[middleware] Recent User with ID: " + u);
-            next();
-        } else {
-            auth0Calls.getSysToken().then(() => auth0Calls.getLevel(u)).then(() => {
-                console.log("[middleware] user level: " + auth0Calls.userLevelServerSide);
-                if (auth0Calls.userLevelServerSide === level || auth0Calls.userLevelServerSide === 'admin') {
-                    auth0Calls.recentUsers.push(u);
-                    next();
-                } else if (level === 'user' && auth0Calls.userLevelServerSide === 'admin') {
-                    auth0Calls.recentUsers.push(u);
-                    next();
-                }else{
-                    console.log("Invalid User Level: " + auth0Calls.userLevelServerSide);
-                    res.sendStatus(401);
-                }
-            });
-        }
-    };
-
-const validateUser = (req, res, next) => {
-    let u = req.user['sub'];
-    if(auth0Calls.recentUsers.indexOf(u) >= 0){
-        console.log("[middleware] Recent User with ID: "+ u);
-        next();
-    }else{
-        auth0Calls.getSysToken().then(() => auth0Calls.getLevel(u)).then(() => {
-            console.log("[middleware] user level: " + auth0Calls.userLevelServerSide);
-            if(auth0Calls.userLevelServerSide === 'user' || auth0Calls.userLevelServerSide === 'admin') {
-                auth0Calls.recentUsers.push(u);
+        auth0Calls.getLevel(u).then(user_level => {
+            if(user_level === level || user_level === 'admin') {
+                console.log('[middleware] Accepted user level: ' + user_level);
                 next();
-            }else{
-                console.log("Invalid User Level: "+ auth0Calls.userLevelServerSide);
+            }
+            else {
+                console.log('[middleware] Insufficient user level: ' + user_level);
                 res.sendStatus(401);
             }
         });
-
-    }
-
-
-};
+    };
 
 const authCheck = jwt({
     secret: jwks.expressJwtSecret({
@@ -123,6 +115,14 @@ app.get('/api/fks/:table', authCheck, validate('admin'), checkTableID, query.get
 
 
 
+// ========== Restricted Actions ==========
+app.get('/api/limselect/:table', authCheck, validate('user'), restrictTableID, query.selectAll); // select all from a table or view
+app.post('/api/limquery/:table', authCheck, validate('user'), restrictTableID, query.advancedQuery); // advanced query
+app.get('/api/limcolnames/:table', authCheck, validate('user'), restrictTableID, query.getColumns); // get column names from a table or view
+app.get('/api/limfks/:table', authCheck, validate('user'), restrictTableID, query.getFKs); // get foreign keys
+
+
+
 // ========== Update Actions ==========
 app.post('/api/insert/:table', authCheck, validate('admin'), checkTableID, update.insert); // insert on a table
 app.patch('/api/update/:table', authCheck, validate('admin'), checkTableID, update.update); // update a table row
@@ -131,8 +131,9 @@ app.delete('/api/delete/:table', authCheck, validate('admin'), checkTableID, upd
 
 
 // ========== Auth Actions ==========
-app.get('/api/users', authCheck, validateUser, auth0Calls.getUsers);
-app.patch('/api/saveuser', authCheck, validateUser, auth0Calls.updateUser);
+app.get('/api/users', authCheck, validate('admin'), auth0Calls.getUsers);
+app.patch('/api/saveuser', authCheck, validate('admin'), auth0Calls.updateUser);
+app.get('/api/getperms', authCheck, auth0Calls.getPerms);
 
 
 

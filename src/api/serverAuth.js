@@ -1,32 +1,38 @@
-exports.sysToken = '';
-exports.userLevelServerSide = '';
-exports.recentUsers = [];
-exports.recentAdmins = [];
+sysToken = '';
+recentUsers = {};
 
-exports.getLevel = function(user_id){
-    let request = require("request-promise");
-    let options = {
-        method: 'GET',
-        url: 'https://rwwittenberg.auth0.com/api/v2/users/' + user_id,
-        qs: {fields: 'app_metadata', include_fields: 'true'},
-        headers:
-            {
-                'content-type': 'application/json',
-                authorization: `Bearer ${exports.sysToken}`
-            }
-    };
-    return (request(options)
-        .then(response => {
-            try {
-                exports.userLevelServerSide = JSON.parse(response)['app_metadata']['level'];
-
-            }catch(e){
-                exports.userLevelServerSide = "newUser";
-            }
-        }));
+exports.getLevel = async function(user_id) {
+    if(!recentUsers.hasOwnProperty(user_id)) {
+        recentUsers[user_id] = await getLevelFromServer(user_id);
+    }
+    return recentUsers[user_id];
 };
 
-exports.getSysToken = function(){
+getLevelFromServer = function(user_id){
+    return getSysToken().then(() => {
+        let request = require("request-promise");
+        let options = {
+            method: 'GET',
+            url: 'https://rwwittenberg.auth0.com/api/v2/users/' + user_id,
+            qs: {fields: 'app_metadata', include_fields: 'true'},
+            headers:
+                {
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${sysToken}`
+                }
+        };
+        return (request(options)
+            .then(response => {
+                try {
+                    return JSON.parse(response)['app_metadata']['level'];
+                }catch(e){
+                    return "newUser";
+                }
+            }));
+    });
+};
+
+getSysToken = function(){
     let request = require("request-promise");
 
     let options = { method: 'POST',
@@ -42,11 +48,11 @@ exports.getSysToken = function(){
 
     return request(options)
         .then(response => {
-            exports.sysToken = response['access_token'];
+            sysToken = response['access_token'];
         });
 };
 
-exports.getUsers = (req, res) =>{
+exports.getUsers = (req, res) => {
     let request = require("request-promise");
     let options = {
         method: 'GET',
@@ -55,7 +61,7 @@ exports.getUsers = (req, res) =>{
         headers:
             {
                 'content-type': 'application/json',
-                authorization: `Bearer ${exports.sysToken}`
+                authorization: `Bearer ${sysToken}`
             }
     };
     console.log('[auth] Getting all users');
@@ -69,7 +75,7 @@ exports.getUsers = (req, res) =>{
         }));
 };
 
-exports.updateUser = (req, res) =>{
+exports.updateUser = (req, res) => {
     let request = require("request-promise");
     let options = {
         method: 'PATCH',
@@ -77,7 +83,7 @@ exports.updateUser = (req, res) =>{
         headers:
             {
                 'content-type': 'application/json',
-                'Authorization': `Bearer ${exports.sysToken}`
+                'Authorization': `Bearer ${sysToken}`
             },
         body: `{"app_metadata":{"level":"${req.body.newLevel}"}}`
     };
@@ -90,4 +96,11 @@ exports.updateUser = (req, res) =>{
             console.log('[auth] 500 ' + error);
             res.status(500).send(error);
         });
+};
+
+exports.getPerms = (req, res) => {
+    let u = req.user['sub'];
+    exports.getLevel(u)
+        .then(user_level => res.status(200).send(user_level))
+        .catch(error => res.status(500).send(error));
 };

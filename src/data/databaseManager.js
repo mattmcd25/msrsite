@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { getAccessToken } from "../components/AuthMan";
 import { dictFromList } from "../Utils";
+import {auth_level} from "../index";
 
 
-/// / ========== Internal Functions ==========
+
+// ========== Internal Functions ==========
 let conf = {
     headers: {
         Authorization: `Bearer ${getAccessToken()}`,
@@ -103,18 +105,30 @@ const byID = id => ({ "ID":`${id}` });
 
 // ========== Exported Functions ==========
 export function getAll(table) {
-    return api_get(`select*/${table}`)
-        .then(json => json['recordsets'][0]);
+    if(auth_level === 'admin')
+        return api_get(`select*/${table}`)
+            .then(json => json['recordsets'][0]);
+    else
+        return api_get(`limselect/${table}`)
+            .then(json => json['recordsets'][0]);
 }
 
 export function getAllColumns(table) {
-    return api_get(`colnames/${table}`)
-        .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
+    if(auth_level === 'admin')
+        return api_get(`colnames/${table}`)
+            .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
+    else
+        return api_get(`limcolnames/${table}`)
+            .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
 }
 
 export function getFKs(table) {
-    return api_get(`fks/${table}`)
-        .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
+    if(auth_level === 'admin')
+        return api_get(`fks/${table}`)
+            .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
+    else
+        return api_get(`limfks/${table}`)
+            .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
 }
 
 export function getUserPermissions() {
@@ -127,6 +141,10 @@ export function saveUserPermissions(data) {
         .then(r => cleanUser(r));
 }
 
+export function getUserLevel() {
+    return api_get('getperms');
+}
+
 export function insert(table, data) {
     return api_post(`insert/${table}`, data);
 }
@@ -136,8 +154,12 @@ export function update(table, data) {
 }
 
 export function query(table, data) {
-    return api_post(`query/${table}`, data)
-        .then(json => json['recordsets'][0]);
+    if(auth_level === 'admin')
+        return api_post(`query/${table}`, data)
+            .then(json => json['recordsets'][0]);
+    else
+        return api_post(`limquery/${table}`, data)
+            .then(json => json['recordsets'][0]);
 }
 
 export function del(table, data) {
