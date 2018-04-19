@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { getAccessToken } from "../components/AuthMan";
 import { dictFromList } from "../Utils";
-import {auth_level} from "../index";
+import { isAdmin } from "../index";
 
 
 
@@ -105,7 +105,7 @@ const byID = id => ({ "ID":`${id}` });
 
 // ========== Exported Functions ==========
 export function getAll(table) {
-    if(auth_level === 'admin')
+    if(isAdmin())
         return api_get(`select*/${table}`)
             .then(json => json['recordsets'][0]);
     else
@@ -114,7 +114,7 @@ export function getAll(table) {
 }
 
 export function getAllColumns(table) {
-    if(auth_level === 'admin')
+    if(isAdmin())
         return api_get(`colnames/${table}`)
             .then(json => dictFromList(json['recordsets'][0], 'COLUMN_NAME'));
     else
@@ -123,7 +123,7 @@ export function getAllColumns(table) {
 }
 
 export function getFKs(table) {
-    if(auth_level === 'admin')
+    if(isAdmin())
         return api_get(`fks/${table}`)
             .then(json => json['recordsets'][0].map(c => Object.values(c)[0]));
     else
@@ -154,7 +154,7 @@ export function update(table, data) {
 }
 
 export function query(table, data) {
-    if(auth_level === 'admin')
+    if(isAdmin())
         return api_post(`query/${table}`, data)
             .then(json => json['recordsets'][0]);
     else

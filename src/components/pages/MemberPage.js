@@ -4,6 +4,7 @@ import { getMemberByID, getMemberSkillsByID, getMemberWorkByID, getMemberLangsBy
 import { Link } from 'react-router-dom';
 import { Button, Grid, CircularProgress } from 'react-md';
 import MemberDisplay from '../displays/MemberDisplay';
+import {isAdmin} from "../../index";
 
 export default class MemberPage extends React.PureComponent {
     constructor(props) {
@@ -23,7 +24,7 @@ export default class MemberPage extends React.PureComponent {
             .then(this.getAndSave(getMemberCertsByID(id), 'certs'))
             .then(this.getAndSave(getMemberByID(id), 'mem'))
             .then(() => this.props.setTitle(this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
-            .then(() => this.props.setActions((
+            .then(() => isAdmin() && this.props.setActions((
                 <Link to={`/member/${this.state.mem.ID}/edit`}>
                     <Button style={{'color':'black'}} secondary raised>Edit</Button>
                 </Link>)));

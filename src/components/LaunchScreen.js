@@ -1,7 +1,7 @@
 import React from "react";
 import { Media, Paper, CircularProgress } from 'react-md';
 import ReactDOM from 'react-dom'
-import {adminInitialize, limitedInitialize} from "../index";
+import {initialize, storeUserLevel} from "../index";
 import App from "../App";
 import LimitedApp from '../LimitedApp';
 import UnauthorizedPage from "./pages/UnauthorizedPage";
@@ -20,13 +20,13 @@ export default class LaunchScreen extends React.Component{
         }
         else {
             getUserLevel().then(level => {
+                storeUserLevel(level);
+
                 switch(level) {
                     case 'admin':
-                        return adminInitialize()
-                                .then(() => ReactDOM.render(<App/>, document.getElementById("root")));
+                        return initialize().then(() => ReactDOM.render(<App/>, document.getElementById("root")));
                     case 'user':
-                        return limitedInitialize()
-                                .then(() => ReactDOM.render(<LimitedApp/>, document.getElementById("root")));
+                        return initialize().then(() => ReactDOM.render(<LimitedApp/>, document.getElementById("root")));
                     default:
                         return ReactDOM.render(<UnauthorizedPage/>, document.getElementById("root"));
                 }

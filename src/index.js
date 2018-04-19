@@ -7,31 +7,17 @@ import LockedApp from "./LockedApp";
 export var HEADERS = {};
 export var CONSTANTS = {};
 export var FKS = {};
-export var auth_level = 'unauthorized';
 export var WORKSTATUS = ['Employed', 'Released', 'Dismissed'];
 export var WORKTYPE = ['Full-time', 'Part-time', 'Temporary'];
 let searchResult = [];
+let auth_level = '';
 
 ReactDOM.render(
     <LockedApp/>,
     document.getElementById('root')
 );
 
-export function adminInitialize() {
-    auth_level = 'admin';
-    return initialize();
-}
-
-export function limitedInitialize() {
-    auth_level = 'user';
-    return initialize();
-}
-
-export function unauthorizedInitialize() {
-    auth_level = 'unauthorized';
-}
-
-function initialize() {
+export function initialize() {
     let constants = ['Skill', 'Language', 'Site', 'Certificate'];
     let headers = ['Member', 'Work', 'Has_Cert', 'Placement', 'Training'].concat(constants);
     let promises = [];
@@ -43,10 +29,7 @@ function initialize() {
     return Promise.all(promises);
 }
 
-export function storeSearch(result) {
-    searchResult = result;
-}
-
-export function reclaimSearch() {
-    return searchResult;
-}
+export const storeUserLevel = level => auth_level = level;
+export const isAdmin = () => auth_level === 'admin';
+export const storeSearch = result => searchResult = result;
+export const reclaimSearch = () => searchResult;

@@ -1,13 +1,8 @@
 import React from 'react';
 import { Paper, Media, Button, FontIcon } from 'react-md';
 import { logout } from "../AuthMan";
-import { unauthorizedInitialize } from "../../index";
 
 export default class UnauthorizedPage extends React.PureComponent {
-    componentWillMount() {
-        unauthorizedInitialize();
-    }
-
     render() {
         return (
             <div className="launchHor" style={{'marginTop':'7%'}}>

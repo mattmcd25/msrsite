@@ -91,6 +91,7 @@ exports.updateUser = (req, res) => {
     return request(options)
         .then(response => {
             console.log('[auth] Success');
+            recentUsers[req.body.user_id] = req.body.newLevel;
             res.status(200).send(response);
         }).catch(error => {
             console.log('[auth] 500 ' + error);

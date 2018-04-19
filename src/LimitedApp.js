@@ -1,18 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import IndexPage from "./components/pages/IndexPage";
-import NewMember from "./components/pages/NewMemberPage";
 import Layout from "./components/pages/Layout";
 import MemberPage from "./components/pages/MemberPage";
-import EditMemberPage from "./components/pages/EditMemberPage";
-import LoginPage from "./components/pages/LoginPage";
 import NotFoundPage from "./components/pages/NotFoundPage";
 import QueryPage from './components/pages/QueryPage';
-import AdminPage from "./components/pages/AdminPage";
-import Callback from "./components/Callback";
-import {isLoggedIn} from "./components/AuthMan";
-import TrainingPage from "./components/pages/TrainingPage";
-
+import {isLoggedIn, logout} from "./components/AuthMan";
 
 export default class App extends React.Component {
     constructor(props) {
@@ -74,8 +67,9 @@ export default class App extends React.Component {
                         location: location,
                         history: history
                     })
-                }else{
-                    return <Redirect to='/login'/>
+                }
+                else {
+                    logout();
                 }
             }
         );
@@ -89,14 +83,8 @@ export default class App extends React.Component {
                         {/* Homepage */}
                         <Route exact path="/" render={this.componentWithRefs(IndexPage)}/>
                         {/* Other Pages */}
-                        <Route path="/login" component={LoginPage}/>
-                        <Route path="/callback" component={Callback}/>
-                        <Route path="/new" render={this.componentWithRefs(NewMember)}/>
                         <Route exact path="/member/:memid" render={this.componentWithRefs(MemberPage)}/>
-                        <Route path="/member/:memid/edit" render={this.componentWithRefs(EditMemberPage)}/>
                         <Route path="/query" render={this.componentWithRefs(QueryPage)}/>
-                        <Route path="/manage" render={this.componentWithRefs(AdminPage)}/>
-                        <Route path="/training" render={this.componentWithRefs(TrainingPage)}/>
                         {/* Redirects */}
                         <Route path="/index.*" render={() => <Redirect to="/"/>}/>
                         <Route path="/member" render={() => <Redirect to="/"/>}/>
@@ -108,5 +96,3 @@ export default class App extends React.Component {
         );
     }
 }
-
-//onUpdate={() => window.scrollTo(0, 0)}
