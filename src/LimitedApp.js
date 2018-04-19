@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-d
 import IndexPage from "./components/pages/IndexPage";
 import Layout from "./components/pages/Layout";
 import MemberPage from "./components/pages/MemberPage";
-import NotFoundPage from "./components/pages/NotFoundPage";
+// import NotFoundPage from "./components/pages/NotFoundPage";
 import QueryPage from './components/pages/QueryPage';
 import {isLoggedIn, logout} from "./components/AuthMan";
 
@@ -89,7 +89,8 @@ export default class App extends React.Component {
                         <Route path="/index.*" render={() => <Redirect to="/"/>}/>
                         <Route path="/member" render={() => <Redirect to="/"/>}/>
                         {/* Error - Default */}
-                        <Route render={this.componentWithRefs(NotFoundPage)}/>
+                        <Redirect to='/'/>
+                        {/*<Route render={this.componentWithRefs(NotFoundPage)}/>*/}
                     </Switch>
                 </Layout>
             </Router>

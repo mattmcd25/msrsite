@@ -5,7 +5,7 @@ import NewMember from "./components/pages/NewMemberPage";
 import Layout from "./components/pages/Layout";
 import MemberPage from "./components/pages/MemberPage";
 import EditMemberPage from "./components/pages/EditMemberPage";
-import NotFoundPage from "./components/pages/NotFoundPage";
+// import NotFoundPage from "./components/pages/NotFoundPage";
 import QueryPage from './components/pages/QueryPage';
 import AdminPage from "./components/pages/AdminPage";
 import {isLoggedIn, logout} from "./components/AuthMan";
@@ -98,7 +98,8 @@ export default class App extends React.Component {
                         <Route path="/index.*" render={() => <Redirect to="/"/>}/>
                         <Route path="/member" render={() => <Redirect to="/"/>}/>
                         {/* Error - Default */}
-                        <Route render={this.componentWithRefs(NotFoundPage)}/>
+                        <Redirect to='/'/>
+                        {/*<Route render={this.componentWithRefs(NotFoundPage)}/>*/}
                     </Switch>
                 </Layout>
             </Router>
