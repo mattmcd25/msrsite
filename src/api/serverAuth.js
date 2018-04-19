@@ -58,7 +58,7 @@ exports.getUsers = (req, res) =>{
                 authorization: `Bearer ${exports.sysToken}`
             }
     };
-    console.log('[auth] Getting all of duh usuhs');
+    console.log('[auth] Getting all users');
     return (request(options)
         .then(response => {
             console.log('[auth] Success');
@@ -73,21 +73,21 @@ exports.updateUser = (req, res) =>{
     let request = require("request-promise");
     let options = {
         method: 'PATCH',
-        url: 'https://rwwittenberg.auth0.com/api/v2/user/'+req.body.user_id,
+        url: `https://rwwittenberg.auth0.com/api/v2/users/${req.body.user_id}`,
         headers:
             {
                 'content-type': 'application/json',
-                authorization: `Bearer ${exports.sysToken}`
+                'Authorization': `Bearer ${exports.sysToken}`
             },
-        body: {"app_metadata" : { "level": req.body.newLevel }}
+        body: `{"app_metadata":{"level":"${req.body.newLevel}"}}`
     };
-    console.log('[auth] Getting all of duh usuhs');
-    return (request(options)
+    console.log('[auth] Updating user ' + JSON.stringify(req.body));
+    return request(options)
         .then(response => {
             console.log('[auth] Success');
             res.status(200).send(response);
         }).catch(error => {
             console.log('[auth] 500 ' + error);
             res.status(500).send(error);
-        }));
+        });
 };

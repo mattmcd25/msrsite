@@ -2,10 +2,11 @@ import React from 'react';
 import { DataTable, TableHeader, TableBody, TableRow, TableColumn,
          FontIcon, Checkbox, Autocomplete, Button } from 'react-md';
 import Tooltip from '../Tooltip';
+import {PrettyKey} from "./DisplayUtils";
 
 const HEADERS = (edit, props) => {
     let l = Object.keys(Object.values(props.data)[0]).slice(1);
-    if (edit) l.push('');
+    if (edit && props.remove) l.push('');
     return l;
 };
 
@@ -18,7 +19,10 @@ export default class CheckTableElement extends React.Component {
                     <DataTable baseId="lang" fullWidth={false} selectableRows={false}>
                         <TableHeader>
                             <TableRow>
-                                {HEADERS(this.props.edit, this.props).map(head => <TableColumn className="small" key={head}>{head}</TableColumn>)}
+                                {HEADERS(this.props.edit, this.props).map(head => (
+                                    <TableColumn grow={head===Object.keys(Object.values(this.props.data)[0])[1]}
+                                                 className="small" key={head}>{PrettyKey(head)}</TableColumn>)
+                                )}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -38,17 +42,17 @@ export default class CheckTableElement extends React.Component {
 }
 
 function CheckTableRow(props) {
-    let pk = Object.keys(props.data[0]);
-    let l = props.data[pk];
+    let titleKey = Object.keys(props.data)[1];
+    let title = props.data[titleKey];
 
     let children = Object.keys(props.data).slice(1).map(k => (
         <TableColumn className="small" key={k}>
             <Tooltip tooltipPosition="top" tooltipLabel={props.tip}>
-                {k === pk ?
-                    l :
+                {k === titleKey ?
+                    title :
                     props.edit ?
-                        <Checkbox id={l+''+k} name={l+''+k} label={''} checked={props.data[k]}
-                                  onChange={v => props.onChange(l, k, v)}/> :
+                        <Checkbox id={title+''+k} name={title+''+k} label={''} checked={props.data[k]}
+                                  onChange={v => props.onChange(title, k, v)}/> :
                         props.data[k] ?
                             <FontIcon primary>check</FontIcon> :
                             <FontIcon error>close</FontIcon>}
@@ -56,10 +60,10 @@ function CheckTableRow(props) {
         </TableColumn>
     ));
 
-    if(props.edit) children.push(
+    if(props.edit && props.remove) children.push(
         <TableColumn className="small">
             <Tooltip tooltipPosition="top" tooltipLabel={props.tip}>
-                <Button icon primary onClick={() => props.remove(l)}>
+                <Button icon primary onClick={() => props.remove(title)}>
                     close
                 </Button>
             </Tooltip>

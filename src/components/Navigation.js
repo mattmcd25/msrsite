@@ -9,6 +9,7 @@ const NAV_ITEMS = [
         children: [
             {name:"View Members", to:"/", icon:"home", desc:"View basic information"},
             {name:"Add Member", to:"/new", icon:"add", desc:"Add a new member"},
+            {name:"Batch Add Training", to:"/training", icon:"assignment", desc:"Record a group training"},
             {name:"Advanced Search", to:"/query", icon:"search", desc:"Search by skills or work"}
         ]
     },

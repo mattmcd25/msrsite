@@ -1,13 +1,25 @@
 import React from 'react';
 import {
     getMemberByID, getMemberSkillsByID, getMemberWorkByID,
-    update, del, insert, getMemberLangsByID, getMemberCertsByID
+    update, del, insert, getMemberLangsByID, getMemberCertsByID, getMemberTrainingByID, getMemberPlacementsByID
 } from "../../data/databaseManager";
 import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
-import { PrettyWork, invalidData } from "../displays/DisplayUtils";
+import { dataLengthIssues } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
-import { intersection, difference, dictFromList } from "../../Utils";
+import {intersection, difference, duplicates} from "../../Utils";
+import IssueButton from '../IssueButton';
+
+const defaultFor = (set, key) => {
+    switch(set) {
+        case 'work': return { WORKID:key, EMPLOYER: 'Untitled', LENGTH: 0, SKILLS: [] };
+        case 'placement': return { PLACEMENTID: key, EMPLOYER: 'Untitled', WORKTYPE: 'Full-time',
+                                    WORKSTATUS: 'Employed', STARTDATE: new Date(), SKILLS: [] };
+        case 'training': return { TRAININGID: key, FIELD: 'Untitled', COMPLETEDATE: new Date(),
+                                    SUCCEEDED: true, SKILLS: [] };
+        default: return { key };
+    }
+};
 
 export default class EditMemberPage extends React.Component {
     constructor(props){
@@ -15,7 +27,7 @@ export default class EditMemberPage extends React.Component {
         props.setActions([]);
         this.state = {
             loading: true,
-            disabled: false,
+            issues: [],
             nextID: 1
         };
     }
@@ -27,40 +39,51 @@ export default class EditMemberPage extends React.Component {
                 <Button style={{'color':'black'}} raised secondary children="Cancel" />
             </Link>,
             <label className="spacer"/>,
-            <Button style={{'color':'black'}} raised secondary disabled={this.state.disabled}
-                    onClick={this.saveChanges}>
+            <IssueButton raised secondary issues={this.state.issues} onClick={this.saveChanges}
+                         style={{'color':'black'}} position="left">
                 Save
-            </Button>
+            </IssueButton>
         ]);
     };
 
     // When state changes; used to update actions based on invalid data
     componentDidUpdate = () => {
-        let disabled = invalidData([this.state.mem], 'Member')
-                            || invalidData(this.state.work, 'Work')
-                            || invalidData(this.state.certs, 'Has_Cert');
-        if(disabled !== this.state.disabled) {
-            this.setState({ disabled }, this.updateActions);
+        let issues = dataLengthIssues([this.state.mem], 'Member')
+                        .concat(dataLengthIssues(this.state.work, 'Work'))
+                        .concat(dataLengthIssues(this.state.certs, 'Has_Cert'))
+                        .concat(dataLengthIssues(this.state.placement, 'Placement'))
+                        .concat(dataLengthIssues(this.state.training, 'Training'));
+        if(this.state.mem && (!this.state.mem.SITE || this.state.mem.SITE === '')) issues.push({field:'SITE',value:''});
+        if(this.state.certs) {
+            let types = Object.values(this.state.certs).map(c=>c.TYPE);
+            if(types.includes('')) issues.push({field:'TYPE',value:''});
+            let dups = duplicates(types);
+            if(dups.length > 0) issues.push({field:'TYPE',value:dups[0],duplicate:true});
+        }
+        if(JSON.stringify(issues[0]) !== JSON.stringify(this.state.issues[0])) {
+            this.setState({ issues }, this.updateActions);
         }
     };
 
     // Initial loading from database
     componentDidMount(){
         let id = this.props.match.params.memid;
-        getMemberSkillsByID(id, false)
-            .then(skills => this.setState({ skills, pastSkills: skills }))
-            .then(() => getMemberWorkByID(id))
-            .then(work => this.setState({ work: PrettyWork(work), pastWork: PrettyWork(work) }))
-            .then(() => getMemberLangsByID(id))
-            .then(langs => this.setState({ langs: dictFromList(langs, 'LANGUAGE'), pastLangs: dictFromList(langs, 'LANGUAGE') }))
-            .then(() => getMemberCertsByID(id))
-            .then(certs => this.setState({ certs: dictFromList(certs, 'TYPE'), pastCerts: dictFromList(certs, 'TYPE') }))
-            .then(() => getMemberByID(id))
-            .then(mem => this.setState({ mem, pastMem: mem }))
+        this.getAndSave(getMemberSkillsByID(id, false), 'skills')()
+            .then(this.getAndSave(getMemberWorkByID(id), 'work'))
+            .then(this.getAndSave(getMemberTrainingByID(id), 'training'))
+            .then(this.getAndSave(getMemberPlacementsByID(id), 'placement'))
+            .then(this.getAndSave(getMemberLangsByID(id), 'langs'))
+            .then(this.getAndSave(getMemberCertsByID(id), 'certs'))
+            .then(this.getAndSave(getMemberByID(id), 'mem'))
             .then(() => this.props.setTitle("Editing " + this.state.mem.FIRSTNAME + " " + this.state.mem.SURNAME))
             .then(this.updateActions)
             .then(() => this.setState({ loading: false }));
     }
+
+    past = (name) => `past${name[0].toUpperCase() + name.slice(1)}`;
+
+    getAndSave = (promise, name) =>
+        () => promise.then(res => this.setState({ [name]:res, [this.past(name)]:res }));
 
     // Save changes to the member
     saveChanges = () => {
@@ -99,7 +122,6 @@ export default class EditMemberPage extends React.Component {
         });
 
         // Update certificates
-        // TODO check for duplicates
         let oldCerts = Object.keys(this.state.pastCerts);
         let newCerts = Object.keys(this.state.certs);
         difference(newCerts, oldCerts).forEach(cert => promises.push(insert('Has_Cert', this.state.certs[cert])));
@@ -116,40 +138,59 @@ export default class EditMemberPage extends React.Component {
             }
         });
 
-        // Adding new work
-        let oldWork = Object.keys(this.state.pastWork);
-        let newWork = Object.keys(this.state.work);
-        difference(newWork, oldWork).forEach(workID => {
-            let {WORKID:fakeID, SKILLS, ...restWork} = this.state.work[workID];
-            promises.push(insert('Work', {
-                ID,
-                ...restWork
-            }).then(res => {
-                let WORKID = res.recordset[0].WORKID;
-                SKILLS.forEach(NAME => promises.push(insert('Work_skill', {WORKID, NAME})));
-            }));
-        });
+        // Update Work
+        this.saveJobs('work', 'WORKID', promises, ID);
 
-        // Removing old work
-        difference(oldWork, newWork).forEach(WORKID => {
-            promises.push(del('Work_Skill', {WORKID})
-                .then(() => del('Work', {WORKID})));
-        });
+        // Update Placements
+        this.saveJobs('placement', 'PLACEMENTID', promises, ID);
 
-        // Updating old&&new work
-        intersection(oldWork, newWork).forEach(WORKID => {
-            let {WORKID:pastID, SKILLS:oldSkills, ...restPast} = this.state.pastWork[WORKID];
-            let {WORKID:curID, SKILLS:newSkills, ...restWork} = this.state.work[WORKID];
-            difference(oldSkills, newSkills).forEach(NAME => promises.push(del('Work_skill', {WORKID, NAME})));
-            difference(newSkills, oldSkills).forEach(NAME => promises.push(insert('Work_skill', {WORKID, NAME})));
-            if(JSON.stringify(restWork) !== JSON.stringify(restPast))
-                promises.push(update('Work', {...restWork, PK: {WORKID}}));
-        });
+        // Update Training
+        this.saveJobs('training', 'TRAININGID', promises, ID);
 
-        // fin
+        // Wait for all api calls to finish
         Promise.all(promises).then(() => {
             this.props.toast({text:'Saved!'});
             this.props.history.push('/member/'+ID)
+        });
+    };
+
+    saveJobs = (name, pk, promises, ID) => {
+        let pastName = this.past(name);
+        let table = name[0].toUpperCase() + name.slice(1);
+        let skilltable = `${table}_SKILL`;
+        let oldData = this.state[pastName];
+        let newData = this.state[name];
+        let oldKeys = Object.keys(oldData);
+        let newKeys = Object.keys(newData);
+
+        // Adding new
+        difference(newKeys, oldKeys).forEach(key => {
+            let {[pk]:id, SKILLS, ...rest} = newData[key];
+            promises.push(
+                insert(table, { ID, ...rest })
+                    .then(res => {
+                        let realKey = res.recordset[0][pk];
+                        SKILLS.forEach(NAME => promises.push(insert(skilltable, {[pk]:realKey, NAME})));
+                    })
+            );
+        });
+
+        // Removing old
+        difference(oldKeys, newKeys).forEach(key => {
+            promises.push(
+                del(skilltable, {[pk]:key})
+                    .then(() => del(table, {[pk]:key}))
+            );
+        });
+
+        // Updating old ones that weren't removed
+        intersection(oldKeys, newKeys).forEach(key => {
+            let {[pk]:oldID, SKILLS:oldSkills, ...restOld} = oldData[key];
+            let {[pk]:newID, SKILLS:newSkills, ...restNew} = newData[key];
+            difference(oldSkills, newSkills).forEach(NAME => promises.push(del(skilltable, {[pk]:key, NAME})));
+            difference(newSkills, oldSkills).forEach(NAME => promises.push(insert(skilltable, {[pk]:key, NAME})));
+            if(JSON.stringify(restNew) !== JSON.stringify(restOld))
+                promises.push(update(table, {...restNew, PK: {[pk]:key}}));
         });
     };
 
@@ -165,18 +206,17 @@ export default class EditMemberPage extends React.Component {
         });
     };
 
-    // work text field edited
-    updateWork = (workID, evt) => {
-        const target = evt.target;
-        const value = target.value;
-        const name = target.name;
+    // job item text field edited
+    updateItem = (set, key, evt) => {
+        let field = evt.target.name;
+        let value = evt.target.value;
 
-        this.setState(prevstate => ({
-            work : {
-                ...prevstate.work,
-                [workID]: {
-                    ...prevstate.work[workID],
-                    [name]: value
+        this.setState(prevState => ({
+            [set]: {
+                ...prevState[set],
+                [key]: {
+                    ...prevState[set][key],
+                    [field]: value
                 }
             }
         }));
@@ -199,25 +239,7 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
-    /* ========== SET ========== */
-    // skills list changed
-    setSkills = (skills) => {
-        this.setState({ skills });
-    };
-
-    // work skills list changed
-    setWorkSkills = (workID, SKILLS) => {
-        this.setState(prevState => ({
-            work: {
-                ...prevState.work,
-                [workID]: {
-                    ...prevState.work[workID],
-                    SKILLS
-                }
-            }
-        }));
-    };
-
+    // langauges edited
     setLangs = (language, key, value) => {
         this.setState(prevState => ({
             langs: {
@@ -230,7 +252,27 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
+    /* ========== SET ========== */
+    // skills list changed
+    setSkills = (skills) => {
+        this.setState({ skills });
+    };
+
+    // job item list changed
+    setItemSkills = (set, key, SKILLS) => {
+        this.setState(prevState => ({
+            [set]: {
+                ...prevState[set],
+                [key]: {
+                    ...prevState[set][key],
+                    SKILLS
+                }
+            }
+        }));
+    };
+
     /* ========== ADD ========== */
+    // add language
     addLang = (LANGUAGE) => {
         let ID = this.props.match.params.memid;
         this.setState(prevState => ({
@@ -247,23 +289,19 @@ export default class EditMemberPage extends React.Component {
         }));
     };
 
-    // add work
-    addWork = () => {
-        let WORKID = 'new'+this.state.nextID;
+    // add job item
+    addItem = (set) => {
+        let key = 'new'+this.state.nextID;
         this.setState(prevState => ({
-            work: {
-                ...prevState.work,
-                [WORKID]: {
-                    WORKID,
-                    EMPLOYER: 'Untitled',
-                    LENGTH: 0,
-                    SKILLS: []
-                }
+            [set]: {
+                ...prevState[set],
+                [key]: defaultFor(set, key)
             },
             nextID: prevState.nextID + 1
         }));
     };
 
+    // add cert
     addCert = () => {
         let ID = this.props.match.params.memid;
         let TYPE = 'new'+this.state.nextID;
@@ -281,42 +319,66 @@ export default class EditMemberPage extends React.Component {
     };
 
     /* ========== REMOVE ========== */
+    // remove language
     removeLang = (LANGUAGE) => {
         let {[LANGUAGE]:toDel, ...langs} = this.state.langs;
         this.setState({
             langs
         });
     };
-    // remove work
-    removeWork = (workID) => {
-        let {[workID]:toDel, ...work} = this.state.work;
-        this.setState({ work });
+
+    // remove job item
+    removeItem = (set, key) => {
+        let {[key]:toDel, ...rest} = this.state[set];
+        this.setState({ [set]:rest });
     };
 
+    // remove cert
     removeCert = (type) => {
         let {[type]:toDel, ...certs} = this.state.certs;
         this.setState({ certs });
     };
 
+    removeClicked = () => {
+        this.props.popup({
+            title:'Confirm Delete',
+            body:`Are you sure you want to completely remove ${this.state.mem.FIRSTNAME} ${this.state.mem.SURNAME}? This cannot be undone.`,
+            actions:[
+                <Button flat primary onClick={this.props.dismissPopup}>Cancel</Button>,
+                <Button flat primary onClick={this.removeMember}>Delete Permanently</Button>
+            ]
+        })
+    };
+
+    // remove member
     removeMember = () => {
-        // TODO add a confirm dialog lol
         this.setState({ loading: true });
+        this.props.toast({text: `Deleting ${this.state.mem.FIRSTNAME} ${this.state.mem.SURNAME}...`});
+        this.props.dismissPopup();
         let ID = this.state.mem.ID;
         let promises = [];
-        Object.keys(this.state.pastWork).forEach(WORKID => {
-            promises.push(del('Work_Skill', {WORKID})
-                .then(() => del('Work', {WORKID})));
-        });
 
-        this.state.skills.forEach(NAME => {
-            promises.push(del('Has_Skill', {NAME, ID}));
-        });
-
+        this.removeJobs('work', 'WORKID', promises);
+        this.removeJobs('training', 'TRAININGID', promises);
+        this.removeJobs('placement', 'PLACEMENTID', promises);
+        Object.keys(this.state.pastLangs).forEach(LANGUAGE => promises.push(del('Know_lang', {LANGUAGE, ID})));
+        Object.keys(this.state.pastCerts).forEach(TYPE => promises.push(del('Has_Cert', {TYPE, ID})));
+        this.state.pastSkills.forEach(NAME => promises.push(del('Has_Skill', {NAME, ID})));
         Promise.all(promises)
             .then(() => del('Member', {ID}))
+            .then(() => this.props.toast({text: 'Deleted!'}))
             .then(() => this.props.history.push('/'));
     };
 
+    removeJobs = (set, pk, promises) => {
+        let pastSet = this.past(set);
+        Object.keys(this.state[pastSet]).forEach(key => {
+            promises.push(del(`${set}_Skill`, {[pk]:key})
+                .then(() => del(set, {[pk]:key})));
+        });
+    };
+
+    /* ========== RENDER ========== */
     render() {
         return (
             <div className="editMemberPage">
@@ -324,13 +386,17 @@ export default class EditMemberPage extends React.Component {
                     this.state.loading ?
                         <Grid className="member-display"><CircularProgress id="editMemberPage"/></Grid> :
                         <EditMemberDisplay mem={this.state.mem} skills={this.state.skills} work={this.state.work}
-                                           setSkills={this.setSkills} setWorkSkills={this.setWorkSkills}
-                                           onMemChange={this.updateMember} onWorkChange={this.updateWork}
-                                           addWork={this.addWork} removeWork={this.removeWork}
-                                           removeMember={this.removeMember} langs={this.state.langs}
+                                           setSkills={this.setSkills}
+
+                                           setItemSkills={this.setItemSkills} updateItem={this.updateItem}
+                                           addItem={this.addItem} removeItem={this.removeItem}
+
+                                           onMemChange={this.updateMember}
+                                           removeMember={this.removeClicked} langs={this.state.langs}
                                            setLangs={this.setLangs} addLang={this.addLang} addCert={this.addCert}
                                            removeLang={this.removeLang} certs={this.state.certs}
-                                           onCertChange={this.updateCert} removeCert={this.removeCert}/>
+                                           onCertChange={this.updateCert} removeCert={this.removeCert}
+                        placement={this.state.placement} training={this.state.training}/>
                 }
             </div>
         );

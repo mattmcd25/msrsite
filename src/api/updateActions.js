@@ -10,7 +10,11 @@ exports.insert = (req, res) => {
     console.log(`[insert] ${JSON.stringify(req.body)} into ${tableID}`);
     let cols = '("' + Object.keys(req.body).reduce((acc, cur) => acc + '", "' + cur) + '")';
     let vars = '(' + Object.values(req.body).map(val => varToSQL(val)).reduce((acc, cur) => acc + ', ' + cur) + ')';
-    let output = tableID==="WORK" ? " OUTPUT Inserted.WORKID" : tableID==="MEMBER" ? " OUTPUT Inserted.ID" : "";
+    let output = tableID==="WORK" ? " OUTPUT Inserted.WORKID"
+                : tableID==="MEMBER" ? " OUTPUT Inserted.ID"
+                : tableID==="PLACEMENT" ? " OUTPUT Inserted.PLACEMENTID"
+                : tableID==="TRAINING" ? " OUTPUT Inserted.TRAININGID"
+                    : "";
     let request = new sql.Request();
     let query = `INSERT INTO ${tableID} ${cols}${output} VALUES ${vars}`;
     return request.query(query)
@@ -19,7 +23,7 @@ exports.insert = (req, res) => {
             if(res) res.status(201).send(recordset);
         })
         .catch(err => {
-            console.log('[insert] '+err);
+            console.log('[insert] 500 '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -44,7 +48,7 @@ exports.update = (req, res) => {
             if(res) res.status(202).send(recordset);
         })
         .catch(err => {
-            console.log('[update] '+err);
+            console.log('[update] 500 '+err);
             if(res) res.status(500).send(err);
         });
 };
@@ -65,7 +69,7 @@ exports.delete = (req, res) => {
             if(res) res.status(202).send(recordset);
         })
         .catch(err => {
-            console.log('[delete] '+err);
+            console.log('[delete] 500 '+err);
             if(res) res.status(500).send(err);
         });
 };

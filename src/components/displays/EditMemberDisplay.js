@@ -1,14 +1,16 @@
 import React from 'react';
 import { BlankCard, ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./Cards";
-import { Grid, Button } from 'react-md';
-import { CONSTANTS } from "../../index";
+import { Grid, Button, FontIcon } from 'react-md';
+import { CONSTANTS, WORKSTATUS, WORKTYPE } from "../../index";
 import { dictFromList } from "../../Utils";
 
+let chips, skDict, langs, langDict;
+
 export default function EditMemberDisplay(props) {
-    let skills = CONSTANTS['Skill'].map(s => s.NAME);
-    let skDict = dictFromList(CONSTANTS['Skill'], 'NAME');
-    let langDict = dictFromList(CONSTANTS['Language'], 'LANGUAGE');
-    let langs = CONSTANTS['Language'].map(s => s.LANGUAGE);
+    chips = CONSTANTS['Skill'].map(s => s.NAME);
+    skDict = dictFromList(CONSTANTS['Skill'], 'NAME');
+    langDict = dictFromList(CONSTANTS['Language'], 'LANGUAGE');
+    langs = CONSTANTS['Language'].map(s => s.LANGUAGE);
     return (
         <Grid className="member-display">
             {(() => {
@@ -18,49 +20,67 @@ export default function EditMemberDisplay(props) {
                                       acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR)}}/>)
             })()}
 
-            {Object.keys(props.work).map(workID => {
-                let {WORKID, SKILLS, ...rest} = props.work[workID];
-                return (
-                    <PropsAndChipsCard edit key={workID} title={rest.EMPLOYER} subtitle="Work Experience"
-                                       list={SKILLS} data={rest} listHeader="Skills Learned" table='Work'
-                                       updateList={(list) => props.setWorkSkills(workID, list)} acData={skills}
-                                       onChange={(evt) => props.onWorkChange(workID, evt)} tips={skDict}
-                                       actions={<Button raised className="redButton"
-                                                        onClick={() => props.removeWork(workID)}>
-                                                    Delete
-                                                </Button>}/>
-                );
-            })}
+            {jobCards(props, 'work', 'WORKID', "Past Work Experience")}
 
-            <ChipListCard edit title="Other Skills" acData={skills} tips={skDict}
-                          list={props.skills} updateList={props.setSkills}/>
+            {jobCards(props, 'placement', 'PLACEMENTID', "Placement through MSR")}
+
+            {jobCards(props, 'training', 'TRAININGID', "MSR Training Session", 'FIELD')}
 
             {Object.keys(props.certs).map(type => {
                 let {ID, ...rest} = props.certs[type];
                 return <PropListCard edit title={rest.TYPE} subtitle="Certificate" data={rest} table='Has_Cert'
                                      onChange={evt => props.onCertChange(type, evt)} key={type}
-                                     actions={<Button raised className="redButton"
-                                                      onClick={() => props.removeCert(type)}>
-                                                    Delete
-                                              </Button>}/>
+                                     acData={{TYPE:CONSTANTS['Certificate'].map(c=>c.TYPE)}}
+                                     actions={<Button flat iconChildren={<FontIcon>delete</FontIcon>} iconBefore={false}
+                                                      className="redButton" onClick={() => props.removeCert(type)}>
+                                         Delete</Button>}/>
             })}
 
             <CheckTableCard edit title="Language Proficiencies" data={props.langs} onChange={props.setLangs}
                             acData={langs} add={props.addLang} remove={props.removeLang} tips={langDict}/>
 
+            <ChipListCard edit title="Other Skills" acData={chips} tips={skDict}
+                          list={props.skills} updateList={props.setSkills}/>
+
             <BlankCard title="Other Actions">
-                <Button raised primary onClick={props.addWork}>
+                <Button raised primary onClick={() => props.addItem('work')}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
                     Add Work Experience
-                </Button>
-                <label className="vertSpacer"/>
-                <Button raised primary onClick={props.addCert}>
+                </Button><label className="vertSpacer"/>
+                <Button raised primary onClick={() => props.addItem('placement')}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
+                    Add Placement
+                </Button><label className="vertSpacer"/>
+                <Button raised primary onClick={() => props.addItem('training')}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
+                    Add Training
+                </Button><label className="vertSpacer"/>
+                <Button raised primary onClick={props.addCert}
+                        className="addButton" iconChildren={<FontIcon>add</FontIcon>}>
                     Add New Certificate
-                </Button>
-                <label className="vertSpacer"/>
-                <Button raised className="redButton" onClick={props.removeMember}>
-                    Delete This Member
+                </Button><label className="vertSpacer"/>
+                <Button raised className="raisedRedButton" iconChildren={<FontIcon>delete</FontIcon>} onClick={props.removeMember}>
+                    delete
                 </Button>
             </BlankCard>
         </Grid>
     );
+}
+
+function jobCards(props, set, pk, subtitle, title='EMPLOYER') {
+    let table = set[0].toUpperCase() + set.slice(1);
+    return Object.keys(props[set]).map(key => {
+        let {[pk]:id, SKILLS, ...rest} = props[set][key];
+        return (
+            <PropsAndChipsCard edit key={key} title={rest[title]} subtitle={subtitle}
+                               list={SKILLS} data={rest} listHeader="Skills Learned" table={table}
+                               updateList={list => props.setItemSkills(set, key, list)}
+                               acData={{chips, WORKTYPE, WORKSTATUS}}
+                               onChange={evt => props.updateItem(set, key, evt)} tips={skDict}
+                               actions={<Button flat iconChildren={<FontIcon>delete</FontIcon>} iconBefore={false} className="redButton"
+                                                onClick={() => props.removeItem(set, key)}>
+                                   Delete
+                               </Button>}/>
+        )
+    });
 }

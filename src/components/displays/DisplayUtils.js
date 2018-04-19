@@ -1,7 +1,8 @@
 import React from "react";
 import Tooltip from '../Tooltip';
 import { CONSTANTS, HEADERS } from "../../index";
-import { dictFromList, or } from "../../Utils";
+import { dictFromList } from "../../Utils";
+import { FontIcon } from 'react-md';
 
 const formats = {
     'FIRSTNAME': ['First Name'],
@@ -20,7 +21,21 @@ const formats = {
     'ABBR': ['Site Code'],
     'TYPE': ['Certificate Type'],
     'YEAR': ['Completion Year'],
-    'INSTITUTION': ['Completed at']
+    'INSTITUTION': ['Completed at'],
+    'DEPENDENTS': ['Dependents'],
+    'DATE': ['Recruit Date'],
+    'WORKTYPE': ['Employment Type'],
+    'WORKSTATUS': ['Employment Status'],
+    'STARTDATE': ['Start Date',prettyDate],
+    'COMPLETEDATE': ['Complete Date',prettyDate],
+    'SUCCEEDED': ['Succeeded',prettyBool],
+    'FIELD': ['Training Field'],
+    'READ': ['Read'],
+    'WRITE': ['Write'],
+    'SPEAK': ['Speak'],
+    'email': ['Email Address'],
+    'basic': ['Basic Permissions'],
+    'admin': ['Admin Permissions']
 };
 
 export function PrettyKey(key) {
@@ -37,27 +52,6 @@ export function PrettyPair(key, val) {
     return <div><b>{PrettyKey(key)}:</b> {PrettyValue(key, val)}</div>;
 }
 
-export function PrettyWork(work) {
-    return work.reduce((acc, cur) => {
-        if(acc!==undefined && acc.hasOwnProperty(cur.WORKID)) {
-            acc[cur.WORKID].SKILLS.push(cur.NAME);
-            return acc;
-        }
-        else {
-            let sks = cur.NAME ? [cur.NAME] : [];
-            return {
-                [cur.WORKID]: {
-                    EMPLOYER: cur.EMPLOYER,
-                    WORKID: cur.WORKID,
-                    LENGTH: cur.LENGTH,
-                    SKILLS: sks
-                },
-                ...acc
-            }
-        }
-    }, {});
-}
-
 export function textValidation(table, field) {
     let info = HEADERS[table][field];
     let result = {};
@@ -72,14 +66,24 @@ export function textValidation(table, field) {
     return result;
 }
 
-export function invalidFields(fields) {
-    return fields.filter(field => field.props.value.length > field.props.maxLength).length > 0;
+export function dataLengthIssues(data, table) {
+    return data ? Object.keys(data).reduce((acc, key) => {
+        let cur = data[key];
+        return acc.concat(
+            cur ? Object.keys(cur).reduce((acc, field) =>
+                (typeof(cur[field]) === 'string' &&
+                HEADERS[table][field].DATA_TYPE === 'varchar' &&
+                cur[field].length > HEADERS[table][field].CHARACTER_MAXIMUM_LENGTH) ?
+                    acc.concat({key,field,value:cur[field]}) : acc, []) : []
+        )}, []) : [];
 }
 
-export function invalidData(data, table) {
-    return data && or(Object.values(data).map(d =>
-        d && or(Object.keys(d).map(k =>
-            (typeof(d[k]) === 'string' && d[k].length > HEADERS[table][k].CHARACTER_MAXIMUM_LENGTH)))));
+export function issueTip(issue) {
+    if(!issue) return '';
+    else if(issue.custom) return issue.message;
+    else if(issue.duplicate) return `There are cannot be two ${PrettyKey(issue.field)} named ${issue.value}!`;
+    else if(issue.value === "") return `The ${PrettyKey(issue.field)} field cannot be empty!`;
+    else return `The ${PrettyKey(issue.field)} field is overfilled!`;
 }
 
 function prettyPhone(old) {
@@ -104,4 +108,14 @@ function prettyYears(years) {
         (years === 1) ?
             `${years} year` :
             `${years*12} months`;
+}
+
+function prettyDate(date) {
+    return new Date(date).toDateString()
+}
+
+function prettyBool(bool) {
+    return bool ?
+        <div style={{'display':'inline'}}><FontIcon primary>check</FontIcon>Yes</div> :
+        <div style={{'display':'inline'}}><FontIcon error>close</FontIcon>No</div> ;
 }

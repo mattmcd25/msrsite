@@ -4,9 +4,12 @@ import { Grid } from 'react-md';
 import {CONSTANTS} from "../../index";
 import {dictFromList} from "../../Utils";
 
+let skDict;
+let langDict;
+
 export default function MemberDisplay(props) {
-    let skDict = dictFromList(CONSTANTS['Skill'], 'NAME');
-    let langDict = dictFromList(CONSTANTS['Language'], 'LANGUAGE');
+    skDict = dictFromList(CONSTANTS['Skill'], 'NAME');
+    langDict = dictFromList(CONSTANTS['Language'], 'LANGUAGE');
     return (
         <Grid className="member-display">
             {(() => {
@@ -16,16 +19,14 @@ export default function MemberDisplay(props) {
 
             <ChipListCard title="Skills" list={props.skills} updateList={props.setSkills} tips={skDict}/>
 
-            {Object.keys(props.work).map(workID => {
-                let {WORKID, EMPLOYER, SKILLS, ...rest} = props.work[workID];
-                return (
-                    <PropsAndChipsCard key={workID} title={EMPLOYER} subtitle="Work Experience" tips={skDict}
-                                       list={SKILLS} data={rest} listHeader="Skills Learned"/>
-                );
-            })}
+            {jobCards(props.work, 'WORKID', 'Past Work Experience')}
 
-            {props.certs.map(cert => {
-                let {ID, TYPE, ...rest} = cert;
+            {jobCards(props.placement, 'PLACEMENTID', 'Placement through MSR')}
+
+            {jobCards(props.training, 'TRAININGID', 'MSR Training Session', 'FIELD')}
+
+            {Object.keys(props.certs).map(cert => {
+                let {ID, TYPE, ...rest} = props.certs[cert];
                 let DESC = dictFromList(CONSTANTS['Certificate'], 'TYPE')[TYPE].DESC;
                 return <PropListCard title={TYPE} key={TYPE} subtitle="Certificate" data={{DESC, ...rest}}/>
             })}
@@ -33,4 +34,14 @@ export default function MemberDisplay(props) {
             <CheckTableCard title="Language Proficiencies" data={props.langs} tips={langDict}/>
         </Grid>
     );
+}
+
+function jobCards(list, pk, subtitle, title='EMPLOYER') {
+    return Object.keys(list).map(key => {
+        let {[pk]:id, [title]:t, SKILLS, ...rest} = list[key];
+        return (
+            <PropsAndChipsCard key={key} title={t} subtitle={subtitle} tips={skDict}
+                               list={SKILLS} data={rest} listHeader="Skills Learned"/>
+        )
+    })
 }
