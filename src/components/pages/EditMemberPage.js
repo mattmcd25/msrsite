@@ -53,7 +53,10 @@ export default class EditMemberPage extends React.Component {
                         .concat(dataLengthIssues(this.state.certs, 'Has_Cert'))
                         .concat(dataLengthIssues(this.state.placement, 'Placement'))
                         .concat(dataLengthIssues(this.state.training, 'Training'));
-        if(this.state.mem && (!this.state.mem.SITE || this.state.mem.SITE === '')) issues.push({field:'SITE',value:''});
+        if(this.state.mem !== undefined) {
+            if(!this.state.mem.SITE || this.state.mem.SITE === '') issues.push({field:'SITE',value:''});
+            if(!this.state.mem.STATUS || this.state.mem.STATUS === '') issues.push({field:'STATUS',value:''});
+        }
         if(this.state.certs) {
             let types = Object.values(this.state.certs).map(c=>c.TYPE);
             if(types.includes('')) issues.push({field:'TYPE',value:''});

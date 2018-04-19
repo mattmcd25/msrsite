@@ -30,9 +30,6 @@ const formats = {
     'COMPLETEDATE': ['Complete Date',prettyDate],
     'SUCCEEDED': ['Succeeded',prettyBool],
     'FIELD': ['Training Field'],
-    'READ': ['Read'],
-    'WRITE': ['Write'],
-    'SPEAK': ['Speak'],
     'email': ['Email Address'],
     'none': ['No Access'],
     'basic': ['Limited Access'],
@@ -41,7 +38,7 @@ const formats = {
 
 export function PrettyKey(key) {
     let f = formats[key];
-    return f && f[0] ? f[0] : key;
+    return f && f[0] ? f[0] : (key && key[0].toUpperCase()+key.slice(1).toLowerCase());
 }
 
 export function PrettyValue(key, val) {

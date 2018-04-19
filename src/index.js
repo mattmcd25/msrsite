@@ -9,6 +9,7 @@ export var CONSTANTS = {};
 export var FKS = {};
 export var WORKSTATUS = ['Employed', 'Released', 'Dismissed'];
 export var WORKTYPE = ['Full-time', 'Part-time', 'Temporary'];
+export var STATUS = ['Active', 'Employed', 'Inactive', 'Blacklisted'];
 let searchResult = [];
 let auth_level = '';
 
