@@ -21,12 +21,12 @@ const ADMIN = {
     ]
 };
 
-const MISC = {
-    head:"Miscellaneous",
-    children: [
-        {name:"Help", to:"/help", icon:"help", desc:"Get help with this app"}
-    ]
-};
+// const MISC = {
+//     head:"Miscellaneous",
+//     children: [
+//         {name:"Help", to:"/help", icon:"help", desc:"Get help with this app"}
+//     ]
+// };
 
 const ACCOUNT = {
     head:"Account",
@@ -37,7 +37,7 @@ const ACCOUNT = {
 
 const NAV_ITEMS = () => {
     if(isAdmin())
-        return [GENERAL, ADMIN, MISC, ACCOUNT];
+        return [GENERAL, ADMIN, /*MISC,*/ ACCOUNT];
     else {
         let limGeneral = {
             ...GENERAL,
@@ -45,7 +45,7 @@ const NAV_ITEMS = () => {
                 GENERAL.children[0], GENERAL.children[3]
             ]
         };
-        return [limGeneral, MISC, ACCOUNT];
+        return [limGeneral, /*MISC,*/ ACCOUNT];
     }
 };
 
