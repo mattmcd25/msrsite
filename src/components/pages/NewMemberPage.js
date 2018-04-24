@@ -11,10 +11,9 @@ export default class NewMemberPage extends React.Component {
     constructor(props) {
         super(props);
         this.props.setTitle("Add Member");
-        this.state = {
-            mem: makeDict(Object.keys(HEADERS['Member']).slice(1)),
-            loading: false
-        };
+        let mem = makeDict(Object.keys(HEADERS['Member']).slice(1));
+        mem.DATE = new Date();
+        this.state = { mem, loading: false };
     };
 
     handleSubmit = () => {

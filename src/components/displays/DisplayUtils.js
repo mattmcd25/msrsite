@@ -23,7 +23,7 @@ const formats = {
     'YEAR': ['Completion Year'],
     'INSTITUTION': ['Completed at'],
     'DEPENDENTS': ['Dependents'],
-    'DATE': ['Recruit Date'],
+    'DATE': ['Recruit Date',prettyDate],
     'WORKTYPE': ['Employment Type'],
     'WORKSTATUS': ['Employment Status'],
     'STARTDATE': ['Start Date',prettyDate],

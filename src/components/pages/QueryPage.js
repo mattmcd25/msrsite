@@ -26,7 +26,7 @@ export default class QueryPage extends React.Component {
 
     clear = () => {
         this.setState({
-            mem: makeDict(Object.keys(HEADERS['Member']).slice(1)),
+            mem: doubleDate(makeDict(Object.keys(HEADERS['Member']).slice(1))),
             skills: [],
             langs: [],
             workSkills: [],
