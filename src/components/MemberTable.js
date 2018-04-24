@@ -18,8 +18,7 @@ export default class MemberTable extends React.Component {
     };
 
     handleExport(){
-        console.log(this.props.members);
-        return this.props.members;
+        return this.state.display;
     }
 
     componentDidMount() {
