@@ -31,6 +31,6 @@ export function initialize() {
 }
 
 export const storeUserLevel = level => auth_level = level;
-export const isAdmin = () => auth_level === 'admin';
+export const isAdmin = () => auth_level === 'admin' || auth_level === 'creator';
 export const storeSearch = result => searchResult = result;
 export const reclaimSearch = () => searchResult;

@@ -33,11 +33,14 @@ const formats = {
     'email': ['Email Address'],
     'none': ['No Access'],
     'basic': ['Limited Access'],
-    'admin': ['Full Access']
+    'admin': ['Full Access'],
+    'STATUS': ['Member Status']
 };
 
 export function PrettyKey(key) {
     let f = formats[key];
+    if(key.slice(0,3) === 'MIN') return `Minimum ${formats[key.slice(3)][0]}`;
+    else if(key.slice(0,3) === 'MAX') return `Maximum ${formats[key.slice(3)][0]}`;
     return f && f[0] ? f[0] : (key && key[0].toUpperCase()+key.slice(1).toLowerCase());
 }
 
@@ -82,6 +85,15 @@ export function issueTip(issue) {
     else if(issue.duplicate) return `There are cannot be two ${PrettyKey(issue.field)} named ${issue.value}!`;
     else if(issue.value === "") return `The ${PrettyKey(issue.field)} field cannot be empty!`;
     else return `The ${PrettyKey(issue.field)} field is overfilled!`;
+}
+
+export function doubleDate(dict) {
+    return Object.assign(...Object.entries(dict).map(d => {
+        if(d[0].includes('DATE'))
+            return {[`MIN${d[0]}`]:d[1], [`MAX${d[0]}`]:d[1]};
+        else
+            return {[d[0]]:d[1]};
+    }));
 }
 
 function prettyPhone(old) {

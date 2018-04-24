@@ -80,10 +80,14 @@ function cleanUser(a) {
     let isnone = true;
     try{
         ulevel = a.app_metadata.level;
-        if(ulevel === 'admin'){
+        if(ulevel === 'creator') {
+            return {};
+        }
+        else if(ulevel === 'admin'){
             isadmin = true;
             isnone = false;
-        }else if(ulevel === 'user'){
+        }
+        else if(ulevel === 'user'){
             isuser = true;
             isnone = false;
         }

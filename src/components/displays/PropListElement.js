@@ -34,6 +34,8 @@ export default class PropListElement extends React.Component {
         return (
             <div>
                 {Object.keys(this.props.data).map(field => {
+                    let fieldkey = (field.slice(0,3) === 'MIN' || field.slice(0,3) === 'MAX') ? field.slice(3) : field;
+
                     if(this.props.edit) {
                         if(this.props.acData && this.props.acData[field]) {
                             return <Autocomplete id="props-autocomplete" label={PrettyKey(field)} ref={e => this.setRef(field, e)}
@@ -54,7 +56,7 @@ export default class PropListElement extends React.Component {
                                              className="padRight" checked={this.props.data[field]}
                                              onChange={v => this.onChange(field, v)}/>
                         }
-                        else if (HEADERS[this.props.table][field].DATA_TYPE === 'date') {
+                        else if (HEADERS[this.props.table][fieldkey].DATA_TYPE === 'date') {
                             let value = {};
                             if(this.props.data[field]) {
                                 let d = new Date(this.props.data[field]);
@@ -64,7 +66,7 @@ export default class PropListElement extends React.Component {
                             return <DatePicker id={`${field}-date`} label={PrettyKey(field)} displayMode="portrait"
                                                {...value} fullWidth={false} icon={false} autoOk key={field}
                                                onChange={(s, o) => this.onChange(field, o)} className='inlineDate'
-                                               {...textValidation(this.props.table, field)}  />;
+                                               {...textValidation(this.props.table, fieldkey)}  />;
                         }
                         else {
                             return <TextField className="padRight" key={field} id={field} name={field}

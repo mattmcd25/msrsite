@@ -18,6 +18,7 @@ const TABLE_REBINDINGS = {
     'MEMBER': 'MEMBER_RESTRICTED'
 };
 
+const AUTH_LEVELS = ['newUser', 'user', 'admin', 'creator'];
 
 
 // ========== Middleware ==========
@@ -52,7 +53,7 @@ const validate = (level) =>
     (req, res, next) => {
         let u = req.user['sub'];
         auth0Calls.getLevel(u).then(user_level => {
-            if(user_level === level || user_level === 'admin') {
+            if(AUTH_LEVELS.indexOf(user_level) >= AUTH_LEVELS.indexOf(level)) {
                 console.log('[middleware] Accepted user level: ' + user_level);
                 next();
             }

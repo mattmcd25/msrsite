@@ -26,8 +26,10 @@ exports.advancedQuery = (req, res) => {
 
     console.log(`[query] ${tableID} with cond ${JSON.stringify(req.body)}`);
     let cond = Object.keys(req.body).reduce((acc, cur) => {
-        let op = (cur === 'LENGTH' || cur === 'YEAR') ? '>=' : '=';
-        return `${acc} AND [${cur}]${op}${ua.varToSQL(req.body[cur])}`
+        let op = (cur === 'LENGTH' || cur === 'YEAR' || cur.slice(0,3) === 'MIN') ? '>=' :
+            (cur.slice(0,3) === 'MAX') ? '<=' : '=';
+        let variable = (cur.slice(0,3) === 'MIN' || cur.slice(0,3) === 'MAX') ? cur.slice(3) : cur;
+        return `${acc} AND [${variable}]${op}${ua.varToSQL(req.body[cur])}`
     }, '').substring(5);
     let query = `SELECT * FROM "${tableID}" WHERE ${cond}`;
     let request = new sql.Request();

@@ -6,6 +6,7 @@ import MemberTable from '../MemberTable';
 import { storeSearch, reclaimSearch } from "../../index";
 import { HEADERS } from "../../index";
 import { intersection, makeDict, filterObj } from "../../Utils";
+import { doubleDate } from '../displays/DisplayUtils';
 
 export default class QueryPage extends React.Component {
     constructor(props) {
@@ -30,9 +31,9 @@ export default class QueryPage extends React.Component {
             langs: [],
             workSkills: [],
             work: makeDict(Object.keys(HEADERS['Work']).slice(2)),
-            placement: makeDict(Object.keys(HEADERS['Placement']).slice(2)),
+            placement: doubleDate(makeDict(Object.keys(HEADERS['Placement']).slice(2))),
             placementSkills: [],
-            training: makeDict(Object.keys(HEADERS['Training']).slice(2)),
+            training: doubleDate(makeDict(Object.keys(HEADERS['Training']).slice(2))),
             trainingSkills: [],
             cert: makeDict(Object.keys(HEADERS['Has_Cert']).slice(1)),
             result: []
