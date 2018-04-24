@@ -1,5 +1,6 @@
 import React from "react";
 import { TableCardHeader, TextField, Button, FontIcon } from 'react-md';
+import {CSVLink, CSVDownload} from 'react-csv';
 
 export default function MemberTableHeader(props) {
     return (
@@ -17,6 +18,9 @@ export default function MemberTableHeader(props) {
                 onChange={props.onChange}
                 type={"text"}
             />
+            <CSVLink data={props.onDownloadClick} filename={props.title}>
+                <Button flat primary>Download</Button>
+            </CSVLink>
             {props.onRefreshClick===undefined ?
                 <label className="spacer"/> :
                 <Button flat primary onClick={props.onRefreshClick} iconChildren={<FontIcon>refresh</FontIcon>}>

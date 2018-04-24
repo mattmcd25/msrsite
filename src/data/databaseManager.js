@@ -49,6 +49,11 @@ function checkStatus(response) {
 }
 
 // ========== Exported Functions ==========
+
+export function getExport(path){
+    api_post('/download', path);
+}
+
 export function getAll(table) {
     return api_get(`select*/${table}`)
         .then(json => json['recordsets'][0]);

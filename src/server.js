@@ -82,6 +82,9 @@ const authCheck = jwt({
 });
 
 
+
+
+
 // ========== Configuration ==========
 const app = express(); // server app
 
@@ -103,8 +106,12 @@ app.get('/api', (req, res) => { // generic test
     console.log(req.user);
 });
 
-
-
+// ========== Download Report ==========
+app.post('/api/download', function(req, res){
+    console.log(req.body);
+    let file = req.body;
+    res.download(file); // Set disposition and send it.
+});
 
 
 
