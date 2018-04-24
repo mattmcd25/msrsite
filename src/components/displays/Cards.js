@@ -42,8 +42,8 @@ export function PropsAndChipsCard(props) {
     return (
         <BlankCard {...props}>
             <PropListElement {...props}/>
-            <br/>{props.list.length > 0 ? <b>{props.listHeader+":"}</b> : false}<br/>
-            <ChipListElement {...props}/>
+            <br/><b>{props.listHeader+":"}</b><br/>
+            <ChipListElement {...props} acData={props.acData && props.acData.chips}/>
         </BlankCard>
     );
 }

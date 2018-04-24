@@ -1,10 +1,11 @@
 import React from 'react';
 import { DataTable, TableCardHeader, TableHeader, TableBody, TableRow, CircularProgress,
          TableColumn, EditDialogColumn, TablePagination, Button, FontIcon } from 'react-md';
-import { CONSTANTS, HEADERS } from "../../index";
-import { invalidData, PrettyKey, textValidation } from "./DisplayUtils";
-import { del, getAll, insert, update } from "../../data/databaseManager";
-import { intersection, difference, dictFromList, uniteRoutes } from "../../Utils";
+import {CONSTANTS, FKS, HEADERS} from "../../index";
+import { dataLengthIssues, PrettyKey, textValidation } from "./DisplayUtils";
+import {del, getAll, insert, update} from "../../data/databaseManager";
+import {intersection, difference, dictFromList, uniteRoutes, duplicates} from "../../Utils";
+import IssueButton from "../IssueButton";
 
 export default class ConstantTableElement extends React.Component {
     constructor(props) {
@@ -63,7 +64,7 @@ export default class ConstantTableElement extends React.Component {
 
     remove = (i) => {
         let data = this.state.data;
-        data.splice(i, 1);
+        data.splice(i+this.state.start, 1);
         this.setState(prevState => ({
             data,
             display: data.slice(prevState.start, prevState.start + prevState.rowsPerPage)
@@ -87,7 +88,8 @@ export default class ConstantTableElement extends React.Component {
         let newKeys = Object.keys(newData);
         let promises = [];
 
-        difference(oldKeys, newKeys).forEach(key => promises.push(del(this.props.table, {[this.props.pk]:key}))); // removed
+        difference(oldKeys, newKeys).forEach(key =>
+            promises.push(del(this.props.table, {[this.props.pk]:key}).catch(e => this.catchDel(key, e)))); // removed
         difference(newKeys, oldKeys).forEach(key => promises.push(insert(this.props.table, newData[key]))); // added
         intersection(oldKeys, newKeys).forEach(key => {
             if(JSON.stringify(oldData[key]) !== JSON.stringify(newData[key])) {
@@ -95,11 +97,15 @@ export default class ConstantTableElement extends React.Component {
             }
         }); // potentially modified
 
-        Promise.all(promises)
-            .then(() => getAll(this.props.table))
+        Promise.all(promises) // reload the page
+            .then(this.refreshTable)
+            .then(() => this.props.toast({text: 'Saved!'}));
+    };
+
+    refreshTable = () => {
+        return getAll(this.props.table)
             .then(res => CONSTANTS[this.props.table] = res)
-            .then(() => {
-                this.props.toast({text: 'Saved!'});
+            .then(() =>
                 this.setState({
                     data: CONSTANTS[this.props.table].slice(),
                     display: CONSTANTS[this.props.table].slice(0, 10),
@@ -107,8 +113,32 @@ export default class ConstantTableElement extends React.Component {
                     start: 0,
                     pk_changed: [],
                     loading: false
-                });
-            }); // reload the page
+                })
+            );
+    };
+
+    catchDel = (key, error) => {
+        this.props.popup({
+            title:'Confirm Delete',
+            body:`The ${this.props.table} '${key}' is still referenced by at least one member. Would you like to remove it anyway?`,
+            actions:[
+                <Button flat primary onClick={this.props.dismissPopup}>Cancel</Button>,
+                <Button flat primary onClick={() => this.deleteAll(key)}>Delete Anyway</Button>
+            ]
+        });
+    };
+
+    deleteAll = (key) => {
+        this.props.dismissPopup();
+        this.setState({ loading: true });
+        this.props.toast({text: `Force deleting ${key}...`});
+        let promises = [];
+        FKS[this.props.table].forEach(tab => promises.push(del(tab, {[this.props.pk]:key})));
+        Promise.all(promises)
+            .then(() => del(this.props.table, {[this.props.pk]:key}))
+            .then(this.refreshTable)
+            .then(() => this.props.toast({text: `Force removed ${key} successfully.`}));
+
     };
 
     render() {
@@ -137,16 +167,23 @@ export default class ConstantTableElement extends React.Component {
             );
             return <TableRow key={i} children={children}/>
         });
+
+        let issues = dataLengthIssues(this.state.data, this.props.table);
+        let keys = Object.values(this.state.data).map(d=>d[this.props.pk]);
+        if(keys.includes('')) issues.push({field:this.props.pk,value:''});
+        let dups = duplicates(keys);
+        if(dups.length > 0) issues.push({field:this.props.pk,value:dups[0],duplicate:true});
+
         return (this.state.loading ? <CircularProgress id="settingsTable"/> :
             <div>
                 <TableCardHeader className='smallHeader' visible={false} title={this.props.table+'s'}>
                     <Button flat primary onClick={this.addClick} iconChildren={<FontIcon>add</FontIcon>}>
                         Add
                     </Button>
-                    <Button flat primary onClick={this.save} disabled={invalidData(this.state.data, this.props.table)}
-                            iconChildren={<FontIcon>save</FontIcon>}>
+                    <IssueButton flat primary onClick={this.save} issues={issues} position="left"
+                                 iconChildren={<FontIcon>save</FontIcon>}>
                         Save
-                    </Button>
+                    </IssueButton>
                 </TableCardHeader>
                 <DataTable baseId={this.props.table} selectableRows={false}>
                     <TableHeader>

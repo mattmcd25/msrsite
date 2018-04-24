@@ -10,6 +10,10 @@ export function getAccessToken() {
     return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
+export function getUserID() {
+    return decode(getAccessToken()).sub;
+}
+
 function clearIdToken() {
     localStorage.removeItem(ID_TOKEN_KEY);
 }
@@ -37,7 +41,7 @@ export function setIdToken() {
 }
 
 export function isLoggedIn() {
-    const idToken = getIdToken();
+    const idToken = getAccessToken();
     return !!idToken && !isTokenExpired(idToken);
 }
 
@@ -51,7 +55,7 @@ function getTokenExpirationDate(encodedToken) {
     return date;
 }
 
-function isTokenExpired(token) {
+export function isTokenExpired(token) {
     const expirationDate = getTokenExpirationDate(token);
     return expirationDate < new Date();
 }

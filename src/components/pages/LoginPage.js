@@ -1,11 +1,11 @@
 import React from "react";
 import {login, isLoggedIn} from "../AuthMan";
 import LaunchScreen from "../LaunchScreen";
-import { Paper, Media, Button } from 'react-md';
+import { Paper, Media, Button, FontIcon } from 'react-md';
+import WebFontLoader from "webfontloader";
 
 
 export default class LoginPage extends React.Component{
-
     constructor(props){
         super(props);
         this.state = {
@@ -14,18 +14,13 @@ export default class LoginPage extends React.Component{
         }
     }
 
-    updateUsername = (evt) =>{
-        this.setState({
-            username: evt.target.value
+    componentWillMount() {
+        WebFontLoader.load({
+            google: {
+                families: ['Roboto:300,400,500,700', 'Material Icons', 'Novo:300,400,500,700', 'Open Sans:300,400,500,700'],
+            },
         });
-    };
-
-    updatePassword = (evt) =>{
-        this.setState({
-            password: evt.target.value
-        });
-    };
-
+    }
 
     render(){
         if(isLoggedIn()){
@@ -41,7 +36,7 @@ export default class LoginPage extends React.Component{
                         </Media>
                         <label className="vertSpacer"/><br/>
                         <div className='launchHor' style={{'marginTop':'0px'}}>
-                            <Button flat primary onClick={login}>
+                            <Button flat primary onClick={login} iconChildren={<FontIcon>lock_open</FontIcon>}>
                                 Sign In
                             </Button><br/>
                         </div>

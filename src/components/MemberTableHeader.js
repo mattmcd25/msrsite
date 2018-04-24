@@ -4,7 +4,7 @@ import {CSVLink, CSVDownload} from 'react-csv';
 
 export default function MemberTableHeader(props) {
     return (
-        <TableCardHeader visible={false} title="Members">
+        <TableCardHeader visible={false} title={props.title || "Members"}>
             <TextField
                 id="search"
                 label="Quick Search"

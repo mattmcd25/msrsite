@@ -81,8 +81,27 @@
 }
 
 .redButton {
-  background: $md-red-200;
+  //background: $md-red-200;
+  color: $md-red-800;
+  i {
+    color: inherit;
+  }
+}
+
+.raisedRedButton {
+  background: $md-red-800;
   color: $md-white-base;
+  width: 100%;
+  i {
+    color: inherit;
+  }
+}
+
+.addButton {
+  width: 100%;
+  i {
+    color: inherit;
+  }
 }
 
 .small {
@@ -109,4 +128,14 @@
 
 .padRight {
   padding-right: 20px;
+}
+
+.inlineDate {
+  display: inline;
+  padding-right: 20px;
+  div {
+    hr {
+      margin-bottom: 21px;
+    }
+  }
 }
