@@ -10,6 +10,7 @@ export var FKS = {};
 export var WORKSTATUS = ['Employed', 'Released', 'Dismissed'];
 export var WORKTYPE = ['Full-time', 'Part-time', 'Temporary'];
 export var STATUS = ['Active', 'Employed', 'Inactive', 'Blacklisted'];
+export var MARITAL = ['Married', 'Single'];
 let searchResult = [];
 let auth_level = '';
 
@@ -27,7 +28,13 @@ export function initialize() {
         promises.push(getAll(table).then(res => CONSTANTS[table] = res));
         promises.push(getFKs(table).then(res => FKS[table] = res));
     });
-    return Promise.all(promises);
+    return Promise.all(promises)
+        .catch(e => {
+        ReactDOM.render(
+            <p>Failed to initialize. Please reload the app.</p>,
+            document.getElementById('root')
+        );
+    });
 }
 
 export const storeUserLevel = level => auth_level = level;

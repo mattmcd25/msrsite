@@ -74,7 +74,6 @@ export default class ConstantTableElement extends React.Component {
     save = () => {
         this.setState({ loading: true });
         this.props.toast({text:`Saving ${this.props.table}s...`});
-        // TODO ensure there are no duplicates
         let oldData = dictFromList(CONSTANTS[this.props.table], this.props.pk);
         let newData = dictFromList(this.state.data, this.props.pk);
         let routes = uniteRoutes(this.state.pk_changed);

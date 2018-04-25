@@ -2,7 +2,7 @@ import React from 'react';
 import { BlankCard, ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./Cards";
 import { Grid, Button, FontIcon } from 'react-md';
 import { CONSTANTS, WORKSTATUS, WORKTYPE, STATUS } from "../../index";
-import { dictFromList } from "../../Utils";
+import {capitalize, dictFromList} from "../../Utils";
 
 let chips, skDict, langs, langDict;
 
@@ -68,7 +68,7 @@ export default function EditMemberDisplay(props) {
 }
 
 function jobCards(props, set, pk, subtitle, title='EMPLOYER') {
-    let table = set[0].toUpperCase() + set.slice(1);
+    let table = capitalize(set);
     return Object.keys(props[set]).map(key => {
         let {[pk]:id, SKILLS, ...rest} = props[set][key];
         return (

@@ -9,19 +9,21 @@ export default function MemberTableBody(props) {
         <div>
             {!props.loaded ?
                 <div><CircularProgress id="memberTable"/><br/></div> :
-                <DataTable baseId="member" selectableRows={false}>
-                    <TableHeader>
-                        <TableRow>
-                            {Object.keys(HEADERS['Member']).slice(1).map(head => <TableColumn key={head}>{PrettyKey(head)}</TableColumn>)}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {props.display.map(mem => <MemberTableRow key={mem.ID} data={mem}/>)}
-                    </TableBody>
-                    {props.display.length === 0 ? [<br/>,<h4 style={{'margin-left':'25px'}}>No results</h4>] : false}
-                    <TablePagination rows={props.rows} rowsPerPageLabel="Rows per page"
-                                     onPagination={props.handlePagination} page={props.page}/>
-                </DataTable>
+                <div>
+                    <DataTable baseId="member" selectableRows={false}>
+                        <TableHeader>
+                            <TableRow>
+                                {Object.keys(HEADERS['Member']).slice(1).map(head => <TableColumn key={head}>{PrettyKey(head)}</TableColumn>)}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {props.display.map(mem => <MemberTableRow key={mem.ID} data={mem}/>)}
+                        </TableBody>
+                        <TablePagination rows={props.rows} rowsPerPageLabel="Rows per page"
+                                         onPagination={props.handlePagination} page={props.page}/>
+                    </DataTable>
+                    {props.display.length === 0 ? [<br/>,<h4 style={{'marginLeft':'25px'}}>No results</h4>] : false}
+                </div>
             }
         </div>
     );

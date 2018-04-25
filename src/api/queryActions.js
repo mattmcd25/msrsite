@@ -12,11 +12,11 @@ exports.selectAll = (req, res) => {
     let request = new sql.Request(); // create Request object
     return request.query(`SELECT * FROM `+ tableID) // query
         .then(recordset => {
-            console.log("[select*] Success");
+            console.log(`[select*] ${tableID} Success`);
             if(res) res.status(200).send(recordset); // send records as a response
         })
         .catch(err => {
-            console.log('[select*] 500 '+err);
+            console.log(`[select*] ${tableID} 500 ${err}`);
             if(res) res.status(500).send(err);
         });
 };

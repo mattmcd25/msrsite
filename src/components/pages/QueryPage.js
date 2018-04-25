@@ -6,7 +6,7 @@ import MemberTable from '../MemberTable';
 import { storeSearch, reclaimSearch } from "../../index";
 import { HEADERS } from "../../index";
 import { intersection, makeDict, filterObj } from "../../Utils";
-import { doubleDate } from '../displays/DisplayUtils';
+import {displayTitle, doubleDate} from '../displays/DisplayUtils';
 
 export default class QueryPage extends React.Component {
     constructor(props) {
@@ -21,7 +21,7 @@ export default class QueryPage extends React.Component {
         if(search.length === 0)
             this.setQueryMode();
         else
-            this.setSearchMode(search);
+            this.setDisplayMode(search);
     }
 
     clear = () => {
@@ -43,7 +43,7 @@ export default class QueryPage extends React.Component {
 
     setQueryMode = () => {
         storeSearch([]);
-        this.setState({ mode: 'query' });
+        this.setState({ mode: 'query', title: 'Members' });
         this.clear();
         this.props.setTitle("Advanced Search");
         this.props.setActions([
@@ -57,11 +57,12 @@ export default class QueryPage extends React.Component {
         ]);
     };
 
-    setSearchMode = (result) => {
+    setDisplayMode = (result) => {
         storeSearch(result);
+        let title = displayTitle(this.state);
         this.setState({
             mode: 'display',
-            result
+            result, title
         });
         this.props.setTitle("Advanced Search Results");
         this.props.setActions(
@@ -94,7 +95,7 @@ export default class QueryPage extends React.Component {
             matchingIDs = intersection(matchingIDs, res.map(getID));
         }
         let result = allMembers.filter(mem => matchingIDs.includes(mem.ID));
-        this.setSearchMode(result);
+        this.setDisplayMode(result);
     };
 
     propSearch = (set, table, promises) => {
@@ -173,7 +174,8 @@ export default class QueryPage extends React.Component {
                                       update={this.update} updateList={(k, li) => this.setState({ [k]: li })}
 
                                       ref={e => this.display = e}/> :
-                        <MemberTable members={this.state.result} loaded={this.state.mode==="display"}/>
+                        <MemberTable members={this.state.result} loaded={this.state.mode==="display"}
+                                     title={this.state.title}/>
                     }
                 </Grid>
             </div>

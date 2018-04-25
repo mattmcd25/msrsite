@@ -26,7 +26,6 @@ export default class AccountManager extends React.PureComponent {
     }
 
     componentDidMount() {
-        console.log('me',getUserID());
         getUserPermissions().then(r => {
             this.setState({
                 users: r,

@@ -12,7 +12,7 @@ export const duplicates = list => {
 // Dictionaries
 export const makeDict = list => Object.assign({}, ...list.map(head => ({[head]:''})));
 export const filterObj = (obj) => Object.assign({}, ...Object.keys(obj).map(k =>
-    (obj[k] === '' || obj[k] === false || obj[k] === undefined) ? {} : {[k]:obj[k]}
+    (obj[k] === '' || obj[k] === false || obj[k] === undefined || JSON.stringify(obj[k]) === '{}') ? {} : {[k]:obj[k]}
 ));
 export const dictFromList = (list, key) => Object.assign({}, ...list.map(data => ({[data[key]]:data})));
 export const uniteRoutes = (transforms) => {
@@ -28,3 +28,6 @@ export const uniteRoutes = (transforms) => {
     });
     return reachedFrom;
 };
+
+// Strings
+export const capitalize = str => str[0].toUpperCase() + str.slice(1);

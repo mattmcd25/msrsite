@@ -3,7 +3,9 @@ import { TableCardHeader, TextField, Button, FontIcon } from 'react-md';
 
 export default function MemberTableHeader(props) {
     return (
-        <TableCardHeader visible={false} title={props.title || "Members"}>
+        <TableCardHeader visible={false} title="Members">
+            {props.title && <div style={{'maxWidth':'500px'}}><h4>{props.title.substring(8)}</h4></div>}
+            <label style={{'padding':'20px'}}/>
             <TextField
                 id="search"
                 label="Quick Search"

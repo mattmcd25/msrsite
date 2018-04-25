@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
 import { dataLengthIssues } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
-import {intersection, difference, duplicates} from "../../Utils";
+import {intersection, difference, duplicates, capitalize} from "../../Utils";
 import IssueButton from '../IssueButton';
 
 const defaultFor = (set, key) => {
@@ -90,7 +90,7 @@ export default class EditMemberPage extends React.Component {
             });
     }
 
-    past = (name) => `past${name[0].toUpperCase() + name.slice(1)}`;
+    past = (name) => `past${capitalize(name)}`;
 
     getAndSave = (promise, name) =>
         () => promise.then(res => this.setState({ [name]:res, [this.past(name)]:res }));
@@ -166,7 +166,7 @@ export default class EditMemberPage extends React.Component {
 
     saveJobs = (name, pk, promises, ID) => {
         let pastName = this.past(name);
-        let table = name[0].toUpperCase() + name.slice(1);
+        let table = capitalize(name);
         let skilltable = `${table}_SKILL`;
         let oldData = this.state[pastName];
         let newData = this.state[name];
