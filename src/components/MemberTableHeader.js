@@ -21,7 +21,7 @@ export default function MemberTableHeader(props) {
                 type={"text"}
             />
             <label className="bigSpacer"/>
-            <CSVLink data={props.onDownloadClick} filename={(props.title || "Members") + ".csv"}>
+            <CSVLink data={props.data} filename={(props.title || "Members") + ".csv"}>
                 <Button flat primary iconChildren={<FontIcon>file_download</FontIcon>}>Download</Button>
             </CSVLink>
             {props.onRefreshClick===undefined ?

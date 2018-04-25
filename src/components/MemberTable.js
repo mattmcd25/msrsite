@@ -17,10 +17,6 @@ export default class MemberTable extends React.Component {
         };
     };
 
-    handleExport(){
-        return this.state.display;
-    }
-
     componentDidMount() {
         this.setState(prevState => ({
             match: this.props.members,
@@ -77,7 +73,7 @@ export default class MemberTable extends React.Component {
             <Cell size={12}>
                 <Card tableCard>
                     <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue} title={this.props.title}
-                                       onChange={this.updateInputValue} onDownloadClick={this.handleExport()} onRefreshClick={this.props.onRefreshClick}/>
+                                       onChange={this.updateInputValue} data={this.props.members} onRefreshClick={this.props.onRefreshClick}/>
                     <MemberTableBody loaded={this.props.loaded} display={this.state.display}
                                      rows={this.state.match.length} handlePagination={this.handlePagination}
                                      page={this.state.page}/>
