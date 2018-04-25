@@ -1,5 +1,5 @@
 import React from 'react';
-import {CONSTANTS, WORKTYPE, WORKSTATUS, STATUS, isAdmin} from "../../index";
+import {CONSTANTS, WORKTYPE, WORKSTATUS, STATUS, GENDER, MARITAL, isAdmin} from "../../index";
 import ChipListElement from './ChipListElement';
 import PropListElement from "./PropListElement";
 import CheckTableElement from './CheckTableElement';
@@ -16,7 +16,7 @@ const searchCards = (props) => [
         icon:'person',
         children: (
             <PropListElement edit data={props.general} onChange={e => props.update('mem', e)} table="Member"
-                             acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR),STATUS}} ref={e => refs['mem']=e}/>
+                             acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR),STATUS,GENDER,MARITAL}} ref={e => refs['mem']=e}/>
         )
     },
     {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BlankCard, ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./Cards";
 import { Grid, Button, FontIcon } from 'react-md';
-import { CONSTANTS, WORKSTATUS, WORKTYPE, STATUS } from "../../index";
+import { CONSTANTS, WORKSTATUS, WORKTYPE, STATUS, GENDER, MARITAL } from "../../index";
 import {capitalize, dictFromList} from "../../Utils";
 
 let chips, skDict, langs, langDict;
@@ -17,7 +17,7 @@ export default function EditMemberDisplay(props) {
                 let {ID, ...rest} = props.mem;
                 return (<PropListCard edit title={rest.FIRSTNAME + " " + rest.SURNAME} data={rest}
                                       onChange={props.onMemChange} table='Member'
-                                      acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR),STATUS}}/>)
+                                      acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR),STATUS,GENDER,MARITAL}}/>)
             })()}
 
             {jobCards(props, 'work', 'WORKID', "Past Work Experience")}

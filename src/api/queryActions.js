@@ -7,6 +7,7 @@ const ua = require("./updateActions");
 // SECURITY: tableID checked by my middleware
 exports.selectAll = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
+    if(tableID === 'MEMBER') tableID = 'Member_Full';
 
     console.log(`[select*] ${tableID}`);
     let request = new sql.Request(); // create Request object
@@ -23,6 +24,7 @@ exports.selectAll = (req, res) => {
 
 exports.advancedQuery = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
+    if(tableID === 'MEMBER') tableID = 'Member_Full';
 
     console.log(`[query] ${tableID} with cond ${JSON.stringify(req.body)}`);
     let cond = Object.keys(req.body).reduce((acc, cur) => {
@@ -49,6 +51,7 @@ exports.advancedQuery = (req, res) => {
 // SECURITY: tableID checked by my middleware
 exports.getColumns = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
+    if(tableID === 'MEMBER') tableID = 'Member_Full';
 
     console.log(`[colnames] ${tableID}`);
     let request = new sql.Request(); // create Request object

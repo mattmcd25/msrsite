@@ -11,6 +11,7 @@ export var WORKSTATUS = ['Employed', 'Released', 'Dismissed'];
 export var WORKTYPE = ['Full-time', 'Part-time', 'Temporary'];
 export var STATUS = ['Active', 'Employed', 'Inactive', 'Blacklisted'];
 export var MARITAL = ['Married', 'Single'];
+export var GENDER = ['M', 'F'];
 let searchResult = [];
 let auth_level = '';
 

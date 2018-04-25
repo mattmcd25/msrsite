@@ -1,5 +1,5 @@
 import {PrettyPair, PrettyKey, textValidation} from "./DisplayUtils";
-import { TextField, Autocomplete, Checkbox, DatePicker } from 'react-md';
+import { TextField, Autocomplete, Checkbox, DatePicker, SelectField } from 'react-md';
 import React from 'react';
 import {HEADERS} from "../../index";
 
@@ -38,18 +38,28 @@ export default class PropListElement extends React.Component {
 
                     if(this.props.edit) {
                         if(this.props.acData && this.props.acData[field]) {
-                            return <Autocomplete id="props-autocomplete" label={PrettyKey(field)} ref={e => this.setRef(field, e)}
-                                                  data={this.props.acData[field]} fullWidth={false} key={field} defaultValue={this.props.data[field]}
-                                                  onBlur={() => {
-                                                      let self = this.getRef(field);
-                                                      let value = self.state.value;
-                                                      let data = this.props.acData[field];
-                                                      if(!data.includes(value)) {
-                                                          self.setState({value:''});
-                                                          this.onChange(field, '');
-                                                      }
-                                                  }} {...textValidation(this.props.table, field)} className="padRight"
-                                                  onAutocomplete={val => this.onChange(field, val)}/>
+                            if(this.props.acData[field].length > 20) {
+                                return <Autocomplete id="props-autocomplete" label={PrettyKey(field)} ref={e => this.setRef(field, e)}
+                                                     data={this.props.acData[field]} fullWidth={false} key={field} defaultValue={this.props.data[field]}
+                                                     onBlur={() => {
+                                                         let self = this.getRef(field);
+                                                         let value = self.state.value;
+                                                         let data = this.props.acData[field];
+                                                         if(!data.includes(value)) {
+                                                             self.setState({value:''});
+                                                             this.onChange(field, '');
+                                                         }
+                                                     }} {...textValidation(this.props.table, field)} className="padRight"
+                                                     onAutocomplete={val => this.onChange(field, val)}/>
+                            }
+                            else {
+                                return <SelectField id="select-field-props" label={PrettyKey(field)} fullWidth={false}
+                                                    key={field} menuItems={this.props.acData[field]} sameWidth
+                                                    defaultValue={this.props.data[field]}
+                                                    {...textValidation(this.props.table, field)}
+                                                    className="md-cell md-cell--6 padRight fieldWidth"
+                                                    onChange={val => this.onChange(field, val)}/>;
+                            }
                         }
                         else if (typeof(this.props.data[field]) === 'boolean') {
                             return <Checkbox key={field} id={field} name={field} label={PrettyKey(field)}
