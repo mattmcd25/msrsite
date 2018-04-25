@@ -77,7 +77,6 @@ const authCheck = jwt({
 });
 
 
-
 // ========== Configuration ==========
 const app = express(); // server app
 
@@ -98,7 +97,6 @@ app.get('/api', (req, res) => { // generic test
     res.send("hello from the api!");
     console.log(req.user);
 });
-
 
 
 // ========== General Actions ==========

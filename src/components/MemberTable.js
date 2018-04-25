@@ -3,6 +3,7 @@ import MemberTableBody from "./MemberTableBody";
 import MemberTableHeader from './MemberTableHeader';
 import { Card, Cell } from 'react-md';
 
+
 export default class MemberTable extends React.Component {
     constructor(props) {
         super(props);
@@ -15,6 +16,10 @@ export default class MemberTable extends React.Component {
             inputValue: ""
         };
     };
+
+    handleExport(){
+        return this.state.display;
+    }
 
     componentDidMount() {
         this.setState(prevState => ({
@@ -71,8 +76,8 @@ export default class MemberTable extends React.Component {
         return (
             <Cell size={12}>
                 <Card tableCard>
-                    <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue} title={this.props.title}
-                                       onChange={this.updateInputValue} onRefreshClick={this.props.onRefreshClick}/>
+                    <MemberTableHeader onClearClick={this.clearInput} value={this.state.inputValue}
+                                       onChange={this.updateInputValue} onDownloadClick={this.handleExport()} onRefreshClick={this.props.onRefreshClick}/>
                     <MemberTableBody loaded={this.props.loaded} display={this.state.display}
                                      rows={this.state.match.length} handlePagination={this.handlePagination}
                                      page={this.state.page}/>

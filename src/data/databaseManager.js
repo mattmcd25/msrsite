@@ -108,6 +108,11 @@ function cleanUser(a) {
 const byID = id => ({ "ID":`${id}` });
 
 // ========== Exported Functions ==========
+
+export function getExport(path){
+    api_post('/download', path);
+}
+
 export function getAll(table) {
     if(isAdmin())
         return api_get(`select*/${table}`)
