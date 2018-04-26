@@ -21,7 +21,7 @@ const formats = {
     'ABBR': ['Site Code'],
     'TYPE': ['Certificate Type'],
     'YEAR': ['Completion Year'],
-    'INSTITUTION': ['Completed at'],
+    'INSTITUTION': ['School/Institution'],
     'DEPENDENTS': ['Dependents'],
     'DATE': ['Recruit Date',prettyDate],
     'WORKTYPE': ['Employment Type'],
@@ -112,7 +112,6 @@ export function doubleDate(dict) {
 export function displayTitle(state) {
     let entries = Object.entries(state).filter(e => e[0] !== 'title' && e[0] !== 'result' && e[0] !== 'mode');
     let allConds = filterObj(Object.assign(...entries.map(d => ({[d[0]]:filterObj(d[1])}))));
-    console.log(allConds);
     return 'Members with ' + Object.entries(allConds).reduce((acc, cur) => `${acc}; ${PrettyValue(cur[0],cur[1])}`, '').slice(2);
     // return Object.entries(allConds).map(a =>PrettyPair(a[0],a[1]));
 }
@@ -134,11 +133,14 @@ function prettySite (old) {
 }
 
 function prettyYears(years) {
-    return (years > 1) ?
-        `${years} years` :
-        (years === 1) ?
-            `${years} year` :
-            `${years*12} months`;
+    if(years > 1)
+        return `${years} years`;
+    else if(years === 1)
+        return `${years} year`;
+    else {
+        let months = `${years*12}`;
+        return `${months.slice(0,months.indexOf('.'))} months`;
+    }
 }
 
 function prettyDate(date) {
@@ -153,7 +155,6 @@ function prettyBool(bool) {
 
 function prettyList(name) {
     return list => {
-        console.log('list',list);
         return `${Object.values(list).reduce((acc, cur, i, a) => i === a.length-1 ? `${acc} & ${cur}` : `${acc}, ${cur}`)} ${name}`;
     }
 }
@@ -161,7 +162,6 @@ function prettyList(name) {
 function prettyDict(name) {
     let x = name ? `${name} ` : '';
     return dict => {
-        console.log('dict',dict);
         return Object.entries(dict).reduce((acc, cur) => {
             let key = name==='Knowledge of' ? '' : PrettyKey(cur[0]);
             let value = key!=='Succeeded' ? PrettyValue(cur[0],cur[1]) : cur[1];

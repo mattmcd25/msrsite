@@ -134,6 +134,12 @@
   padding-right: 20px;
 }
 
+.fieldDouble {
+  width: 100%;
+  margin: 0;
+  padding-bottom: 17px;
+}
+
 .fieldWidth {
   max-width: 168px;
   min-width: 168px;
@@ -149,4 +155,8 @@
       margin-bottom: 21px;
     }
   }
+}
+
+.newCard {
+  background-color: $md-red-100;
 }

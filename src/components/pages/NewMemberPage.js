@@ -2,7 +2,7 @@ import React from 'react';
 import { CircularProgress, Grid, Cell } from 'react-md';
 import IssueButton from '../IssueButton';
 import { insert } from '../../data/databaseManager';
-import { CONSTANTS, HEADERS, STATUS, MARITAL, GENDER } from "../../index";
+import { CONSTANTS, HEADERS, STATUS, MARITAL, GENDER, TODAY } from "../../index";
 import { dataLengthIssues } from "../displays/DisplayUtils";
 import { makeDict } from "../../Utils";
 import { PropListCard } from "../displays/Cards";
@@ -12,7 +12,7 @@ export default class NewMemberPage extends React.Component {
         super(props);
         this.props.setTitle("Add Member");
         let mem = makeDict(Object.keys(HEADERS['Member']).slice(1));
-        mem.DATE = new Date();
+        mem.DATE = TODAY;
         this.state = { mem, loading: false };
     };
 
@@ -32,7 +32,6 @@ export default class NewMemberPage extends React.Component {
         let value = target.value;
         let name = target.name;
 
-        console.log(name, value);
         this.setState(prevState => ({
             mem: {
                 ...prevState.mem,

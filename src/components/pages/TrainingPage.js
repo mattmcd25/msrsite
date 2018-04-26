@@ -56,7 +56,6 @@ export default class TrainingPage extends React.Component {
         let value = target.value;
         let name = target.name;
 
-        console.log(name, value);
         this.setState(prevState => ({
             training: {
                 ...prevState.training,

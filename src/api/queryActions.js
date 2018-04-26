@@ -7,7 +7,7 @@ const ua = require("./updateActions");
 // SECURITY: tableID checked by my middleware
 exports.selectAll = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
-    if(tableID === 'MEMBER') tableID = 'Member_Full';
+    if(tableID === 'MEMBER') tableID = 'Member_Full ORDER BY MEMBERSHIP DESC';
 
     console.log(`[select*] ${tableID}`);
     let request = new sql.Request(); // create Request object

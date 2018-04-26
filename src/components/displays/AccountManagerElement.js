@@ -4,6 +4,7 @@ import { FontIcon, CircularProgress } from 'react-md';
 import { getUserPermissions, saveUserPermissions } from "../../data/databaseManager";
 import CheckTableElement from './CheckTableElement';
 import {getUserID} from "../AuthMan";
+import {jsonEq} from "../../Utils";
 
 const levelFrom = perms => {
     if(perms.admin) return 'admin';
@@ -57,7 +58,7 @@ export default class AccountManager extends React.PureComponent {
             let newUser = this.state.users[email];
             let oldUser = this.state.pastUsers[email];
 
-            if(JSON.stringify(newUser) !== JSON.stringify(oldUser)) {
+            if(!jsonEq(newUser, oldUser)) {
                 let {user_id, ...perms} = newUser;
                 let newLevel = levelFrom(perms);
                 promises.push(saveUserPermissions({user_id, newLevel}));

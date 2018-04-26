@@ -2,7 +2,8 @@ import React from 'react';
 import { BlankCard, ChipListCard, PropsAndChipsCard, PropListCard, CheckTableCard } from "./Cards";
 import { Grid, Button, FontIcon } from 'react-md';
 import { CONSTANTS, WORKSTATUS, WORKTYPE, STATUS, GENDER, MARITAL } from "../../index";
-import {capitalize, dictFromList} from "../../Utils";
+import {capitalize, dictFromList, jsonEq} from "../../Utils";
+import {defaultFor} from "../pages/EditMemberPage";
 
 let chips, skDict, langs, langDict;
 
@@ -28,9 +29,10 @@ export default function EditMemberDisplay(props) {
 
             {Object.keys(props.certs).map(type => {
                 let {ID, ...rest} = props.certs[type];
+                let className = jsonEq(defaultFor('cert',''), rest) ? 'newCard' : '';
                 return <PropListCard edit title={rest.TYPE} subtitle="Certificate" data={rest} table='Has_Cert'
                                      onChange={evt => props.onCertChange(type, evt)} key={type}
-                                     acData={{TYPE:CONSTANTS['Certificate'].map(c=>c.TYPE)}}
+                                     acData={{TYPE:CONSTANTS['Certificate'].map(c=>c.TYPE)}} className={className}
                                      actions={<Button flat iconChildren={<FontIcon>delete</FontIcon>} iconBefore={false}
                                                       className="redButton" onClick={() => props.removeCert(type)}>
                                          Delete</Button>}/>
@@ -71,11 +73,12 @@ function jobCards(props, set, pk, subtitle, title='EMPLOYER') {
     let table = capitalize(set);
     return Object.keys(props[set]).map(key => {
         let {[pk]:id, SKILLS, ...rest} = props[set][key];
+        let className = jsonEq(defaultFor(set,key), props[set][key]) ? 'newCard' : '';
         return (
             <PropsAndChipsCard edit key={key} title={rest[title]} subtitle={subtitle}
                                list={SKILLS} data={rest} listHeader="Skills Learned" table={table}
                                updateList={list => props.setItemSkills(set, key, list)}
-                               acData={{chips, WORKTYPE, WORKSTATUS}}
+                               acData={{chips, WORKTYPE, WORKSTATUS}} className={className}
                                onChange={evt => props.updateItem(set, key, evt)} tips={skDict}
                                actions={<Button flat iconChildren={<FontIcon>delete</FontIcon>} iconBefore={false} className="redButton"
                                                 onClick={() => props.removeItem(set, key)}>

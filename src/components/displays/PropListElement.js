@@ -35,12 +35,13 @@ export default class PropListElement extends React.Component {
             <div>
                 {Object.keys(this.props.data).map(field => {
                     let fieldkey = (field.slice(0,3) === 'MIN' || field.slice(0,3) === 'MAX') ? field.slice(3) : field;
-                    console.log(field);
+
                     if(this.props.edit) {
                         if(this.props.acData && this.props.acData[field]) {
+                            let wid = HEADERS[this.props.table][fieldkey].CHARACTER_MAXIMUM_LENGTH >= 40;
                             if(this.props.acData[field].length > 20) {
                                 return <Autocomplete id="props-autocomplete" label={PrettyKey(field)} ref={e => this.setRef(field, e)}
-                                                     data={this.props.acData[field]} fullWidth={false} key={field} defaultValue={this.props.data[field]}
+                                                     data={this.props.acData[field]} fullWidth={wid} key={field} defaultValue={this.props.data[field]}
                                                      onBlur={() => {
                                                          let self = this.getRef(field);
                                                          let value = self.state.value;
@@ -53,11 +54,13 @@ export default class PropListElement extends React.Component {
                                                      onAutocomplete={val => this.onChange(field, val)}/>
                             }
                             else {
-                                return <SelectField id="select-field-props" label={PrettyKey(field)} fullWidth={false}
+                                let className = "md-cell md-cell--6 padRight";
+                                if(!wid) className += ' fieldWidth';
+                                else className += ' fieldDouble';
+                                return <SelectField id="select-field-props" label={PrettyKey(field)} fullWidth={wid}
                                                     key={field} menuItems={this.props.acData[field]} sameWidth
-                                                    defaultValue={this.props.data[field]}
+                                                    defaultValue={this.props.data[field]} className={className}
                                                     {...textValidation(this.props.table, field)}
-                                                    className="md-cell md-cell--6 padRight fieldWidth"
                                                     onChange={val => this.onChange(field, val)}/>;
                             }
                         }
@@ -79,10 +82,12 @@ export default class PropListElement extends React.Component {
                                                {...textValidation(this.props.table, fieldkey)}  />;
                         }
                         else {
-                            return <TextField className="padRight" key={field} id={field} name={field}
-                                       label={PrettyKey(field)} fullWidth={false} value={this.props.data[field]}
-                                       onChange={(v, e) => this.onChange(e.target.name, v)}
-                                              {...textValidation(this.props.table, field)}/>
+                            let len = HEADERS[this.props.table][fieldkey].CHARACTER_MAXIMUM_LENGTH;
+                            let rows = (len > 100) ? 3 : undefined;
+                            return <TextField className="padRight" key={field} id={field} name={field} rows={rows}
+                                                  label={PrettyKey(field)} fullWidth={false} value={this.props.data[field]}
+                                                  onChange={(v, e) => this.onChange(e.target.name, v)}
+                                                  {...textValidation(this.props.table, field)}/>
                         }
                     }
                     else {

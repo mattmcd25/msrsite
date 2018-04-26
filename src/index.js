@@ -12,6 +12,7 @@ export var WORKTYPE = ['Full-time', 'Part-time', 'Temporary'];
 export var STATUS = ['Active', 'Employed', 'Inactive', 'Blacklisted'];
 export var MARITAL = ['Married', 'Single', 'Co-habibitating'];
 export var GENDER = ['M', 'F'];
+export var TODAY = new Date();
 let searchResult = [];
 let auth_level = '';
 

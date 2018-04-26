@@ -7,7 +7,7 @@ import CheckTableElement from "./CheckTableElement";
 export function BlankCard(props) {
     return (
         <Cell size={4}>
-            <Card className="member-card">
+            <Card className={`member-card ${props.className}`}>
                 <CardTitle className="card-action-title" title={props.title} subtitle={props.subtitle}>
                     <CardActions>
                         {props.actions}
