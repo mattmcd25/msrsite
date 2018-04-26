@@ -2,7 +2,7 @@ import React from 'react';
 import { CircularProgress, Grid, Cell } from 'react-md';
 import IssueButton from '../IssueButton';
 import { insert } from '../../data/databaseManager';
-import { CONSTANTS, HEADERS, STATUS } from "../../index";
+import { CONSTANTS, HEADERS, STATUS, MARITAL, GENDER } from "../../index";
 import { dataLengthIssues } from "../displays/DisplayUtils";
 import { makeDict } from "../../Utils";
 import { PropListCard } from "../displays/Cards";
@@ -50,7 +50,7 @@ export default class NewMemberPage extends React.Component {
                     {this.state.loading ?
                         <Cell size={12}><CircularProgress id="newMemberPage"/></Cell> :
                         <PropListCard edit title='New Member' data={this.state.mem} onChange={this.handleInputChange}
-                                      table='Member' acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR),STATUS}}
+                                      table='Member' acData={{SITE:CONSTANTS['Site'].map(s=>s.ABBR),STATUS,MARITAL,GENDER}}
                                       footer={
                                           <IssueButton raised primary issues={issues} onClick={this.handleSubmit}
                                                        position="right">

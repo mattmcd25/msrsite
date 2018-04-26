@@ -4,7 +4,7 @@ import { DataTable, TableCardHeader, TableHeader, TableBody, TableRow, CircularP
 import {CONSTANTS, FKS, HEADERS} from "../../index";
 import { dataLengthIssues, PrettyKey, textValidation } from "./DisplayUtils";
 import {del, getAll, insert, update} from "../../data/databaseManager";
-import {intersection, difference, dictFromList, uniteRoutes, duplicates} from "../../Utils";
+import {intersection, difference, dictFromList, uniteRoutes, duplicates, capitalize} from "../../Utils";
 import IssueButton from "../IssueButton";
 
 export default class ConstantTableElement extends React.Component {
@@ -168,10 +168,11 @@ export default class ConstantTableElement extends React.Component {
         });
 
         let issues = dataLengthIssues(this.state.data, this.props.table);
-        let keys = Object.values(this.state.data).map(d=>d[this.props.pk]);
+        let keys = Object.values(this.state.data).map(d=>d[this.props.pk].toUpperCase());
         if(keys.includes('')) issues.push({field:this.props.pk,value:''});
+        console.log(keys, duplicates(keys));
         let dups = duplicates(keys);
-        if(dups.length > 0) issues.push({field:this.props.pk,value:dups[0],duplicate:true});
+        if(dups.length > 0) issues.push({field:this.props.pk,value:capitalize(dups[0]),duplicate:true});
 
         return (this.state.loading ? <CircularProgress id="settingsTable"/> :
             <div>

@@ -12,10 +12,10 @@ import IssueButton from '../IssueButton';
 
 const defaultFor = (set, key) => {
     switch(set) {
-        case 'work': return { WORKID:key, EMPLOYER: 'Untitled', LENGTH: 0, SKILLS: [] };
-        case 'placement': return { PLACEMENTID: key, EMPLOYER: 'Untitled', WORKTYPE: 'Full-time',
+        case 'work': return { WORKID:key, EMPLOYER: 'New Work Experience', LENGTH: 0, SKILLS: [] };
+        case 'placement': return { PLACEMENTID: key, EMPLOYER: 'New Placement', WORKTYPE: 'Full-time',
                                     WORKSTATUS: 'Employed', STARTDATE: new Date(), SKILLS: [] };
-        case 'training': return { TRAININGID: key, FIELD: 'Untitled', COMPLETEDATE: new Date(),
+        case 'training': return { TRAININGID: key, FIELD: 'New Training', COMPLETEDATE: new Date(),
                                     SUCCEEDED: true, SKILLS: [] };
         default: return { key };
     }
@@ -324,7 +324,8 @@ export default class EditMemberPage extends React.Component {
                     YEAR:2018,
                     INSTITUTION:''
                 }
-            }
+            },
+            nextID: prevState.nextID + 1
         }));
     };
 

@@ -35,7 +35,7 @@ export default class PropListElement extends React.Component {
             <div>
                 {Object.keys(this.props.data).map(field => {
                     let fieldkey = (field.slice(0,3) === 'MIN' || field.slice(0,3) === 'MAX') ? field.slice(3) : field;
-
+                    console.log(field);
                     if(this.props.edit) {
                         if(this.props.acData && this.props.acData[field]) {
                             if(this.props.acData[field].length > 20) {
