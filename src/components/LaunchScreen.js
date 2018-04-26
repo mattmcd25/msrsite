@@ -23,6 +23,7 @@ export default class LaunchScreen extends React.Component{
                 storeUserLevel(level);
 
                 switch(level) {
+                    case 'creator':
                     case 'admin':
                         return initialize().then(() => ReactDOM.render(<App/>, document.getElementById("root")));
                     case 'user':

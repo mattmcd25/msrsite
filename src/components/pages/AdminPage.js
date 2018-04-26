@@ -39,8 +39,8 @@ const settingCards = (props) => [
     },
     {
         title:'Account Management',
-        subtitle:'Add to or remove from the pre-set list of certificate types.',
-        icon:'school',
+        subtitle:'Change the access levels of users of this app.',
+        icon:'person',
         children: (
             <AccountManagerElement {...props}/>
         )

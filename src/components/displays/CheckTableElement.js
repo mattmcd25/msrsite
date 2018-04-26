@@ -46,7 +46,6 @@ function CheckTableRow(props) {
     let titleKey = Object.keys(props.data)[1];
     let title = props.data[titleKey];
     let ID = Object.values(props.data)[0];
-    console.log('id',ID);
 
     let children = Object.keys(props.data).slice(1).map(k => (
         <TableColumn className="small" key={k}>
@@ -56,9 +55,9 @@ function CheckTableRow(props) {
                     props.edit ?
                         (!props.exclusive ?
                             <Checkbox id={title+''+k} name={title+''+k} label={''} checked={props.data[k]}
-                                      onChange={v => props.onChange(title, k, v)} disabled={props.shouldDisable(ID)}/> :
+                                      onChange={v => props.onChange(title, k, v)} disabled={props.shouldDisable && props.shouldDisable(ID)}/> :
                             <Radio id={title+''+k} name={title+''+k} label={''} checked={props.data[k]}
-                                   onChange={v => props.onChange(title, k, v)} disabled={props.shouldDisable(ID)}/>) :
+                                   onChange={v => props.onChange(title, k, v)} disabled={props.shouldDisable && props.shouldDisable(ID)}/>) :
                         (props.data[k] ?
                             <FontIcon primary>check</FontIcon> :
                             <FontIcon error>close</FontIcon>)}

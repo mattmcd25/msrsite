@@ -4,7 +4,9 @@ import { CSVLink } from 'react-csv';
 
 export default function MemberTableHeader(props) {
     return (
-        <TableCardHeader visible={false} title={props.title || "Members"}>
+        <TableCardHeader visible={false} title="Members">
+            {props.title && <div style={{'maxWidth':'500px'}}><h4>{props.title.substring(8)}</h4></div>}
+            <label style={{'padding':'20px'}}/>
             <TextField
                 id="search"
                 label="Quick Search"
@@ -19,7 +21,7 @@ export default function MemberTableHeader(props) {
                 type={"text"}
             />
             <label className="bigSpacer"/>
-            <CSVLink data={props.onDownloadClick} filename={(props.title || "Members") + ".csv"}>
+            <CSVLink data={props.data} filename={(props.title || "Members") + ".csv"}>
                 <Button flat primary iconChildren={<FontIcon>file_download</FontIcon>}>Download</Button>
             </CSVLink>
             {props.onRefreshClick===undefined ?

@@ -7,16 +7,18 @@ import { Link } from 'react-router-dom'
 import { Button, Grid, CircularProgress } from 'react-md';
 import { dataLengthIssues } from "../displays/DisplayUtils";
 import EditMemberDisplay from '../displays/EditMemberDisplay';
-import {intersection, difference, duplicates} from "../../Utils";
+import {intersection, difference, duplicates, capitalize, jsonEq} from "../../Utils";
+import { TODAY } from "../../index";
 import IssueButton from '../IssueButton';
 
-const defaultFor = (set, key) => {
+export const defaultFor = (set, key) => {
     switch(set) {
-        case 'work': return { WORKID:key, EMPLOYER: 'Untitled', LENGTH: 0, SKILLS: [] };
-        case 'placement': return { PLACEMENTID: key, EMPLOYER: 'Untitled', WORKTYPE: 'Full-time',
-                                    WORKSTATUS: 'Employed', STARTDATE: new Date(), SKILLS: [] };
-        case 'training': return { TRAININGID: key, FIELD: 'Untitled', COMPLETEDATE: new Date(),
+        case 'work': return { WORKID:key, EMPLOYER: 'Untitled Work Experience', LENGTH: 0, SKILLS: [] };
+        case 'placement': return { PLACEMENTID: key, EMPLOYER: 'Untitled Placement', WORKTYPE: 'Full-time',
+                                    WORKSTATUS: 'Employed', STARTDATE: TODAY, SKILLS: [] };
+        case 'training': return { TRAININGID: key, FIELD: 'Untitled Training', COMPLETEDATE: TODAY,
                                     SUCCEEDED: true, SKILLS: [] };
+        case 'cert': return { TYPE:key, YEAR:2018, INSTITUTION:'' };
         default: return { key };
     }
 };
@@ -53,14 +55,17 @@ export default class EditMemberPage extends React.Component {
                         .concat(dataLengthIssues(this.state.certs, 'Has_Cert'))
                         .concat(dataLengthIssues(this.state.placement, 'Placement'))
                         .concat(dataLengthIssues(this.state.training, 'Training'));
-        if(this.state.mem && (!this.state.mem.SITE || this.state.mem.SITE === '')) issues.push({field:'SITE',value:''});
+        if(this.state.mem !== undefined) {
+            if(!this.state.mem.SITE || this.state.mem.SITE === '') issues.push({field:'SITE',value:''});
+            if(!this.state.mem.STATUS || this.state.mem.STATUS === '') issues.push({field:'STATUS',value:''});
+        }
         if(this.state.certs) {
             let types = Object.values(this.state.certs).map(c=>c.TYPE);
             if(types.includes('')) issues.push({field:'TYPE',value:''});
             let dups = duplicates(types);
             if(dups.length > 0) issues.push({field:'TYPE',value:dups[0],duplicate:true});
         }
-        if(JSON.stringify(issues[0]) !== JSON.stringify(this.state.issues[0])) {
+        if(!jsonEq(issues[0], this.state.issues[0])) {
             this.setState({ issues }, this.updateActions);
         }
     };
@@ -87,7 +92,7 @@ export default class EditMemberPage extends React.Component {
             });
     }
 
-    past = (name) => `past${name[0].toUpperCase() + name.slice(1)}`;
+    past = (name) => `past${capitalize(name)}`;
 
     getAndSave = (promise, name) =>
         () => promise.then(res => this.setState({ [name]:res, [this.past(name)]:res }));
@@ -101,7 +106,7 @@ export default class EditMemberPage extends React.Component {
         let ID = this.props.match.params.memid;
 
         // Update basic member fields
-        if(JSON.stringify(this.state.mem) !== JSON.stringify(this.state.pastMem)) {
+        if(!jsonEq(this.state.mem, this.state.pastMem)) {
             let {ID, ...restMem} = this.state.mem;
             promises.push(update('Member', {...restMem, PK: {ID}}));
         }
@@ -120,7 +125,7 @@ export default class EditMemberPage extends React.Component {
         intersection(newLangs, oldLangs).forEach(langName => {
             let {ID, LANGUAGE, ...restNew} = this.state.langs[langName];
             let {ID:oldID, LANGUAGE:oldLang, ...restOld} = this.state.pastLangs[langName];
-            if(JSON.stringify(restNew) !== JSON.stringify(restOld)) {
+            if(!jsonEq(restNew, restOld)) {
                 promises.push(update('Know_lang', {
                     ...restNew,
                     PK: {ID, LANGUAGE}
@@ -136,7 +141,7 @@ export default class EditMemberPage extends React.Component {
         intersection(oldCerts, newCerts).forEach(cert => {
             let {ID, TYPE, ...restNew} = this.state.certs[cert];
             let {ID:oldID, TYPE:oldType, ...restOld} = this.state.pastCerts[cert];
-            if(JSON.stringify({TYPE, ...restNew}) !== JSON.stringify({TYPE:oldType, ...restOld})) {
+            if(!jsonEq({TYPE, ...restNew}, {TYPE:oldType, ...restOld})) {
                 promises.push(update('Has_Cert', {
                     TYPE,
                     ...restNew,
@@ -163,7 +168,7 @@ export default class EditMemberPage extends React.Component {
 
     saveJobs = (name, pk, promises, ID) => {
         let pastName = this.past(name);
-        let table = name[0].toUpperCase() + name.slice(1);
+        let table = capitalize(name);
         let skilltable = `${table}_SKILL`;
         let oldData = this.state[pastName];
         let newData = this.state[name];
@@ -196,7 +201,7 @@ export default class EditMemberPage extends React.Component {
             let {[pk]:newID, SKILLS:newSkills, ...restNew} = newData[key];
             difference(oldSkills, newSkills).forEach(NAME => promises.push(del(skilltable, {[pk]:key, NAME})));
             difference(newSkills, oldSkills).forEach(NAME => promises.push(insert(skilltable, {[pk]:key, NAME})));
-            if(JSON.stringify(restNew) !== JSON.stringify(restOld))
+            if(!jsonEq(restNew, restOld))
                 promises.push(update(table, {...restNew, PK: {[pk]:key}}));
         });
     };
@@ -321,7 +326,8 @@ export default class EditMemberPage extends React.Component {
                     YEAR:2018,
                     INSTITUTION:''
                 }
-            }
+            },
+            nextID: prevState.nextID + 1
         }));
     };
 

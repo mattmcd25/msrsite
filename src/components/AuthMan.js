@@ -75,7 +75,6 @@ export function login() {
 }
 
 export function logout(){
-    console.log("Signing Out");
     clearIdToken();
     clearAccessToken();
     window.location.href = '/';

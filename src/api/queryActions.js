@@ -7,27 +7,31 @@ const ua = require("./updateActions");
 // SECURITY: tableID checked by my middleware
 exports.selectAll = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
+    if(tableID === 'MEMBER') tableID = 'Member_Full ORDER BY MEMBERSHIP DESC';
 
     console.log(`[select*] ${tableID}`);
     let request = new sql.Request(); // create Request object
     return request.query(`SELECT * FROM `+ tableID) // query
         .then(recordset => {
-            console.log("[select*] Success");
+            console.log(`[select*] ${tableID} Success`);
             if(res) res.status(200).send(recordset); // send records as a response
         })
         .catch(err => {
-            console.log('[select*] 500 '+err);
+            console.log(`[select*] ${tableID} 500 ${err}`);
             if(res) res.status(500).send(err);
         });
 };
 
 exports.advancedQuery = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
+    if(tableID === 'MEMBER') tableID = 'Member_Full';
 
     console.log(`[query] ${tableID} with cond ${JSON.stringify(req.body)}`);
     let cond = Object.keys(req.body).reduce((acc, cur) => {
-        let op = (cur === 'LENGTH' || cur === 'YEAR') ? '>=' : '=';
-        return `${acc} AND [${cur}]${op}${ua.varToSQL(req.body[cur])}`
+        let op = (cur === 'LENGTH' || cur === 'YEAR' || cur.slice(0,3) === 'MIN') ? '>=' :
+            (cur.slice(0,3) === 'MAX') ? '<=' : '=';
+        let variable = (cur.slice(0,3) === 'MIN' || cur.slice(0,3) === 'MAX') ? cur.slice(3) : cur;
+        return `${acc} AND [${variable}]${op}${ua.varToSQL(req.body[cur])}`
     }, '').substring(5);
     let query = `SELECT * FROM "${tableID}" WHERE ${cond}`;
     let request = new sql.Request();
@@ -47,6 +51,7 @@ exports.advancedQuery = (req, res) => {
 // SECURITY: tableID checked by my middleware
 exports.getColumns = (req, res) => {
     let tableID = req.params['table'].toUpperCase();
+    if(tableID === 'MEMBER') tableID = 'Member_Full';
 
     console.log(`[colnames] ${tableID}`);
     let request = new sql.Request(); // create Request object

@@ -4,7 +4,7 @@ import { DataTable, TableCardHeader, TableHeader, TableBody, TableRow, CircularP
 import {CONSTANTS, FKS, HEADERS} from "../../index";
 import { dataLengthIssues, PrettyKey, textValidation } from "./DisplayUtils";
 import {del, getAll, insert, update} from "../../data/databaseManager";
-import {intersection, difference, dictFromList, uniteRoutes, duplicates} from "../../Utils";
+import {intersection, difference, dictFromList, uniteRoutes, duplicates, capitalize, jsonEq} from "../../Utils";
 import IssueButton from "../IssueButton";
 
 export default class ConstantTableElement extends React.Component {
@@ -74,7 +74,6 @@ export default class ConstantTableElement extends React.Component {
     save = () => {
         this.setState({ loading: true });
         this.props.toast({text:`Saving ${this.props.table}s...`});
-        // TODO ensure there are no duplicates
         let oldData = dictFromList(CONSTANTS[this.props.table], this.props.pk);
         let newData = dictFromList(this.state.data, this.props.pk);
         let routes = uniteRoutes(this.state.pk_changed);
@@ -92,7 +91,7 @@ export default class ConstantTableElement extends React.Component {
             promises.push(del(this.props.table, {[this.props.pk]:key}).catch(e => this.catchDel(key, e)))); // removed
         difference(newKeys, oldKeys).forEach(key => promises.push(insert(this.props.table, newData[key]))); // added
         intersection(oldKeys, newKeys).forEach(key => {
-            if(JSON.stringify(oldData[key]) !== JSON.stringify(newData[key])) {
+            if(!jsonEq(oldData[key], newData[key])) {
                 promises.push(update(this.props.table, {...newData[key], PK:{[this.props.pk]:key}}));
             }
         }); // potentially modified
@@ -169,10 +168,10 @@ export default class ConstantTableElement extends React.Component {
         });
 
         let issues = dataLengthIssues(this.state.data, this.props.table);
-        let keys = Object.values(this.state.data).map(d=>d[this.props.pk]);
+        let keys = Object.values(this.state.data).map(d=>d[this.props.pk].toUpperCase());
         if(keys.includes('')) issues.push({field:this.props.pk,value:''});
         let dups = duplicates(keys);
-        if(dups.length > 0) issues.push({field:this.props.pk,value:dups[0],duplicate:true});
+        if(dups.length > 0) issues.push({field:this.props.pk,value:capitalize(dups[0]),duplicate:true});
 
         return (this.state.loading ? <CircularProgress id="settingsTable"/> :
             <div>

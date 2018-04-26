@@ -22,7 +22,7 @@ export default class TrainingPage extends React.Component {
     };
 
     componentDidMount = () => {
-        let name = member => ({[`${member.FIRSTNAME} ${member.SURNAME} (M# ${member.MEMBERSHIP})`]:member.ID});
+        let name = member => ({[`${member.FIRSTNAME} ${member.SURNAME} (ID ${member.MEMBERSHIP})`]:member.ID});
         getAll('Member').then(ms => this.setState({ people: Object.assign({}, ...ms.map(name)), loading: false }));
     };
 
@@ -56,7 +56,6 @@ export default class TrainingPage extends React.Component {
         let value = target.value;
         let name = target.name;
 
-        console.log(name, value);
         this.setState(prevState => ({
             training: {
                 ...prevState.training,

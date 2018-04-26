@@ -41,7 +41,6 @@ exports.update = (req, res) => {
     let cond = Object.keys(pk).reduce((acc, cur) => `${acc} AND ${cur}=${varToSQL(pk[cur])}`, '').substring(5);
     let request = new sql.Request();
     let query = `UPDATE ${tableID} SET ${vars} WHERE ${cond}`;
-    console.log(query);
     return request.query(query)
         .then(recordset => {
             console.log("[update] Success");

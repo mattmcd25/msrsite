@@ -80,10 +80,14 @@ function cleanUser(a) {
     let isnone = true;
     try{
         ulevel = a.app_metadata.level;
-        if(ulevel === 'admin'){
+        if(ulevel === 'creator') {
+            return {};
+        }
+        else if(ulevel === 'admin'){
             isadmin = true;
             isnone = false;
-        }else if(ulevel === 'user'){
+        }
+        else if(ulevel === 'user'){
             isuser = true;
             isnone = false;
         }
@@ -104,11 +108,6 @@ function cleanUser(a) {
 const byID = id => ({ "ID":`${id}` });
 
 // ========== Exported Functions ==========
-
-export function getExport(path){
-    api_post('/download', path);
-}
-
 export function getAll(table) {
     if(isAdmin())
         return api_get(`select*/${table}`)
