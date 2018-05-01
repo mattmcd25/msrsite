@@ -32,7 +32,7 @@ export default class LoginPage extends React.Component{
                 <div className="launchVer">
                     <Paper zDepth={2}>
                         <Media>
-                            <img src={'/bad-msr-logo.png'} alt="msr logo"/>
+                            <img src={'/msr-logo.png'} alt="msr logo"/>
                         </Media>
                         <label className="vertSpacer"/><br/>
                         <div className='launchHor' style={{'marginTop':'0px'}}>

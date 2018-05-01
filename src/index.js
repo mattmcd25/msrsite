@@ -14,6 +14,7 @@ export var MARITAL = ['Married', 'Single', 'Co-habibitating'];
 export var GENDER = ['M', 'F'];
 export var TODAY = new Date();
 let searchResult = [];
+let searchState = {};
 let auth_level = '';
 
 ReactDOM.render(
@@ -41,5 +42,6 @@ export function initialize() {
 
 export const storeUserLevel = level => auth_level = level;
 export const isAdmin = () => auth_level === 'admin' || auth_level === 'creator';
-export const storeSearch = result => searchResult = result;
+export const storeSearch = (result, state) => { searchResult = result; searchState = state; };
 export const reclaimSearch = () => searchResult;
+export const reclaimState = () => searchState;

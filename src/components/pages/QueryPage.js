@@ -3,7 +3,7 @@ import { Grid, Button } from 'react-md';
 import {getAll, query} from "../../data/databaseManager";
 import QueryDisplay from '../displays/QueryDisplay';
 import MemberTable from '../MemberTable';
-import { storeSearch, reclaimSearch } from "../../index";
+import {storeSearch, reclaimSearch, reclaimState} from "../../index";
 import { HEADERS } from "../../index";
 import { intersection, makeDict, filterObj } from "../../Utils";
 import {displayTitle, doubleDate} from '../displays/DisplayUtils';
@@ -21,7 +21,7 @@ export default class QueryPage extends React.Component {
         if(search.length === 0)
             this.setQueryMode();
         else
-            this.setDisplayMode(search);
+            this.setDisplayMode(search, reclaimState());
     }
 
     clear = () => {
@@ -42,7 +42,7 @@ export default class QueryPage extends React.Component {
     };
 
     setQueryMode = () => {
-        storeSearch([]);
+        storeSearch([], {});
         this.setState({ mode: 'query', title: 'Members' });
         this.clear();
         this.props.setTitle("Advanced Search");
@@ -57,9 +57,9 @@ export default class QueryPage extends React.Component {
         ]);
     };
 
-    setDisplayMode = (result) => {
-        storeSearch(result);
-        let title = displayTitle(this.state);
+    setDisplayMode = (result, state) => {
+        storeSearch(result, state);
+        let title = displayTitle(state);
         this.setState({
             mode: 'display',
             result, title
@@ -95,7 +95,7 @@ export default class QueryPage extends React.Component {
             matchingIDs = intersection(matchingIDs, res.map(getID));
         }
         let result = allMembers.filter(mem => matchingIDs.includes(mem.ID));
-        this.setDisplayMode(result);
+        this.setDisplayMode(result, this.state);
     };
 
     propSearch = (set, table, promises) => {

@@ -9,7 +9,7 @@ export default class UnauthorizedPage extends React.PureComponent {
                 <div className="launchVer">
                     <Paper zDepth={2}>
                         <Media>
-                            <img src={'/bad-msr-logo.png'} alt="msr logo"/>
+                            <img src={'/msr-logo.png'} alt="msr logo"/>
                         </Media>
                         <label className="vertSpacer"/>
                         <div className='launchHor' style={{'marginTop':'0px'}}>

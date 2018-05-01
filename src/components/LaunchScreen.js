@@ -41,7 +41,7 @@ export default class LaunchScreen extends React.Component{
                 <div className="launchVer">
                     <Paper zDepth={2}>
                         <Media>
-                            <img src={'/bad-msr-logo.png'} alt="msr logo"/>
+                            <img src={'/msr-logo.png'} alt="msr logo"/>
                         </Media>
                         <CircularProgress id="launchScreen"/>
                     </Paper>
