@@ -136,8 +136,8 @@ export default class EditMemberPage extends React.Component {
         // Update certificates
         let oldCerts = Object.keys(this.state.pastCerts);
         let newCerts = Object.keys(this.state.certs);
-        difference(newCerts, oldCerts).forEach(cert => promises.push(insert('Has_Cert', this.state.certs[cert])));
         difference(oldCerts, newCerts).forEach(cert => promises.push(del('Has_Cert', this.state.pastCerts[cert])));
+        difference(newCerts, oldCerts).forEach(cert => promises.push(insert('Has_Cert', this.state.certs[cert])));      
         intersection(oldCerts, newCerts).forEach(cert => {
             let {ID, TYPE, ...restNew} = this.state.certs[cert];
             let {ID:oldID, TYPE:oldType, ...restOld} = this.state.pastCerts[cert];
@@ -175,6 +175,14 @@ export default class EditMemberPage extends React.Component {
         let oldKeys = Object.keys(oldData);
         let newKeys = Object.keys(newData);
 
+        // Removing old
+        difference(oldKeys, newKeys).forEach(key => {
+            promises.push(
+                del(skilltable, {[pk]:key})
+                    .then(() => del(table, {[pk]:key}))
+            );
+        });
+
         // Adding new
         difference(newKeys, oldKeys).forEach(key => {
             let {[pk]:id, SKILLS, ...rest} = newData[key];
@@ -184,14 +192,6 @@ export default class EditMemberPage extends React.Component {
                         let realKey = res.recordset[0][pk];
                         SKILLS.forEach(NAME => promises.push(insert(skilltable, {[pk]:realKey, NAME})));
                     })
-            );
-        });
-
-        // Removing old
-        difference(oldKeys, newKeys).forEach(key => {
-            promises.push(
-                del(skilltable, {[pk]:key})
-                    .then(() => del(table, {[pk]:key}))
             );
         });
 

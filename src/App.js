@@ -68,10 +68,8 @@ export default class App extends React.Component {
                         toast: this.toast,
                         popup: this.popup,
                         dismissPopup: this.dismissPopup,
-                        match: match,
-                        location: location,
-                        history: history
-                    })
+                        match, location, history
+                    });
                 }
                 else {
                     logout();
